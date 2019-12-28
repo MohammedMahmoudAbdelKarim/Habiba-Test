@@ -1,0 +1,679 @@
+<div class="animated fadeIn" id="stock-list">
+  <!-- Start Header -->
+  <header class="bg-blue px-5 py-3">
+    <div
+      class="row align-items-start mb-5 justify-content-between no-gutters w-100"
+    >
+      <div class="col-8">
+        <!-- Titles -->
+        <h6 class="col-12 p-0">Dashboard | Main Stock | List</h6>
+        <h3 class="text-uppercase">
+          MAIN STOCK LIST
+        </h3>
+      </div>
+      <div class="col-4 row justify-content-end">
+        <div class="dropdown">
+          <button
+            class="btn dropdown-toggle"
+            type="button"
+            id="dropdownMenu2"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Welcome Habiba
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <button class="dropdown-item" type="button" (click)="logout()">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Filter -->
+      <p class="col-12 p-0 mt-2 text-white">
+        Filter by :
+      </p>
+      <!-- Branch -->
+      <div class="col p-0 mr-3">
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Branch</mat-label>
+          <input
+            type="text"
+            placeholder="Branch"
+            aria-label="Number"
+            matInput
+            [formControl]="myControlBranch"
+            [matAutocomplete]="autoBranch"
+            [(ngModel)]="branchValue"
+          />
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="branchValue = ''"
+            >close</mat-icon
+          >
+          <mat-autocomplete
+            #autoBranch="matAutocomplete"
+            [displayWith]="displayBranch"
+          >
+            <mat-option
+              *ngFor="let option of filteredBranches | async"
+              [value]="option"
+            >
+              {{ option.name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <!-- Category -->
+      <div class="col p-0 mr-3">
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Category</mat-label>
+          <input
+            type="text"
+            placeholder="Category"
+            aria-label="Number"
+            matInput
+            [formControl]="myControlCategory"
+            [matAutocomplete]="autoCategory"
+            [(ngModel)]="categoryValue"
+          />
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="categoryValue = ''"
+            >close</mat-icon
+          >
+          <mat-autocomplete
+            #autoCategory="matAutocomplete"
+            [displayWith]="displayCategory"
+          >
+            <mat-option
+              *ngFor="let option of filteredCategories | async"
+              [value]="option"
+            >
+              {{ option.name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <!-- Code -->
+      <div class="col p-0 mr-3">
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Code</mat-label>
+          <input
+            type="text"
+            placeholder="Code"
+            aria-label="Number"
+            matInput
+            [formControl]="myControlCode"
+            [matAutocomplete]="autoCode"
+            [(ngModel)]="codeValue"
+          />
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="codeValue = ''"
+            >close</mat-icon
+          >
+          <mat-autocomplete
+            #autoCode="matAutocomplete"
+            [displayWith]="displayCode"
+          >
+            <mat-option
+              *ngFor="let option of filteredCodes | async"
+              [value]="option"
+            >
+              {{ option.label }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <!-- Status -->
+      <div class="col p-0 mr-3">
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Status</mat-label>
+          <input
+            type="text"
+            placeholder="Status"
+            aria-label="Number"
+            matInput
+            [formControl]="myControlStatus"
+            [matAutocomplete]="autoStatus"
+            [(ngModel)]="statusValue"
+          />
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="statusValue = ''"
+            >close</mat-icon
+          >
+          <mat-autocomplete
+            #autoStatus="matAutocomplete"
+            [displayWith]="displayStatus"
+          >
+            <mat-option
+              *ngFor="let option of filteredStatus | async"
+              [value]="option"
+            >
+              {{ option.name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <!-- Delete -->
+      <div
+        class="col pointer mr-3 pl-3 row align-items-center"
+        *ngIf="checkedItems > 1"
+        (click)="removeMultiply()"
+      >
+        <div id="multi-delete" class="d-flex align-items-center">
+          <i class="fas fa-trash-alt text-white"></i>
+          <span class="text-white pl-2">Delete Items</span>
+        </div>
+      </div>
+      <div class="col-4 row justify-content-between">
+        <div class="col-6 row justify-content-end no-gutters">
+          <button class="addBtn" routerLink="/sales/make-new-sale">
+            <i class="icon-basket-loaded mr-2 align-middle"></i>
+            Make New Sale
+          </button>
+        </div>
+        <div class="col-6 row justify-content-end no-gutters">
+          <button class="addBtn" routerLink="/main-stock/add-new-item">
+            <i class="icon-diamond mr-2 align-middle"></i>
+            Add New Item
+          </button>
+        </div>
+      </div>
+      <div class="col-12 row justify-content-start pl-3 mt-2">
+        <p class="text-white m-0" *ngIf="dataSource.data.length > 1">
+          Search Result {{ dataSource.data.length }} Items
+        </p>
+        <p class="text-white m-0" *ngIf="dataSource.data.length == 1">
+          Search Result {{ dataSource.data.length }} Item
+        </p>
+        <p *ngIf="!dataSource.data.length" class="text-white m-0">
+          No Data Available
+        </p>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+  <!-- Start Table -->
+  <div class="floated container-fluid relative">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()"
+          >
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="text-center">
+          <mat-checkbox
+            (change)="mutliplyAction($event)"
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          >
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="img">
+        <th mat-header-cell *matHeaderCellDef>IMAGE</th>
+        <td mat-cell class="pointer" *matCellDef="let row">
+          <img
+            width="75px"
+            height="70px"
+            class="img-fluid"
+            src="http://jewelry.ixscope.com/backend/img/products/{{
+              row.image
+            }}"
+            #img
+            [alt]="row.label"
+            style="border: 1px solid #000"
+            (click)="openImage(img)"
+            class="pointer"
+          />
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="category.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CATEGORY</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.category.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="label">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CODE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.label }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="branch.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>BRANCH</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.branch.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="gold_weight">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>GOLD WEIGHT</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.gold_weight }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="item_total_after_profit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>SALE PRICE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>$ {{ row.item_total_after_profit }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CREATED DATE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.product_date }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="status.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>STATUS</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="status text-uppercase" [ngClass]="row.status.name">
+            {{ row.status.name }}
+          </span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+        <td
+          mat-cell
+          *matCellDef="let row"
+          class="detailsmenu "
+          (mouseenter)="hideme[row.id] = !hideme[row.id] && (testArea = true)"
+          (mouseleave)="hideme[row.id] = !hideme[row.id] && (testArea = false)"
+        >
+          <ng-container>
+            <div id="showOrdercontrols" *ngIf="hideme[row.id]">
+              <button
+                *ngIf="row.status.name == 'available'"
+                class="basic_button"
+                type="button"
+                (click)="routeToSale(row)"
+              >
+                <a target="blank">
+                  <img src="../../../assets/icon/invoice.svg" alt="" />
+                </a>
+                <span class="tooltiptext">Invoice</span>
+              </button>
+              <button
+                *ngIf="row.status.name != 'available'"
+                class="basic_button"
+                type="button"
+                (click)="routeToReturn(row)"
+              >
+                <a target="blank">
+                  <img src="../../../assets/icon/exchange.svg" alt="" />
+                </a>
+                <span class="tooltiptext">Refund</span>
+              </button>
+              <button
+                *ngIf="row.status.name == 'available'"
+                id="invicebutton"
+                class="basic_button"
+                type="button"
+                (click)="myModal.show(transferForm.reset())"
+                (click)="getData(row)"
+              >
+                <img src="../../../assets/icon/transfer.svg" alt="" />
+                <span class="tooltiptext">Transfer</span>
+              </button>
+              <button
+                id="editButton"
+                (click)="openDetailsPopup(row)"
+                class="basic_button"
+                type="button"
+              >
+                <img src="../../../assets/icon/details.svg" alt="" />
+                <span class="tooltiptext">Details</span>
+              </button>
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="
+                  openUpdataPopup(row, index); itemStockDetailsData = row
+                "
+              >
+                <img src="../../../assets/icon/edit.svg" alt="" />
+                <span class="tooltiptext">Edit</span>
+              </button>
+              <button id="editButton" class="basic_button" type="button">
+                <img src="../../../assets/icon/barcode.svg" alt="" />
+                <span class="tooltiptext">Label</span>
+              </button>
+              <button
+                id="editButton"
+                (click)="opendeletePopup(row); deletedStockIndex = index"
+                class="basic_button"
+                type="button"
+              >
+                <img src="../../../assets/icon/delete.svg" alt="" />
+                <span class="tooltiptext">Delete</span>
+              </button>
+            </div>
+          </ng-container>
+          <button class="buttonListItems">
+            <img src="../../../assets/icon/menu.svg" alt="" />
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <!-- Pagination -->
+    <mat-paginator
+      [pageSizeOptions]="[10, 20, 30, 40, 50]"
+      (page)="pageEvent = $event; onPaginateChange($event)"
+    ></mat-paginator>
+  </div>
+  <!-- End Table -->
+
+  <!-- Details -->
+  <div
+    id="details"
+    bsModal
+    #detailsModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header pb-0 border-bottom-0">
+          <button
+            type="button"
+            class="close"
+            (click)="detailsModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">Close</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body p-4" *ngIf="stockData">
+          <div class="d-flex justify-content-between">
+            <h4 class="text-uppercase">{{ category }} {{ stockData.label }}</h4>
+            <div class="status text-center text-uppercase" [ngClass]="status">
+              <p>{{ status }}</p>
+            </div>
+          </div>
+          <div class="row no-gutters mt-3">
+            <div class="col-5" id="img">
+              <img
+                class="w-100"
+                height="205px"
+                src="http://jewelry.ixscope.com/backend/img/products/{{
+                  stockData.image
+                }}"
+                [alt]="stockData.label"
+              />
+            </div>
+            <div class="col-7 pl-5 row no-gutters justify-content-end">
+              <table class="col-12" id="table-details">
+                <thead>
+                  <tr class="text-center">
+                    <th scope="col" class="head-title border-right">
+                      Category
+                    </th>
+                    <th scope="col" class="head-title border-right">Code</th>
+                    <th scope="col" class="head-title border-right">Branch</th>
+                    <th scope="col" class="head-title">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border-right">{{ category }}</td>
+                    <td class="border-right">{{ stockData.label }}</td>
+                    <td class="border-right">{{ branch }}</td>
+                    <td>{{ stockData.product_date }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="col-12 row justify-content-between">
+                <div class="col-4">
+                  <div class="gold-box">
+                  <h3 class="head-title">Gold Weight</h3>
+                  <p>{{stockData.gold_weight}} gm</p>
+                </div>
+                </div>
+                <div class="col-4">
+                  <div class="gold-box">
+                    <h3 class="head-title">Gold Price</h3>
+                    <p>$ {{stockData.gold_price}}</p>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="gold-box">
+                    <h3 class="head-title">Total</h3>
+                    <p>$ {{stockData.gold_total}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 w-100" id="stones">
+              <h2
+          class="head-title text-left"
+          [ngClass]="stones.length == 0 ? 'text-red' : ''"
+        >
+          {{
+            stones.length > 0
+              ? 'STONES'
+              : 'No stone available to this product'
+          }}
+          <span
+            class="ml-3"
+            *ngIf="stones.length > 1"
+            >{{ stones.length }} Stones</span
+          >
+          <span
+            class="ml-3"
+            *ngIf="stones.length == 1"
+            >{{ stones.length }} Stone</span
+          >
+        </h2>
+        <div class="stone-border">
+          <div class="stone-table" *ngFor="let stone of stones">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" class="border-right">Name</th>
+                  <th scope="col" class="border-right text-center">Quantity</th>
+                  <th scope="col" class="border-right text-center">Weight (cts)</th>
+                  <th scope="col" class="border-right text-center">Cost ($)</th>
+                  <th scope="col" class="border-right text-center">Setting</th>
+                  <th scope="col" class="text-center">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="border-right">{{stone.name}}</td>
+                  <td class="border-right text-center">{{stone.quantity}}</td>
+                  <td class="border-right text-center">{{stone.weight}}</td>
+                  <td class="border-right text-center">{{stone.price}}</td>
+                  <td class="border-right text-center">{{stone.setting}}</td>
+                  <td class="text-center">{{stone.total}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+            </div>
+            <div id="cost" class="mt-5 w-100">
+<div class="row w-50 m-auto justify-content-between">
+  <div class="col-6 row justify-content-start">
+    <h4 class="col-12">Cost</h4>
+    <div class="cost-box col-12">{{totalCost}}</div>
+  </div>
+  <div class="col-6 row justify-content-end">
+    <h4 class="col-12">Cost  *4.4 in $</h4>
+    <div class="cost-box col-12">{{finalCost}}</div>
+  </div>
+</div>
+            </div>
+            <footer class="row mt-5 justify-content-center w-100">
+              <div class=" col-md-10 col-md-offset-1">
+                <div class="row justify-content-center">
+                  <div class="col-md-6 row justify-content-center align-items-center pointer">
+                    
+                      <img src="../../../assets/icon/printer.svg" alt="" class="mr-2"/>
+                      <span>Print Label</span>
+                  </div>
+                  <div class="col-md-6 row justify-content-center align-items-center pointer">
+                      <img src="../../../assets/icon/label.svg" alt="" class="mr-2"/>
+                      <span>View Label</span> 
+                  </div>
+                </div>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Make Transfer -->
+  <div
+    bsModal
+    #myModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">{{ transferName }} {{ transferCode }}</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="myModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body">
+          <form
+            [formGroup]="transferForm"
+            (ngSubmit)="onSubmitTransfer(transferForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-12 row">
+                <div class="form-group col-12 no-gutters">
+                  <label for="exampleInputName2" class="title"
+                    >New Branch<span class="text-red">*</span></label
+                  >
+                  <select
+                    class="p-3 itemInput w-100"
+                    formControlName="branch_id"
+                  >
+                    <option disabled selected="selected" value=""
+                      >Please Select Branch</option
+                    >
+                    <option
+                      *ngFor="let branch of branchList"
+                      [value]="branch.id"
+                    >
+                      {{ branch.name }}</option
+                    >
+                  </select>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 mt-2 alert alert-danger"
+                    *ngIf="
+                      transferForm.controls.branch_id.errors?.required &&
+                      transferForm.controls.branch_id.touched &&
+                      !modalError.branch_id
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.branch_id"
+                    >{{ modalError.name }}</mat-hint
+                  >
+                </div>
+              </div>
+              <div class="modal-footer border-0">
+                <button
+                  type="submit"
+                  class="btn-modal-submit"
+                  [disabled]="!transferForm.controls.branch_id.value"
+                  [ngClass]="
+                    !transferForm.controls.branch_id.value
+                      ? 'disabledSubmitButton'
+                      : 'enableSubmitButton'
+                  "
+                >
+                  Transfer
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Image Modal -->
+  <div
+    bsModal
+    #myModalImg="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content border-0" style="background: 0;">
+        <div class="modal-header border-0">
+          <button
+            type="button"
+            class="close"
+            (click)="myModalImg.hide()"
+            aria-label="Close"
+          >
+            <span class="text-white" aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body">
+          <img style="width: 100%; height: auto;" [src]="imgSrc" alt="" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

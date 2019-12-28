@@ -1,0 +1,531 @@
+<div class="animated fadeIn" id="users">
+  <!-- Start Header -->
+  <header class="bg-blue p-5">
+    <div class="row align-items-end">
+      <!-- left-hand-side-of-header -->
+      <div class="row align-items-baseline col-12 justify-content-between mb-4">
+        <!-- Titles -->
+        <h6 class="col-12 p-0 text-white">
+          Dashboard | Settings | Privillages
+        </h6>
+        <h3 class="text-uppercase text-white">Users & Accounts</h3>
+        <!-- Filter -->
+        <p class="col-12 p-0 mt-4 text-white">
+          Filter by :
+        </p>
+        <!-- stone -->
+        <div class="col-3 p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Name , Mobile</mat-label>
+            <input
+              type="text"
+              placeholder="Name , Mobile"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlrole"
+              [matAutocomplete]="autorole"
+              [(ngModel)]="roleValue"
+            />
+            <mat-icon
+              class="text-white pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="roleValue = ''"
+              *ngIf="roleValue"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autorole="matAutocomplete"
+              [displayWith]="displayuser"
+            >
+              <mat-option
+                *ngFor="let option of filteredRoles | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- Delete -->
+        <div
+          class="col pointer mr-3 mt-2 pl-3 pr-0 row align-items-center"
+          *ngIf="checkedItems > 1"
+          (click)="removeMultiply()"
+        >
+          <i class="fas fa-trash-alt font-2xl text-white"></i>
+          <span class="text-white pl-2">Delete Items</span>
+        </div>
+        <div class="col-3 row justify-content-end p-0">
+          <button
+            class="addBtn w-100"
+            data-toggle="modal"
+            (click)="myModal2.show(userForm.reset())"
+            (click)="clearError()"
+          >
+            <i class="icon-diamond mr-2 align-middle"></i>
+            Add New User
+          </button>
+        </div>
+        <div class="col-12 row justify-content-start pl-3 mt-2">
+          <p class="text-white m-0" *ngIf="dataSource.data.length > 1">
+            Search Result {{ dataSource.data.length }} Items
+          </p>
+          <p class="text-white m-0" *ngIf="dataSource.data.length == 1">
+            Search Result {{ dataSource.data.length }} Item
+          </p>
+          <p *ngIf="!dataSource.data.length" class="text-white m-0">
+            No Data Available
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+  <!-- Start Table -->
+  <div class="floated container-fluid relative">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()"
+          >
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          >
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.id }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>USERS</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ROLE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.role }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="is_active">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>STATUS</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="status" [ngClass]="row.is_active">{{
+            row.is_active
+          }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="details">
+        <th mat-header-cell *matHeaderCellDef>DETAILS</th>
+        <td
+          mat-cell
+          *matCellDef="let row"
+          class="detailsmenu "
+          (mouseenter)="hideme[row.id] = !hideme[row.id] && (testArea = true)"
+          (mouseleave)="hideme[row.id] = !hideme[row.id] && (testArea = false)"
+        >
+          <ng-container>
+            <div id="showOrdercontrols" *ngIf="hideme[row.id]">
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="changeStatus(row)"
+              >
+                <img src="../../../assets/icon/user.svg" alt="" />
+                <span class="tooltiptext">Not Active</span>
+              </button>
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="
+                  openUpdataPopup(row, index); itemStockDetailsData = row
+                "
+              >
+                <img src="../../../assets/icon-dashboard/edit.png" alt="" />
+                <span class="tooltiptext">Edit</span>
+              </button>
+              <button
+                id="editButton"
+                (click)="opendeletePopup(row); deletedStockIndex = index"
+                class="basic_button"
+                type="button"
+              >
+                <img src="../../../assets/icon-dashboard/delete.png" alt="" />
+                <span class="tooltiptext">Delete</span>
+              </button>
+            </div>
+          </ng-container>
+          <button class="buttonListItems">
+            <img src="../../../assets/icon-dashboard/menu.svg" alt="" />
+          </button>
+          <div id="Deletepopup" *ngIf="showDeletePopup">
+            <div
+              class="popupStyle"
+              id="backDrop"
+              (click)="closeDeletePopup()"
+            ></div>
+            <div id="DeletepopupData">
+              <div class="headerClose">
+                <a (click)="closeDeletePopup()">
+                  close
+                </a>
+              </div>
+              <p>For Delete Items Please Type <span>DELETE</span></p>
+              <form class="form-inline" [formGroup]="deleteForm">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="DELETE"
+                    formControlName="deleteInput"
+                    value=""
+                    autocomplete="off"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-default"
+                  (click)="deleteUser()"
+                  (click)="removeMultiply()"
+                >
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <!-- Paginator -->
+    <mat-paginator
+      [pageSizeOptions]="[10, 20, 30, 40, 50]"
+      (page)="pageEvent = $event; onPaginateChange($event)"
+    ></mat-paginator>
+  </div>
+  <!-- End Table -->
+  <!-- Add New User Modal -->
+  <div
+    bsModal
+    #myModal2="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add New Users</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="myModal2.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="userForm"
+            (ngSubmit)="onSubmitform(userForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail2"
+                    >User Name <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="name"
+                    autocomplete="off"
+                    placeholder="User Name"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    userForm.controls.name.errors?.required &&
+                    userForm.controls.name.touched &&
+                    !modalError.name
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.name"
+                  >{{ modalError.name }}</mat-hint
+                >
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail3"
+                    >User Email <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="email"
+                    autocomplete="off"
+                    placeholder="User Email"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    userForm.controls.email.errors?.required &&
+                    userForm.controls.email.touched &&
+                    !modalError.email
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.email"
+                  >{{ modalError.email }}</mat-hint
+                >
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>User Mobile <span class="text-red">*</span></label>
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="mobile"
+                    autocomplete="off"
+                    placeholder="User Mobile"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    userForm.controls.mobile.errors?.required &&
+                    userForm.controls.mobile.touched &&
+                    !modalError.mobile
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.mobile"
+                  >{{ modalError.mobile }}</mat-hint
+                >
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label>User Password <span class="text-red">*</span></label>
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="password"
+                    autocomplete="off"
+                    placeholder="User Password"
+                    type="password"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    userForm.controls.password.errors?.required &&
+                    userForm.controls.password.touched &&
+                    !modalError.password
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.password"
+                  >{{ modalError.password }}</mat-hint
+                >
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn-modal-submit">Add User</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Update User Modal -->
+  <div
+    bsModal
+    #myModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Update User</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="myModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="userForm"
+            (ngSubmit)="onUpdateuser(userForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail2"
+                    >User Name <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="name"
+                    autocomplete="off"
+                    placeholder="User Name"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    userForm.controls.name.errors?.required &&
+                    userForm.controls.name.touched &&
+                    !modalError.name
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.name"
+                  >{{ modalError.name }}</mat-hint
+                >
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail3"
+                    >User Email <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="email"
+                    autocomplete="off"
+                    placeholder="User Email"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    userForm.controls.email.errors?.required &&
+                    userForm.controls.email.touched &&
+                    !modalError.email
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.email"
+                  >{{ modalError.email }}</mat-hint
+                >
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>User Mobile <span class="text-red">*</span></label>
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="mobile"
+                    autocomplete="off"
+                    placeholder="User Mobile"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    userForm.controls.mobile.errors?.required &&
+                    userForm.controls.mobile.touched &&
+                    !modalError.mobile
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.mobile"
+                  >{{ modalError.mobile }}</mat-hint
+                >
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label>New Password <span class="text-red">*</span></label>
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="password"
+                    autocomplete="off"
+                    placeholder="New Password"
+                    type="password"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    userForm.controls.password.errors?.required &&
+                    userForm.controls.password.touched &&
+                    !modalError.password
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.password"
+                  >{{ modalError.password }}</mat-hint
+                >
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn-modal-submit">
+                Update User
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

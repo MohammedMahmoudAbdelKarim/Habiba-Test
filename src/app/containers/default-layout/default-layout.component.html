@@ -1,0 +1,24 @@
+<div class="app-body">
+  <app-sidebar
+    id="sidebar"
+    #appSidebar
+    [fixed]="true"
+    [display]="'lg'"
+    [minimized]="sidebarMinimized"
+    (minimizedChange)="toggleMinimize($event)"
+  >
+    <img src="../../../assets/logo.png" class="img-fluid" alt="" />
+    <app-sidebar-nav
+      class="w-100"
+      [navItems]="navItems"
+      [perfectScrollbar]
+      [disabled]="appSidebar.minimized"
+    ></app-sidebar-nav>
+    <app-sidebar-minimizer></app-sidebar-minimizer>
+  </app-sidebar>
+  <main class="main">
+    <div class="">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

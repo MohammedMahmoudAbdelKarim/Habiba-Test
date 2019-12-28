@@ -1,0 +1,259 @@
+<div class="animated fadeIn" id="branch-details">
+  <!-- Start Header -->
+  <header class="bg-blue p-5">
+    <div class="row align-items-end">
+      <!-- left-hand-side-of-header -->
+      <div class="row align-items-baseline col-12 justify-content-between">
+        <!-- Titles -->
+        <h6 class="col-12 p-0 text-white">Branches | Manage Branch</h6>
+        <h3 class="text-uppercase text-white">
+          Manage Branch : {{ branchDetailsData.name }}
+        </h3>
+        <div class="col-3">
+          <button class="addBtn w-100" routerLink="/main-stock/add-new-item">
+            <i class="icon-diamond mr-2 align-middle"></i>
+            Update Branch
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+  <div class="page_body_main" *ngIf="branchDetailsData">
+    <h5 class="text-uppercase">{{ branchDetailsData.name }} Branch</h5>
+    <div class="detailsBranch">
+      <div class="row">
+        <div class="col-lg-9 col-md-12">
+          <div class="row">
+            <!-- Branch Name  -->
+            <div
+              class="col-lg-3 row col-md-3 justify-content-center align-items-center"
+            >
+              <p class="col-12">
+                <img
+                  src="../../../../../assets/icon-branch/placeholder.png"
+                />Branch Name
+              </p>
+              <span>
+                {{
+                  branchDetailsData.name
+                    ? branchDetailsData.name
+                    : 'Branch Name'
+                }}
+              </span>
+            </div>
+            <!-- Client Address  -->
+            <div
+              class="col-lg-3 row col-md-3 justify-content-center align-items-center"
+            >
+              <p class="col-12">
+                <img
+                  src="../../../../../assets/icon-branch/planet-earth.png"
+                />Client Address
+              </p>
+              <span>{{
+                branchDetailsData.address
+                  ? branchDetailsData.address
+                  : 'Client Address'
+              }}</span>
+            </div>
+            <!-- Branch City  -->
+            <div
+              class="col-lg-3 row col-md-3 justify-content-center align-items-center"
+            >
+              <p class="col-12">
+                <img src="../../../../../assets/icon-branch/houses.png" />Branch
+                City
+              </p>
+              <span>{{
+                branchDetailsData.city.name
+                  ? branchDetailsData.city.name
+                  : 'Branch City'
+              }}</span>
+            </div>
+            <!-- Employess Number  -->
+            <div
+              class="col-lg-3 row col-md-3 justify-content-center align-items-center"
+            >
+              <p class="col-12">
+                <img
+                  src="../../../../../assets/icon-branch/user (2).png"
+                />Employess
+              </p>
+              <span>{{ branchEmployeesArray.length }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Add Employees  -->
+    <div class="addEmployee">
+      <h5>
+        ADD EMPLOYEES
+      </h5>
+      <form
+        (ngSubmit)="onSubmit()"
+        #form="ngForm"
+        [formGroup]="addBranchsEmloyeeForm"
+        class="row"
+      >
+        <div class="col-lg-4 col-md-12 col-sm-12">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Employee Role <span>*</span></label>
+              <select
+                class="form-control"
+                formControlName="role_id"
+                (change)="
+                  selectEmployee('role'); seletetEmployeeRoleOption(roleIndex)
+                "
+                value="{{ selectedRoleIndex }}"
+                required
+              >
+                <option value="" disabled selected="selected" value=""
+                  >Please Employee Role</option
+                >
+                <option
+                  *ngFor="
+                    let employeeRole of employeeRolesArray;
+                    let roleIndex = index
+                  "
+                  [value]="roleIndex"
+                  (click)="seletetEmployeeRoleOption(roleIndex)"
+                  >{{
+                    employeeRole.name ? employeeRole.name : 'Employee Role'
+                  }}</option
+                >
+              </select>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Employee Name <span>*</span></label>
+              <select
+                *ngIf="!updateMode"
+                class="form-control"
+                formControlName="employee_id"
+                (change)="selectEmployee('emp')"
+                value="{{ selectedEmployeeIndex }}"
+                required
+              >
+                <option value="" disabled selected="selected"
+                  >Please Employee Name</option
+                >
+                <option
+                  *ngFor="let employee of employeesDetailsArray; let i = index"
+                  [value]="i"
+                  >{{ employee.name }}
+                </option>
+              </select>
+              <select
+                *ngIf="updateMode"
+                class="form-control"
+                formControlName="employee_id"
+                (change)="selectEmployee('emp')"
+                value="{{ selectedEmployeeIndex }}"
+                required
+                disabled
+              >
+                <option value="" disabled selected="selected">{{
+                  employeeEditeName
+                }}</option>
+              </select>
+            </div>
+          </div>
+          <button
+            class="btn"
+            [disabled]="
+              (!updateMode &&
+                addBranchsEmloyeeForm.dirty &&
+                !addBranchsEmloyeeForm.invalid &&
+                addBranchsEmloyeeForm.value.role_id !== '' &&
+                addBranchsEmloyeeForm.value.employee_id !== '') ||
+              (updateMode && addBranchsEmloyeeForm.value.role_id !== '')
+                ? false
+                : true
+            "
+          >
+            {{ updateMode ? 'Update' : 'Add' }}
+          </button>
+        </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-6">
+          <div class="borderStonesTable">
+            <div class="stonesTable">
+              <table class="table">
+                <thead>
+                  <tr class="header-tr">
+                    <th scope="col">EMPLOYEE NAME</th>
+                    <th class="styleBorderRight" scope="col">ROLE</th>
+                    <th class="styleBorderRight-Left" scope="col">
+                      MOBILE
+                    </th>
+                    <th class="styleBorderRight-Left" scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let branchEmployee of branchEmployeesArray">
+                    <td>
+                      {{
+                        branchEmployeesArray.length > 0
+                          ? branchEmployee.name
+                          : ''
+                      }}
+                    </td>
+                    <td class="styleBorderRight">
+                      {{
+                        branchEmployeesArray.length > 0
+                          ? branchEmployee.role.name
+                          : ''
+                      }}
+                    </td>
+                    <td class="styleBorderRight-Left">
+                      {{
+                        branchEmployeesArray.length > 0
+                          ? branchEmployee.mobile
+                          : ''
+                      }}
+                    </td>
+                    <td class="styleBorderRight-Left">
+                      <div>
+                        <button
+                          id="editButton"
+                          class="basic_button"
+                          type="button"
+                          (click)="editBranchEmployee(branchEmployee.id)"
+                        >
+                          <img
+                            src="../../../../../assets/icon-branch/edit (2).png"
+                            alt=""
+                          />
+                        </button>
+                        <button
+                          id="editButton"
+                          class="basic_button"
+                          type="button"
+                          (click)="
+                            deleteEmployeeFromBranch(
+                              branchEmployee.id,
+                              branchEmployee
+                            )
+                          "
+                        >
+                          <img
+                            src="../../../../../assets/icon-branch/delete.png"
+                            alt=""
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

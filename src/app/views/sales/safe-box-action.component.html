@@ -1,0 +1,182 @@
+<div class="animated fadeIn" id="safe-box-action">
+  <!-- Start Header -->
+  <header class="bg-blue p-5">
+    <div class="row align-items-end">
+      <!-- left-hand-side-of-header -->
+      <div class="row align-items-baseline col-12 justify-content-between">
+        <!-- Titles -->
+        <h6 class="col-12 p-0 text-white">Dashboard | Safe Box</h6>
+        <h3 class="text-uppercase text-white">
+          SAFE BOX
+        </h3>
+        <div class="col-3">
+          <button class="addBtn w-100" routerLink="/sales/safe-box-list">
+            <i class="icon-diamond mr-2 align-middle"></i>
+            Safe Box List
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+  <div class="p-5">
+    <table class="table">
+      <thead>
+        <tr class="header-tr">
+          <th scope="col" class="text-center px-0">
+            <img
+              class="mr-3"
+              src="../../../assets/icon/placeholder.svg"
+              alt=""
+            />
+            Warehouse
+          </th>
+          <th class="styleBorderRight text-center px-0" scope="col">
+            <img class="mr-3" src="../../../assets/icon/employee.svg" alt="" />
+            Branch Manager
+          </th>
+          <th class="styleBorderRight-Left text-center px-0" scope="col">
+            <img class="mr-3" src="../../../assets/icon/gear.svg" alt="" />
+            Payment in safe box
+          </th>
+          <th class="styleBorderRight-Left text-center px-0" scope="col">
+            <img class="mr-3" src="../../../assets/icon/calendar.svg" alt="" />
+            Date
+          </th>
+          <th class="text-center px-0" scope="col"></th>
+          <th scope="col" class="text-center px-0"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let box of safeBoxArray; let i = index">
+          <td class="td-forceWidth text-center">
+            {{ box.branches.name }}
+          </td>
+          <td class="styleBorderRight text-center">
+            {{ box.branches.managers[0].name }}
+          </td>
+          <td class="styleBorderRight-Left text-center">
+            {{ box.total }}
+          </td>
+          <td class="styleBorderRight-Left text-center">
+            {{ box.created }}
+          </td>
+          <td
+            class="styleBorderRight-Left text-center d-flex justify-content-end"
+          >
+            <button
+              class="btn-modal-submit"
+              (click)="getEmpty(box)"
+              [disabled]="box.total"
+              [ngClass]="{ disabledSubmitButton: box.total == 0 }"
+              *ngIf="box.total != 0"
+            >
+              Make safe box Empty
+            </button>
+          </td>
+          <td class="">
+            <button
+              class="btn-modal-submit"
+              (click)="getBranch(box)"
+              [disabled]="box.total"
+              [ngClass]="{ disabledSubmitButton: box.total == 0 }"
+              *ngIf="box.total != 0"
+            >
+              Make new payment
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Make Payment -->
+  <div
+    bsModal
+    #myModalPayment="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add New Payment</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="myModalPayment.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="paymentForm"
+            (ngSubmit)="onSubmitPayment(paymentForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-12 no-gutters row">
+                <div class="form-group col-12 no-gutters">
+                  <label for="exampleInputName2" class="title"
+                    >Amount <span class="text-red">*</span></label
+                  >
+                  <input
+                    id="exampleInputName2"
+                    formControlName="payment_amount"
+                    autocomplete="off"
+                    placeholder="EGP"
+                    class="p-3 itemInput w-100 text-center"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    paymentForm.controls.payment_amount.errors?.required &&
+                    paymentForm.controls.payment_amount.touched &&
+                    !modalError
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.length"
+                  >{{ modalError }}</mat-hint
+                >
+                <div class="form-group col-12 no-gutters">
+                  <label for="exampleInputName2" class="title"
+                    >Reason <span class="text-red">*</span></label
+                  >
+                  <input
+                    id="exampleInputName2"
+                    formControlName="reason"
+                    autocomplete="off"
+                    placeholder="Reason"
+                    class="p-3 itemInput w-100 text-center"
+                  />
+                </div>
+              </div>
+              <div class="modal-footer border-0">
+                <button
+                  type="submit"
+                  class="btn-modal-submit"
+                  [disabled]="!paymentForm.controls.payment_amount.value"
+                  [ngClass]="
+                    !paymentForm.controls.payment_amount.value
+                      ? 'disabledSubmitButton'
+                      : 'enableSubmitButton'
+                  "
+                >
+                  SAVE
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

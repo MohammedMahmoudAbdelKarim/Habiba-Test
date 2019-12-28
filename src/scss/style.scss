@@ -1,0 +1,464 @@
+// If you want to override variables do it here
+@import "variables";
+
+// Import styles
+@import "~@coreui/coreui/scss/coreui";
+
+// If you want to add something do it here
+@import "custom";
+
+/* ------------------------------ Commons ------------------------------*/
+* {
+  box-sizing: border-box;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.border-both {
+  border-right: 1px dotted #707070;
+  border-left: 1px dotted #707070
+}
+
+.border-left {
+  border-left: 1px dotted #707070;
+}
+
+.border-right {
+  border-right: 1px dotted #707070;
+}
+
+/* ----------------------------------- Variables -------------------------------------*/
+// Colors
+$blue: #20a8d8;
+$white: #fff;
+$black: #333;
+
+// Background-color
+$primary-color: #262f3d;
+
+
+/* --------------------------------- Mixins --------------------------------------- */
+// Line Height -> Golden Ratio
+@mixin line-height($size) {
+  line-height: $size * 1.618;
+}
+
+// Font
+@mixin typoStyle($size:16px, $weight:400) {
+  font-family: Arial;
+  font-size: $size;
+  font-weight: $weight;
+  @include line-height($size);
+}
+
+/* ------------------------------------------- Side Bar -------------------------- */
+#sidebar {
+  background: $primary-color;
+
+  img {
+    margin: 0 auto;
+  }
+}
+
+/* ---------------------------- Angular Material Auto-complete -------------------- */
+.mat-form-field-appearance-outline .mat-form-field-wrapper {
+  margin: 0;
+  margin-top: 5px;
+  padding: 0;
+}
+
+.example-full-width {
+  background: $white 0% 0% no-repeat padding-box;
+}
+
+.mat-form-field-appearance-outline {
+  color: $white;
+  border-radius: 0;
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: $white !important;
+}
+
+.mat-form-field-label mat-label {
+  color: $black !important;
+}
+
+.mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+  visibility: hidden;
+}
+
+.cdk-text-field-autofill-monitored:not(:-webkit-autofill) {
+  color: $black;
+
+  &::placeholder {
+    color: $black;
+  }
+
+  .mat-form-field-flex {
+    width: 96% !important;
+  }
+
+  .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+    color: $black;
+  }
+
+  mat-form-field.mat-form-field {
+    color: $black;
+  }
+
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: $black;
+  }
+
+  mat-label {
+    color: #8a919d;
+  }
+}
+
+.mat-form-field-label-wrapper {
+  top: -1.2rem !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 6px 0 !important;
+  width: 100% !important;
+
+}
+
+/* ----------------------------------------- Angular Material Table ------------------ */
+table {
+  width: 100%;
+}
+
+.floated {
+  position: relative;
+  top: -3.5rem;
+}
+
+.mat-table {
+  background: $white;
+}
+
+.mat-header-row {
+  background: $primary-color;
+  filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.16));
+}
+
+.mat-cell {
+  color: $black;
+}
+
+td.mat-footer-cell,
+th.mat-header-cell {
+  @include typoStyle(0.8rem, normal);
+  letter-spacing: 0.01em;
+  text-align: left;
+  color: $white;
+  text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+}
+
+td.mat-cell {
+  @include typoStyle(0.8rem, normal);
+  letter-spacing: 0.01em;
+  text-align: left;
+  color: #4b4b4b;
+  text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+
+}
+
+td.mat-cell:first-of-type {
+  padding-left: 0;
+  padding: 14px;
+}
+
+.mat-paginator {
+  background: $primary-color;
+}
+
+td.mat-cell {
+  padding: 1rem 0 !important;
+}
+
+.mat-row:nth-child(even) {
+  background-color: #EEEEEE;
+}
+
+.mat-row:nth-child(odd) {
+  background-color: #fff;
+}
+
+.floated table td {
+  border-bottom: 1px solid #707070;
+}
+
+/* ----------------- Checkbox ------------------- */
+.mat-checkbox .mat-checkbox-frame {
+  border-color: dddddd;
+  background-color: #dddddd
+}
+
+/* ------------------- Actions ------------------------ */
+
+#showOrdercontrols {
+  position: absolute;
+  width: max-content;
+  height: max-content;
+  border: 1px;
+  background-color: #dedede;
+  -webkit-box-shadow: 6px 4px 23px -9px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 6px 4px 23px -9px rgba(0, 0, 0, 0.75);
+  box-shadow: 6px 4px 23px -9px rgba(0, 0, 0, 0.75);
+  padding-bottom: 11px;
+  right: 4px;
+  margin-top: -59px;
+  border-radius: 5px;
+  padding: 20px;
+  border: 1px solid #707070;
+
+  .basic_button {
+    width: 53px;
+    text-align: center;
+    background: none;
+    margin-left: 6px;
+    margin-right: 6px;
+    border: none;
+
+    span {
+      font-size: 13px;
+    }
+
+    img {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+.buttonListItems {
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+
+/* ---------------------------------- Blue Header ----------------------------*/
+
+header {
+  .col-8 {
+    h6 {
+      @include typoStyle(0.8rem, 400);
+      color: $white;
+    }
+
+    h3 {
+      @include typoStyle(1rem, 500);
+      color: $white;
+    }
+  }
+
+  .col-4 {
+    .btn {
+      color: $white;
+    }
+  }
+
+  #multi-delete {
+    background: #FF0034;
+    padding: 0.625rem;
+  }
+
+  .addBtn {
+    border: 0;
+    outline: 0;
+    color: $white;
+    padding: 0.75rem;
+    background: #065a84;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.16);
+  }
+}
+
+
+
+@media screen {
+  #printSection {
+    display: none;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #printSection,
+  #printSection * {
+    visibility: visible;
+  }
+
+  #printSection {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+
+/* -------------------------------- Modal --------------------------------- */
+.modal {
+  .modal-dialog {
+    .modal-content {
+      .modal-header {
+        button {
+          span {
+            @include typoStyle(1rem, 500);
+          }
+        }
+      }
+    }
+  }
+}
+
+/* -------------------------- Status ------------------------------ */
+.status {
+  width: 106px;
+  height: 39px;
+  border-radius: 5px;
+  color: $white;
+  padding: 12px;
+}
+
+.available {
+  background: #155a1e;
+}
+
+.sold {
+  background: #FF0034;
+}
+
+/* ------------------------------------ Stock List ------------------------ */
+#stock-list {
+  @media (min-width: 576px) {
+    .modal-dialog {
+      max-width: 70%;
+    }
+  }
+
+  #details {
+    p {
+      line-height: 1rem;
+    }
+
+    h4 {
+      @include typoStyle(.9rem, bold);
+      letter-spacing: 0.01em;
+      color: #292929;
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+    }
+
+    #img {
+      border: 1px solid #333;
+    }
+
+    .head-title {
+      @include typoStyle(.9rem, bold);
+      letter-spacing: 0.01em;
+      text-align: center;
+      color: #292929;
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+      text-transform: uppercase;
+    }
+  }
+
+  #table-details {
+    width: 100%;
+
+    tbody {
+      tr {
+        td {
+          @include typoStyle(.9rem, normal);
+          text-align: center;
+          letter-spacing: 0.01em;
+          color: #292929;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+
+  .gold-box {
+    padding: 20px 10px;
+    border-radius: 5px;
+    background: #f5f5f5;
+    border: 1px solid rgba(0, 0, 0, 0.24);
+    height: 70%;
+
+    p {
+      @include typoStyle(.8rem, 500);
+      text-align: center;
+    }
+  }
+
+  #stones {
+    h2 {
+      span {
+        font-weight: 500;
+        text-transform: capitalize;
+      }
+    }
+
+    .stone-border {
+      border: 2px solid #dedede;
+      padding: 15px;
+      text-align: left;
+    }
+
+    table {
+      tbody {
+        tr {
+          border-bottom: 2px dotted #493e3e38;
+          padding: 1rem 0;
+
+          &:last-child {
+            border-bottom: 0;
+          }
+
+          td {
+            padding-top: 5px;
+            padding-bottom: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  #cost {
+    h4 {
+      @include typoStyle(15px, bold);
+      letter-spacing: 0.01em;
+      color: #333;
+      text-align: center;
+    }
+
+    .cost-box {
+      border-radius: 5px;
+      background: #f5f5f5;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      padding: 17px;
+      text-align: center;
+      font-family: Arial;
+      @include typoStyle(18px, bold);
+      letter-spacing: 0.01em;
+      color: #000;
+    }
+  }
+
+  footer {
+    .col-md-6 {
+      &:hover {
+        span {
+          color: #039BE5;
+        }
+      }
+    }
+  }
+}

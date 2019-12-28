@@ -1,0 +1,228 @@
+<div class="animated fadeIn" id="productDetails">
+  <div id="popup" *ngIf="showDetailsPopUp" [@parentAnimation]>
+    <div class="popupStyle" id="backDrop" (click)="closeDetailsPopup()"></div>
+    <div id="popupData" [@childAnimation]>
+      <div class="headerClose">
+        <a (click)="closeDetailsPopup()">
+          Close
+        </a>
+      </div>
+      <div class="activeAvailable">
+        <a
+          class="status text-uppercase"
+          [ngClass]="itemDetailsData.status.name"
+        >
+          {{ itemDetailsData.status.name }}
+        </a>
+      </div>
+      <ng-container>
+        <div class="row justify-content-start align-items-center">
+          <div class="col-md-5 no-gutters row">
+            <h2 class="mb-3">
+              {{ itemDetailsData.category.name }} {{ itemDetailsData.label }}
+            </h2>
+            <div class="styleImageProudect">
+              <img
+                src="{{ imgSrc }}"
+                width="331px"
+                height="206.32px"
+                style="border: 1px solid #000;"
+                alt=""
+              />
+            </div>
+          </div>
+          <div class="col-lg-7 col-md-7 col-sm-12">
+            <div class="styleDetailsProudect">
+              <table class="table table-borderless">
+                <thead>
+                  <tr class="header-tr">
+                    <th scope="col" class="head-title">CATEGORY</th>
+                    <th class="styleBorderRight head-title" scope="col">
+                      CODE
+                    </th>
+                    <th
+                      class="styleBorderRight-Left head-title"
+                      scope="col"
+                      class="head-title"
+                    >
+                      BRANCH
+                    </th>
+                    <th scope="col" class="DottedBorderLeft head-title">
+                      DATE
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="text-center text-uppercase">
+                    <td>{{ itemDetailsData.category.name }}</td>
+                    <td class="styleBorderRight">
+                      {{ itemDetailsData.label }}
+                    </td>
+                    <td class="styleBorderRight-Left">
+                      {{ itemDetailsData.branch.name }}
+                    </td>
+                    <td>{{ itemDetailsData.product_date }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="weightProudect">
+                    <p class="head-title">GOLD WEIGHT</p>
+                    <span>{{ itemDetailsData.gold_weight }} gm</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="weightProudect">
+                    <p class="head-title">GOLD PRICE</p>
+                    <span> {{ itemDetailsData.gold_price }} $ </span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="weightProudect">
+                    <p class="head-title">TOTAL</p>
+                    <span style="font-weight: 600">
+                      {{ itemDetailsData.gold_total }} $
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container>
+        <div class="stones mt-5">
+          <h2
+            class="p-2 text-uppercase stoneTitle"
+            [ngClass]="itemDetailsData.stones.length == 0 ? 'text-red' : ''"
+          >
+            {{
+              itemDetailsData.stones.length > 0
+                ? 'STONES'
+                : 'No stone available to this product'
+            }}
+            <span
+              class="textDetails ml-3"
+              *ngIf="itemDetailsData.stones.length > 1"
+              >{{ itemDetailsData.stones.length }} Stones</span
+            >
+            <span
+              class="textDetails ml-3"
+              *ngIf="itemDetailsData.stones.length == 1"
+              >{{ itemDetailsData.stones.length }} Stone</span
+            >
+          </h2>
+          <div class="borderStonesTable" *ngIf="itemDetailsData.stones.length">
+            <div
+              class="stonesTable"
+              *ngFor="
+                let stockStone of itemDetailsData.stones;
+                let stoneIndex = index
+              "
+            >
+              <table class="table stoneTable ">
+                <thead>
+                  <tr class="header-tr">
+                    <th scope="col" class="px-0">Name</th>
+                    <th class="styleBorderRight text-center px-0" scope="col">
+                      Quantity
+                    </th>
+                    <th
+                      class="styleBorderRight-Left text-center px-0"
+                      scope="col"
+                    >
+                      Weight (cts)
+                    </th>
+                    <th
+                      class="styleBorderRight-Left text-center px-0"
+                      scope="col"
+                    >
+                      Cost ($)
+                    </th>
+                    <th
+                      class="styleBorderRight-Left text-center px-0"
+                      scope="col"
+                    >
+                      Setting
+                    </th>
+                    <th scope="col" class="text-center px-0">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-forceWidth text-left">
+                      {{ stockStone.name }}
+                    </td>
+                    <td class="styleBorderRight text-center">
+                      {{ stockStone.quantity }}
+                    </td>
+                    <td class="styleBorderRight-Left text-center">
+                      {{ stockStone.weight }}
+                    </td>
+                    <td class="styleBorderRight-Left text-center">
+                      {{ stockStone.price }}
+                    </td>
+                    <td class="styleBorderRight-Left text-center">
+                      {{ stockStone.setting }}
+                    </td>
+                    <td class="text-center">{{ stockStone.total }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <hr
+                *ngIf="
+                  ((itemDetailsData.stones.length > 1 && stoneIndex % 2 > 0) ||
+                    (itemDetailsData.stones.length >= 2 &&
+                      stoneIndex % 2 == 0)) &&
+                  stoneIndex !== itemDetailsData.stones.length - 1
+                "
+              />
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <div>
+        <div class="row">
+          <div class="costProudect col-12 d-flex justify-content-center">
+            <!-- START PRODECT COST-->
+            <div class=" col-md-6 col-md-offset-3">
+              <div class="row">
+                <div class="col-md-6 row justify-content-center">
+                  <p class="col-12">Cost</p>
+                  <div class="cost">
+                    <span> {{ totalCost }} </span>
+                  </div>
+                </div>
+                <div class="col-md-6 row justify-content-center">
+                  <p class="col-12">Cost *4.4 in $</p>
+                  <div class="cost">
+                    <span> {{ finalCost }} </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="popupFooter row justify-content-center">
+        <div class=" col-md-10 col-md-offset-1">
+          <div class="row">
+            <div class="col-md-6">
+              <a>
+                <img src="../../../assets/icon-popup/printer.png" alt="" />Print
+                Label</a
+              >
+            </div>
+            <div class="col-md-6">
+              <a>
+                <img src="../../../assets/icon-popup/tag (2).png" alt="" />View
+                Label</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

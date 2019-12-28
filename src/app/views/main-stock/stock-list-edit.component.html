@@ -1,0 +1,673 @@
+<div class="animated fadeIn" id="productEdit">
+  <div id="popup" *ngIf="showUpdatePopUp">
+    <div class="popupStyle" id="backDrop" (click)="closeUpdatePopup()"></div>
+    <div id="popupData">
+      <div class="headerClose">
+        <a (click)="closeUpdatePopup()">
+          Close
+        </a>
+      </div>
+      <form
+        (ngSubmit)="onSubmit(stockUpdatForm.value)"
+        #form="ngForm"
+        [formGroup]="stockUpdatForm"
+      >
+        <h4 style="font-size: 15px">Update</h4>
+        <div class="row align-items-center">
+          <div class="updataFormProdect col-9">
+            <h2>
+              {{ updatedItemData.label }}
+            </h2>
+          </div>
+          <div class="activeAvailable col-3">
+            <a
+              class="status text-uppercase"
+              [ngClass]="updatedItemData.status.name"
+            >
+              {{ updatedItemData.status.name }}
+            </a>
+          </div>
+        </div>
+        <ng-container>
+          <div class="row align-items-start">
+            <div class="col-md-5">
+              <img
+                width="331px"
+                height="206.32px"
+                src="{{ imgSrc }}"
+                style="border: 1px solid #000"
+                alt=""
+              />
+            </div>
+
+            <div class="col-md-7">
+              <div class="styleDetailsProudect">
+                <table class="table  ">
+                  <thead>
+                    <tr class="header-tr">
+                      <th scope="col" class="styleBorderRight-Left head-title">
+                        CATEGORY
+                      </th>
+                      <th class="styleBorderRight head-title" scope="col">
+                        CODE
+                      </th>
+                      <th class="styleBorderRight-Left head-title" scope="col">
+                        BRANCH
+                      </th>
+                      <th scope="col" class="head-title">DATE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ updatedItemData.category.name }}</td>
+                      <td class="styleBorderRight">
+                        {{ updatedItemData.label }}
+                      </td>
+                      <td class="styleBorderRight-Left">
+                        {{ updatedItemData.branch.name }}
+                      </td>
+                      <td>{{ updatedItemData.product_date }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="weightProudect">
+                      <p class="head-title">GOLD WEIGHT</p>
+                      <div
+                        class="updataBlock row justify-content-center align-items-center"
+                      >
+                        <input
+                          class="form-control text-center col-6"
+                          id="exampleInputEmail1"
+                          formControlName="updateGoldWeight"
+                          value=""
+                          (keyup)="calculateStoneTotal($event, 0, 'gW')"
+                          (keypress)="numberCheckValidation($event)"
+                          maxlength="9"
+                          autocomplete="off"
+                        />
+                        <span class="col-2"> gm</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="weightProudect">
+                      <p class="head-title">GOLD PRICE</p>
+                      <div
+                        class="updataBlock row justify-content-center align-items-center"
+                      >
+                        <input
+                          class="form-control text-center col-6"
+                          id="exampleInputEmail1"
+                          formControlName="updateGoldPrice"
+                          value=""
+                          (keyup)="calculateStoneTotal($event, 0, 'gP')"
+                          (keypress)="numberCheckValidation($event)"
+                          maxlength="9"
+                          autocomplete="off"
+                        />
+                        <span class="col-2"> $</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="weightProudect">
+                      <p class="head-title">TOTAL</p>
+                      <div
+                        class="updataBlock row justify-content-center align-items-center"
+                      >
+                        <input
+                          disabled="true"
+                          class="form-control text-center goldTotalShow col-6"
+                          id="exampleInputEmail1"
+                          formControlName="goldTotalPrice"
+                          value="{{
+                            !checkItemDataCalculatedIsDefiend
+                              ? updatedItemData.gold_total
+                              : ItemDataCalculated.gold_total
+                          }}"
+                          autocomplete="off"
+                        />
+                        <span class="col-2"> $</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container>
+          <div class="stones mt-5">
+            <div class="row align-items-baseline justify-content-between">
+              <h2
+                class="col-10 pl-3 text-uppercase"
+                [ngClass]="updatedItemData.stones.length == 0 ? 'text-red' : ''"
+              >
+                {{
+                  updatedItemData.stones.length > 0
+                    ? 'STONES'
+                    : 'No stone available to this product'
+                }}
+              </h2>
+              <i
+                class="fas fa-plus-circle col-2 row pr-5 pointer justify-content-end col-1 font-2xl"
+                (click)="myModal.show(stonesForm.reset())"
+              ></i>
+            </div>
+            <div
+              class="borderStonesTable"
+              *ngIf="updatedItemData.stones.length != 0"
+            >
+              <div *ngIf="!stoneFlage">
+                <div
+                  class="stonesTable"
+                  *ngFor="let stone of testStonesArray; let stoneIndex = index"
+                >
+                  <table class="table table-borderless ">
+                    <thead>
+                      <tr class="header-tr">
+                        <th scope="col" class="stoneNameTextAlien p-0">Name</th>
+                        <th
+                          class="styleBorderRight text-center p-0"
+                          scope="col"
+                        >
+                          Quantity
+                        </th>
+                        <th
+                          class="styleBorderRight-Left text-center p-0"
+                          scope="col"
+                        >
+                          Weight (cts)
+                        </th>
+                        <th
+                          class="styleBorderRight-Left text-center p-0"
+                          scope="col"
+                        >
+                          Cost ($)
+                        </th>
+                        <th
+                          class="styleBorderRight-Left text-center p-0"
+                          scope="col"
+                        >
+                          Setting
+                        </th>
+                        <th
+                          scope="col"
+                          class="text-center styleBorderRight-Left"
+                        >
+                          Total
+                        </th>
+                        <th scope="col" class="text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="text-left align-middle">{{ stone.name }}</td>
+                        <td class="styleBorderRight updataRight">
+                          <input
+                            class="form-control text-center w-75 m-auto"
+                            id="exampleInputEmail1"
+                            value="{{ +stone.quantity }}"
+                            formControlName="updateStonesQuantity"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sQ')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                        </td>
+                        <td class="styleBorderRight-Left">
+                          <input
+                            class="form-control w-75 m-auto text-center"
+                            id="exampleInputEmail1"
+                            value="{{ +stone.weight }}"
+                            formControlName="updateStonesWeight"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sW')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                        </td>
+                        <td class=" stoneCostStyle styleBorderRight-Left">
+                          <input
+                            class="form-control text-center w-75 m-auto"
+                            id="exampleInputEmail1"
+                            value="{{ +stone.price }}"
+                            formControlName="updateStonesPrice"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sP')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                        </td>
+                        <td class=" stoneCostStyle styleBorderRight-Left">
+                          <input
+                            class="form-control text-center w-75 m-auto"
+                            id="exampleInputEmail1"
+                            value="{{ +stone.setting }}"
+                            formControlName="updateSettingsSetting"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sS')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                        </td>
+                        <td class="stoneTotalPrice styleBorderRight-Left">
+                          {{
+                            !checkItemDataCalculatedIsDefiend
+                              ? stone.total.toLocaleString()
+                              : ItemDataCalculated.stones[
+                                  stoneIndex
+                                ].total.toLocaleString()
+                          }}
+                        </td>
+                        <td class="text-center">
+                          <i
+                            class="fas fa-trash-alt text-red pointer font-1xl"
+                            (click)="removeStone(stoneIndex)"
+                          ></i>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <hr
+                    *ngIf="
+                      ((updatedItemData.stones.length > 1 &&
+                        stoneIndex % 2 > 0) ||
+                        (updatedItemData.stones.length >= 2 &&
+                          stoneIndex % 2 == 0)) &&
+                      stoneIndex !== updatedItemData.stones.length - 1
+                    "
+                  />
+                </div>
+              </div>
+              <div *ngIf="stoneFlage">
+                <div
+                  class="stonesTable"
+                  *ngFor="let stone of newStoneArray; let stoneIndex = index"
+                >
+                  <table class="table table-borderless ">
+                    <thead>
+                      <tr class="header-tr">
+                        <th scope="col" class="stoneNameTextAlien p-0">Name</th>
+                        <th
+                          class="styleBorderRight text-center p-0"
+                          scope="col"
+                        >
+                          Quantity
+                        </th>
+                        <th
+                          class="styleBorderRight-Left text-center p-0"
+                          scope="col"
+                        >
+                          Weight (cts)
+                        </th>
+                        <th
+                          class="styleBorderRight-Left text-center p-0"
+                          scope="col"
+                        >
+                          Cost ($)
+                        </th>
+                        <th
+                          class="styleBorderRight-Left text-center p-0"
+                          scope="col"
+                        >
+                          Setting
+                        </th>
+                        <th
+                          scope="col"
+                          class="text-center styleBorderRight-Left"
+                        >
+                          Total
+                        </th>
+                        <th scope="col" class="text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="text-left align-middle">{{ stone.name }}</td>
+                        <td class="styleBorderRight updataRight">
+                          <input
+                            class="form-control text-center w-75 m-auto"
+                            id="exampleInputEmail1"
+                            value="{{ +stone.quantity }}"
+                            formControlName="updateStonesQuantity"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sQ')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                        </td>
+                        <td class="styleBorderRight-Left">
+                          <input
+                            class="form-control w-75 m-auto text-center"
+                            id="exampleInputEmail1"
+                            value="{{ +stone.weight }}"
+                            formControlName="updateStonesWeight"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sW')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                        </td>
+                        <td class=" stoneCostStyle styleBorderRight-Left">
+                          <input
+                            class="form-control text-center w-75 m-auto"
+                            id="exampleInputEmail1"
+                            value="{{ +stone.price }}"
+                            formControlName="updateStonesPrice"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sP')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                        </td>
+                        <td class=" stoneCostStyle styleBorderRight-Left">
+                          <input
+                            class="form-control text-center w-75 m-auto"
+                            id="exampleInputEmail1"
+                            value="{{ +stone.setting }}"
+                            formControlName="updateSettingsSetting"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sS')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                        </td>
+                        <td class="stoneTotalPrice styleBorderRight-Left">
+                          {{
+                            !checkItemDataCalculatedIsDefiend
+                              ? stone.total.toLocaleString()
+                              : ItemDataCalculated.stones[
+                                  stoneIndex
+                                ].total.toLocaleString()
+                          }}
+                        </td>
+                        <td class="text-center">
+                          <i
+                            class="fas fa-trash-alt text-red pointer font-1xl"
+                            (click)="removeStone(stoneIndex)"
+                          ></i>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <hr
+                    *ngIf="
+                      ((updatedItemData.stones.length > 1 &&
+                        stoneIndex % 2 > 0) ||
+                        (updatedItemData.stones.length >= 2 &&
+                          stoneIndex % 2 == 0)) &&
+                      stoneIndex !== updatedItemData.stones.length - 1
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <div>
+          <div class="row">
+            <div class="costProudect col-12 d-flex justify-content-center">
+              <!-- START PRODECT COST-->
+              <div class=" col-md-6 col-md-offset-3">
+                <div class="row justify-content-center">
+                  <div class="col-md-6 row justify-content-center">
+                    <p class="col-12">Cost</p>
+                    <div class="cost">
+                      <span>
+                        {{ this.ItemDataCalculated.item_total }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-md-6 row justify-content-center">
+                    <p class="col-12">Cost *4.4 in $</p>
+                    <div class="cost">
+                      <span>{{
+                        ItemDataCalculated.item_total_after_profit
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          [ngClass]="
+            !checkItemDataCalculatedIsDefiend
+              ? 'disabledUpdate'
+              : 'updataButton'
+          "
+        >
+          <button [disabled]="!checkItemDataCalculatedIsDefiend ? true : false">
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add New Stone Model -->
+  <div
+    bsModal
+    #myModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Create New Stone</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="myModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="stonesForm"
+            (ngSubmit)="onSubmitStone(stonesForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-12 row">
+                <div class="form-group col-12 no-gutters">
+                  <label for="exampleInputName2" class="title"
+                    >Stone Type <span class="text-red">*</span></label
+                  >
+                  <select
+                    class="p-3 itemInput w-100"
+                    formControlName="name"
+                    (change)="getSelectedListOptionId()"
+                  >
+                    <option disabled selected="selected" value=""
+                      >Please Select Type</option
+                    >
+                    <option *ngFor="let stone of stoneList">
+                      {{ stone.name }}</option
+                    >
+                  </select>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 mt-2 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.name.errors?.required &&
+                      stonesForm.controls.name.touched &&
+                      !modalError.name
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.name"
+                    >{{ modalError.name }}</mat-hint
+                  >
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="exampleInputEmail3"
+                      >Quantity <span class="text-red">*</span></label
+                    >
+                    <input
+                      class="form-control input-modal"
+                      value=""
+                      formControlName="quantity"
+                      autocomplete="off"
+                      placeholder="Quantity"
+                    />
+                  </div>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.quantity.errors?.required &&
+                      stonesForm.controls.quantity.touched &&
+                      !modalError.quantity
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.quantity"
+                    >{{ modalError.quantity }}</mat-hint
+                  >
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="exampleInputEmail3"
+                      >Weight (cts) <span class="text-red">*</span></label
+                    >
+                    <input
+                      class="form-control input-modal"
+                      value=""
+                      formControlName="weight"
+                      autocomplete="off"
+                      placeholder="Weight(cts)"
+                    />
+                  </div>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.weight.errors?.required &&
+                      stonesForm.controls.weight.touched &&
+                      !modalError.weight
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.weight"
+                    >{{ modalError.weight }}</mat-hint
+                  >
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="exampleInputEmail3"
+                      >Cost ($) <span class="text-red">*</span></label
+                    >
+                    <input
+                      class="form-control input-modal"
+                      value=""
+                      formControlName="price"
+                      autocomplete="off"
+                      placeholder="Cost($)"
+                    />
+                  </div>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.price.errors?.required &&
+                      stonesForm.controls.price.touched &&
+                      !modalError.price
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.price"
+                    >{{ modalError.price }}</mat-hint
+                  >
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="exampleInputEmail3"
+                      >Setting <span class="text-red">*</span></label
+                    >
+                    <input
+                      class="form-control input-modal"
+                      value=""
+                      formControlName="setting"
+                      autocomplete="off"
+                      placeholder="Setting"
+                    />
+                  </div>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.setting.errors?.required &&
+                      stonesForm.controls.setting.touched &&
+                      !modalError.setting
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.setting"
+                    >{{ modalError.setting }}</mat-hint
+                  >
+                </div>
+              </div>
+              <div class="modal-footer border-0">
+                <button
+                  type="submit"
+                  class="btn-modal-submit"
+                  [disabled]="
+                    !stonesForm.controls.name.value &&
+                    !stonesForm.controls.quantity.value &&
+                    !stonesForm.controls.weight.value &&
+                    !stonesForm.controls.price.value &&
+                    !stonesForm.controls.setting.value
+                  "
+                  [ngClass]="
+                    !stonesForm.controls.name.value &&
+                    !stonesForm.controls.quantity.value &&
+                    !stonesForm.controls.weight.value &&
+                    !stonesForm.controls.price.value &&
+                    !stonesForm.controls.setting.value
+                      ? 'disabledSubmitButton'
+                      : 'enableSubmitButton'
+                  "
+                >
+                  Add Stone
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

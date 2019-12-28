@@ -1,0 +1,477 @@
+<div class="animated fadeIn" id="salesList">
+  <!-- Start Header -->
+  <header class="bg-blue px-5 py-3">
+    <div class="row align-items-end">
+      <!-- left-hand-side-of-header -->
+      <div
+        class="row align-items-start mb-5 justify-content-between no-gutters w-100"
+      >
+        <div class="col-8">
+          <!-- Titles -->
+          <h6 class="col-12 p-0">Dashboard | Sales | Sales List</h6>
+          <h3 class="text-uppercase">
+            SALES LIST
+          </h3>
+        </div>
+        <div class="col-4 row justify-content-end">
+          <div class="dropdown">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Welcome Habiba ,
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button class="dropdown-item" type="button">Logout</button>
+            </div>
+          </div>
+        </div>
+        <!-- Filter -->
+        <p class="col-12 p-0 mt-4 text-white">
+          Filter by :
+        </p>
+        <!-- Invoice Number -->
+        <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Invoice Number</mat-label>
+            <input
+              type="text"
+              placeholder="Invoice Number"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlInvoice"
+              [matAutocomplete]="autoInvoice"
+              [(ngModel)]="invoiceValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="invoiceValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoInvoice="matAutocomplete"
+              [displayWith]="displayInvoice"
+            >
+              <mat-option
+                *ngFor="let option of filteredInvoices | async"
+                [value]="option"
+              >
+                {{ option.receipts.receipt_number }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- Branch -->
+        <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Branch</mat-label>
+            <input
+              type="text"
+              placeholder="Branch"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlBranch"
+              [matAutocomplete]="autoBranch"
+              [(ngModel)]="branchValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="branchValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoBranch="matAutocomplete"
+              [displayWith]="displayBranch"
+            >
+              <mat-option
+                *ngFor="let option of filteredBranches | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- Date -->
+        <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Date</mat-label>
+            <input
+              type="text"
+              placeholder="Date"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlDate"
+              [matAutocomplete]="autoDate"
+              [(ngModel)]="dateValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="dateValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoDate="matAutocomplete"
+              [displayWith]="displayDate"
+            >
+              <mat-option
+                *ngFor="let option of filteredDates | async"
+                [value]="option"
+              >
+                {{ option.receipts.receipt_date }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- Delete -->
+        <div
+          class="col mr-3 pointer mt-2 pl-3 pr-0 row align-items-center"
+          *ngIf="checkedItems > 1"
+          (click)="removeMultiply()"
+        >
+          <i class="fas fa-trash-alt font-2xl text-white"></i>
+          <span class="text-white pl-2">Delete Items</span>
+        </div>
+        <div class="col row justify-content-end no-gutters">
+          <button class="addBtn w-100" routerLink="/sales/make-new-sale">
+            <i class="icon-diamond mr-2 align-middle"></i>
+            Make New Sales
+          </button>
+        </div>
+
+        <div class="col-12 row justify-content-start pl-3 mt-2">
+          <p class="text-white m-0" *ngIf="dataSource.data.length > 1">
+            Search Result {{ dataSource.data.length }} Items
+          </p>
+          <p class="text-white m-0" *ngIf="dataSource.data.length == 1">
+            Search Result {{ dataSource.data.length }} Item
+          </p>
+          <p *ngIf="!dataSource.data.length" class="text-white m-0">
+            No Data Available
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+
+  <!-- Start Table -->
+  <div class="floated container-fluid relative">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()"
+          >
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="text-center">
+          <mat-checkbox
+            (change)="mutliplyAction($event)"
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          >
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell class="" *matCellDef="let row">
+          {{ row.id }}
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="product.label">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>PRODUCT CODE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.product.label }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="receipts.branch.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>BRANCH</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.receipts.branch.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="receipts.receipt_date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>DATE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.receipts.receipt_date }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="receipts.receipt_number">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          INVOICE NUMBER
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.receipts.receipt_number }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="product.item_total_after_profit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>SELLING PRICE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.product.item_total_after_profit }} EGP</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="receipts.employee.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>BILLER</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.receipts.employee.name }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Column -->
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef>
+          IMAGE
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <img
+            src="http://jewelry.ixscope.com/backend/img/products/{{
+              row.product.image
+            }}"
+            width="78px"
+            alt=""
+          />
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+        <td
+          mat-cell
+          *matCellDef="let row"
+          class="detailsmenu "
+          (mouseenter)="hideme[row.id] = !hideme[row.id] && (testArea = true)"
+          (mouseleave)="hideme[row.id] = !hideme[row.id] && (testArea = false)"
+        >
+          <ng-container>
+            <div id="showOrdercontrols" *ngIf="hideme[row.id]">
+              <button
+                class="basic_button"
+                type="button"
+                (click)="routeToSale(row)"
+              >
+                <a target="blank">
+                  <img
+                    src="../../../assets/icon-dashboard/invoice (1).png"
+                    alt=""
+                  />
+                </a>
+                <span class="tooltiptext">Invoice</span>
+              </button>
+
+              <button
+                id="editButton"
+                (click)="openDetailsPopup(row.id); itemStockDetailsData = row"
+                class="basic_button"
+                type="button"
+              >
+                <img src="../../../assets/icon-dashboard/invoice.png" alt="" />
+                <span class="tooltiptext">Details</span>
+              </button>
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="
+                  openUpdataPopup(row, index); itemStockDetailsData = row
+                "
+              >
+                <img src="../../../assets/icon-dashboard/edit.png" alt="" />
+                <span class="tooltiptext">Return</span>
+              </button>
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                *ngIf="row.payment_status == 0"
+                (click)="myModalPayment.show(paymentForm.reset())"
+                (click)="openPayment(row)"
+              >
+                <img src="../../../assets/icon-dashboard/barcode.png" alt="" />
+                <span class="tooltiptext">Payment</span>
+              </button>
+            </div>
+          </ng-container>
+          <button class="buttonListItems">
+            <img src="../../../assets/icon-dashboard/menu.svg" alt="" />
+          </button>
+          <div id="Deletepopup" *ngIf="showDeletePopup">
+            <div
+              class="popupStyle"
+              id="backDrop"
+              (click)="closeDeletePopup()"
+            ></div>
+            <div id="DeletepopupData">
+              <div class="headerClose">
+                <a (click)="closeDeletePopup()">
+                  close
+                </a>
+              </div>
+              <p>For Delete Items Please Type <span>DELETE</span></p>
+              <form class="form-inline" [formGroup]="deleteForm">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="DELETE"
+                    formControlName="deleteInput"
+                    value=""
+                    autocomplete="off"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-default"
+                  (click)="deleteStock()"
+                  (click)="removeMultiply()"
+                >
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+      [pageSizeOptions]="[10, 20, 30, 40, 50]"
+      (page)="pageEvent = $event; onPaginateChange($event)"
+    ></mat-paginator>
+  </div>
+  <!-- End Table -->
+
+  <!-- Make Payment -->
+  <div
+    bsModal
+    #myModalPayment="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add New Payment</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="myModalPayment.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="paymentForm"
+            (ngSubmit)="onSubmitPayment(paymentForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-12 row">
+                <div class="form-group col-12 no-gutters">
+                  <label for="exampleInputName2" class="title"
+                    >Amount<span class="text-red">*</span></label
+                  >
+                  <input
+                    id="exampleInputName2"
+                    formControlName="paidAmount"
+                    autocomplete="off"
+                    placeholder="EGP"
+                    class="p-3 itemInput w-100 text-center"
+                  />
+                </div>
+                <div class="form-group col-12 no-gutters">
+                  <label for="exampleInputName2" class="title"
+                    >Payment Method<span class="text-red">*</span></label
+                  >
+                  <select
+                    (change)="getPaymentType($event.target.value)"
+                    class="itemInput p-3 w-100 text-center"
+                    style="padding: 13px"
+                  >
+                    <option value="1" selected="selected">Cash</option>
+                    <option value="2">Visa</option>
+                    <option value="3">Bank Check</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer border-0">
+                <button
+                  type="submit"
+                  class="btn-modal-submit"
+                  [disabled]="!paymentForm.controls.paidAmount.value"
+                  [ngClass]="
+                    !paymentForm.controls.paidAmount.value
+                      ? 'disabledSubmitButton'
+                      : 'enableSubmitButton'
+                  "
+                >
+                  PAY NOW
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Modal -->
+  <div
+    bsModal
+    #myModalImg="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content border-0" style="background: 0;">
+        <div class="modal-header border-0">
+          <button
+            type="button"
+            class="close"
+            (click)="myModalImg.hide()"
+            aria-label="Close"
+          >
+            <span class="text-white" aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <img style="width: 100%; height: auto;" [src]="imgSrc" alt="" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

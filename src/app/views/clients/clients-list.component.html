@@ -1,0 +1,469 @@
+<div class="animated fadeIn" id="clients">
+  <!-- Start Header -->
+  <header class="bg-blue p-5">
+    <div class="row align-items-end">
+      <!-- left-hand-side-of-header -->
+      <div class="row align-items-baseline col-12 justify-content-between mb-5">
+        <!-- Titles -->
+        <h6 class="col-12 p-0 text-white">clients | List</h6>
+        <h3 class="text-uppercase text-white">clients List</h3>
+        <!-- Filter -->
+        <p class="col-12 p-0 mt-4 text-white">
+          Filter by :
+        </p>
+        <!-- stone -->
+        <div class="col-4 p-0">
+          <mat-form-field
+            class="example-full-width"
+            style="width: 100% !important;"
+            appearance="outline"
+          >
+            <mat-label>Name , Mobile</mat-label>
+            <input
+              type="text"
+              placeholder="Name, Mobile"
+              aria-label="Number"
+              matInput
+              [formControl]="clientNameData"
+              [matAutocomplete]="autoClient"
+              [(ngModel)]="clientValue"
+            />
+            <mat-icon
+              class="pointer text-black-50"
+              matSuffix
+              aria-label="Clear"
+              (click)="clientValue = ''"
+              *ngIf="clientValue"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoClient="matAutocomplete"
+              [displayWith]="displayclient"
+            >
+              <mat-option
+                *ngFor="let option of filteredclients | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- Delete -->
+        <div
+          class="col pointer no-gutters mr-3 mt-2 pl-3 pr-0 row align-items-center"
+          *ngIf="checkedItems > 1"
+          (click)="removeMultiply()"
+        >
+          <i class="fas fa-trash-alt font-2xl text-white"></i>
+          <span class="text-white pl-2">Delete Items</span>
+        </div>
+        <div class="col-3 row justify-content-end p-0">
+          <button
+            class="addBtn w-100"
+            data-toggle="modal"
+            (click)="myModal.show(clientsForm.reset())"
+            (click)="clearError()"
+          >
+            <i class="icon-diamond mr-2 align-middle"></i>
+            Add New Client
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+  <!-- Start Table -->
+  <div class="floated container-fluid relative">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()"
+          >
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          >
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.id }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CLIENT NAME</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="mobile">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>MOBILE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.mobile }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>EMAIL</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.email }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CREATE DATE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.created_at }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ACTIONS</th>
+        <td
+          mat-cell
+          *matCellDef="let row"
+          class="detailsmenu "
+          (mouseenter)="hideme[row.id] = !hideme[row.id] && (testArea = true)"
+          (mouseleave)="hideme[row.id] = !hideme[row.id] && (testArea = false)"
+        >
+          <ng-container>
+            <div id="showOrdercontrols" *ngIf="hideme[row.id]">
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="
+                  openUpdataPopup(row, index); itemStockDetailsData = row
+                "
+              >
+                <img src="../../../assets/icon-dashboard/edit.png" alt="" />
+                <span class="tooltiptext">Edit</span>
+              </button>
+              <button
+                id="editButton"
+                (click)="opendeletePopup(row); deletedStockIndex = index"
+                class="basic_button"
+                type="button"
+              >
+                <img src="../../../assets/icon-dashboard/delete.png" alt="" />
+                <span class="tooltiptext">Delete</span>
+              </button>
+            </div>
+          </ng-container>
+          <button class="buttonListItems">
+            <img src="../../../assets/icon-dashboard/menu.svg" alt="" />
+          </button>
+          <div id="Deletepopup" *ngIf="showDeletePopup">
+            <div
+              class="popupStyle"
+              id="backDrop"
+              (click)="closeDeletePopup()"
+            ></div>
+            <div id="DeletepopupData">
+              <div class="headerClose">
+                <a (click)="closeDeletePopup()">
+                  close
+                </a>
+              </div>
+              <p>For Delete Items Please Type <span>DELETE</span></p>
+              <form class="form-inline" [formGroup]="deleteForm">
+                <div class="form-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="DELETE"
+                    formControlName="deleteInput"
+                    value=""
+                    autocomplete="off"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-default"
+                  (click)="deleteClient()"
+                >
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <!-- Paginator -->
+    <mat-paginator
+      [pageSizeOptions]="[10, 20, 30, 40, 50]"
+      (page)="pageEvent = $event; onPaginateChange($event)"
+    ></mat-paginator>
+  </div>
+  <!-- End Table -->
+  <!-- Update Client -->
+  <div
+    bsModal
+    #myModal2="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Update Client</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="myModal2.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="clientsForm"
+            (ngSubmit)="onUpdateclient(clientsForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail2"
+                    >Client Name <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="name"
+                    autocomplete="off"
+                    placeholder="Client Name"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    clientsForm.controls.name.errors?.required &&
+                    clientsForm.controls.name.touched &&
+                    !modalError.name
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.name"
+                  >{{ modalError.name }}</mat-hint
+                >
+              </div>
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail3"
+                    >Client Mobile <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="mobile"
+                    autocomplete="off"
+                    placeholder="Client Mobile"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    clientsForm.controls.mobile.errors?.required &&
+                    clientsForm.controls.mobile.touched &&
+                    !modalError.mobile
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.mobile"
+                  >{{ modalError.mobile }}</mat-hint
+                >
+              </div>
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail3"
+                    >Client Email <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="email"
+                    autocomplete="off"
+                    placeholder="Client Email"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    clientsForm.controls.email.errors?.required &&
+                    clientsForm.controls.email.touched &&
+                    !modalError.email
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.email"
+                  >{{ modalError.email }}</mat-hint
+                >
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn-modal-submit">
+                Update Client
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Create New Client -->
+  <div
+    bsModal
+    #myModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add New Client</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="myModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="clientsForm"
+            (ngSubmit)="onSubmitClient(clientsForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail2"
+                    >Client Name <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="name"
+                    autocomplete="off"
+                    placeholder="Client Name"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    clientsForm.controls.name.errors?.required &&
+                    clientsForm.controls.name.touched &&
+                    !modalError.name
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.name"
+                  >{{ modalError.name }}</mat-hint
+                >
+              </div>
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail3"
+                    >Client Mobile <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="mobile"
+                    autocomplete="off"
+                    placeholder="Client Mobile"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    clientsForm.controls.mobile.errors?.required &&
+                    clientsForm.controls.mobile.touched &&
+                    !modalError.mobile
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.mobile"
+                  >{{ modalError.mobile }}</mat-hint
+                >
+              </div>
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail3"
+                    >Client Email <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="email"
+                    autocomplete="off"
+                    placeholder="Client Email"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    clientsForm.controls.email.errors?.required &&
+                    clientsForm.controls.email.touched &&
+                    !modalError.email
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.email"
+                  >{{ modalError.email }}</mat-hint
+                >
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn-modal-submit">
+                Add Client
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
