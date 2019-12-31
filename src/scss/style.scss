@@ -7,26 +7,23 @@
 // If you want to add something do it here
 @import "custom";
 
-/* ------------------------------ Commons ------------------------------*/
-* {
-  box-sizing: border-box;
-}
+/* --------------------------------- Print --------------------------------- */
+@media print {
+  body * {
+    visibility: hidden;
+  }
 
-.pointer {
-  cursor: pointer;
-}
+  #label-1 *,
+  #label-2 * {
+    visibility: visible;
+  }
 
-.border-both {
-  border-right: 1px dotted #707070;
-  border-left: 1px dotted #707070
-}
-
-.border-left {
-  border-left: 1px dotted #707070;
-}
-
-.border-right {
-  border-right: 1px dotted #707070;
+  #label-1,
+  #label-2 {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
 }
 
 /* ----------------------------------- Variables -------------------------------------*/
@@ -53,6 +50,124 @@ $primary-color: #262f3d;
   @include line-height($size);
 }
 
+/* ------------------------------ Commons ------------------------------*/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #fff;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.border-both {
+  border-right: 1px dotted #707070;
+  border-left: 1px dotted #707070
+}
+
+.border-left {
+  border-left: 1px dotted #707070;
+}
+
+.border-right {
+  border-right: 1px dotted #707070;
+}
+
+.text-red {
+  color: #FF0034 !important;
+}
+
+.text-blue {
+  color: #039BE5 !important;
+}
+
+.text-grey {
+  color: #858585 !important;
+}
+
+.alert-danger {
+  @include typoStyle(.7rem, 500);
+}
+
+.stop {
+  cursor: no-drop;
+}
+
+
+.maxFile p {
+  direction: ltr;
+  color: #858585;
+  margin-right: 0;
+  margin-top: 8px;
+  text-align: right;
+}
+
+.file-upload-wrapper .uploadImage button {
+  background: none;
+  border: none;
+}
+
+.file-upload-wrapper .addFile {
+  width: 100%;
+}
+
+.file-upload-wrapper input {
+  cursor: pointer;
+  position: absolute;
+  width: 72%;
+  height: 21%;
+  left: 14%;
+  top: 43%;
+  opacity: 0;
+}
+
+.file-upload-wrapper p {
+  letter-spacing: 0.09px;
+  color: #858585;
+  position: absolute;
+  text-align: center;
+  margin-left: 17%;
+  margin-top: 13px;
+  display: flex;
+}
+
+.file-upload-wrapper .btn {
+  padding: 10px;
+  font-size: 14px;
+  background: #373737;
+  color: #fff;
+  text-transform: unset;
+  font-family: arial;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.file-upload-wrapper .uploadImage {
+  position: absolute;
+  top: 16px;
+  left: 25px;
+}
+
+.file-upload-wrapper {
+  text-align: center;
+  padding: 52px;
+  border: 1px solid #cccccc;
+  border: 1px solid #707070;
+}
+
+.file-upload-wrapper .uploadImage p {
+  display: flex;
+  margin-top: 21px;
+  color: #333333;
+  margin-left: 3px;
+  width: max-content;
+}
+
+
 /* ------------------------------------------- Side Bar -------------------------- */
 #sidebar {
   background: $primary-color;
@@ -60,9 +175,45 @@ $primary-color: #262f3d;
   img {
     margin: 0 auto;
   }
+
+  a {
+    border-bottom: 1px solid #707070;
+    font-family: Arial;
+    color: #fff;
+  }
+
+  i {
+    font-size: 20px;
+    margin-right: 15px;
+  }
+
+  .nav-dropdown-items {
+    margin-left: 25px;
+
+    i {
+      font-size: 15px;
+    }
+  }
 }
 
-/* ---------------------------- Angular Material Auto-complete -------------------- */
+.submit-btn {
+  background: #373737;
+  color: $white;
+  border: 0;
+  outline: 0;
+  padding: 10px 15px;
+
+  &:disabled {
+    opacity: .5;
+  }
+}
+
+/* ---------------------------- Angular Material Auto-complete
+-------------------- */
+.mat-form-field {
+  width: 100%;
+}
+
 .mat-form-field-appearance-outline .mat-form-field-wrapper {
   margin: 0;
   margin-top: 5px;
@@ -266,6 +417,8 @@ header {
   #multi-delete {
     background: #FF0034;
     padding: 0.625rem;
+    width: 100%;
+    justify-content: center;
   }
 
   .addBtn {
@@ -275,31 +428,7 @@ header {
     padding: 0.75rem;
     background: #065a84;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.16);
-  }
-}
-
-
-
-@media screen {
-  #printSection {
-    display: none;
-  }
-}
-
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  #printSection,
-  #printSection * {
-    visibility: visible;
-  }
-
-  #printSection {
-    position: absolute;
-    left: 0;
-    top: 0;
+    width: 100%;
   }
 }
 
@@ -337,13 +466,105 @@ header {
 
 /* ------------------------------------ Stock List ------------------------ */
 #stock-list {
-  @media (min-width: 576px) {
-    .modal-dialog {
-      max-width: 70%;
+  .stone-table {
+    border-bottom: 1px solid #dddddd;
+  }
+
+  #transfer {
+    select {
+      border: 1px solid #707070;
+    }
+
+    .title-4 {
+      @include typoStyle(1.2rem, 400);
+    }
+
+    .transfer-title {
+      @include typoStyle(1rem, 900);
+
+      span {
+        @include typoStyle(.8rem, 500);
+      }
+    }
+  }
+
+  #labelModel {
+    table {
+      width: 20%;
+      margin: 20px auto;
+    }
+  }
+
+  #stoneModel {
+    .title-4 {
+      @include typoStyle(.9rem, 700);
+    }
+
+    .input-text {
+      padding: 5px 10px;
+      text-align: center;
+      width: 100%;
+      border: 1px solid #707070;
+    }
+  }
+
+  #deleteModal {
+    .modal-content {
+      background: #F8F8F8;
+    }
+
+    .modal-title {
+      @include typoStyle(1rem, 900);
+
+      span {
+        @include typoStyle(1rem, 500);
+      }
+    }
+
+    .form-group {
+      height: 100%;
+    }
+
+    .input-text {
+      padding: 5px 10px;
+      text-align: center;
+      height: 100%;
+      border: 1px solid #707070;
+      font-weight: 900;
+    }
+
+    .modal-footer {
+      button {
+        height: 100%;
+        width: 100%;
+      }
     }
   }
 
   #details {
+    .input-text {
+      padding: 5px 10px;
+      text-align: center;
+      width: 70%;
+      border: 1px solid #707070;
+
+    }
+
+    .input-s {
+      padding: 5px 10px;
+      text-align: center;
+      width: 66%;
+      border: 1px solid #707070;
+
+    }
+
+    @media (min-width: 576px) {
+      .modal-dialog {
+        background: #F8F8F8;
+        max-width: 55%;
+      }
+    }
+
     p {
       line-height: 1rem;
     }
@@ -386,11 +607,12 @@ header {
   }
 
   .gold-box {
-    padding: 20px 10px;
+    padding: 20px 19px;
     border-radius: 5px;
     background: #f5f5f5;
     border: 1px solid rgba(0, 0, 0, 0.24);
-    height: 70%;
+    height: 100%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .16);
 
     p {
       @include typoStyle(.8rem, 500);
@@ -399,6 +621,14 @@ header {
   }
 
   #stones {
+    position: relative;
+
+    .fa-plus-circle {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
     h2 {
       span {
         font-weight: 500;
@@ -413,18 +643,28 @@ header {
     }
 
     table {
+      border-bottom: 2px dotted #493e3e38;
+
+      &:last-child {
+        border: 0;
+      }
+
+      thead {
+        tr {
+          th {
+            padding: 7px 0;
+          }
+        }
+      }
+
       tbody {
         tr {
-          border-bottom: 2px dotted #493e3e38;
           padding: 1rem 0;
-
-          &:last-child {
-            border-bottom: 0;
-          }
 
           td {
             padding-top: 5px;
             padding-bottom: 10px;
+            width: 10%;
           }
         }
       }
@@ -443,6 +683,7 @@ header {
       border-radius: 5px;
       background: #f5f5f5;
       border: 1px solid rgba(0, 0, 0, 0.24);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .16);
       padding: 17px;
       text-align: center;
       font-family: Arial;
@@ -457,6 +698,226 @@ header {
       &:hover {
         span {
           color: #039BE5;
+        }
+      }
+    }
+  }
+}
+
+/* ------------------------------- Make New Item ------------------------ */
+#make-new-item {
+  label {
+    font-family: Arial;
+    font-weight: normal;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    color: #333;
+    text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+  }
+
+  #product-details {
+    h4 {
+      @include typoStyle(1.1rem, bold);
+      letter-spacing: 0.01em;
+      text-align: left;
+      color: #333;
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+    }
+
+    .input-text {
+      padding: 5px 10px;
+      text-align: center;
+      width: 100%;
+      border: 1px solid #707070;
+    }
+  }
+
+  #stones-details {
+    background: #F6F6F6;
+    border: 2px dotted #707070;
+
+    h4 {
+      @include typoStyle(1.1rem, bold);
+      letter-spacing: 0.01em;
+      color: #333;
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+      text-transform: uppercase;
+    }
+  }
+
+  #total-details {
+    .total-border {
+      border: 1px solid #707070;
+      height: 100%;
+    }
+
+    .gold-box {
+      background: #fff;
+      border: 1px solid #707070;
+      padding: 10px 9px;
+      height: 100%;
+
+      h4 {
+        @include typoStyle(.9rem, 900);
+        text-align: center;
+
+        span {
+          @include typoStyle(.7rem, 900);
+        }
+      }
+
+      p {
+        text-align: center;
+        @include typoStyle(1.2rem, 500);
+      }
+    }
+
+    .total {
+      background: #F5F5F5;
+
+      p {
+        text-align: center;
+        @include typoStyle(1.2rem, 900);
+      }
+    }
+
+    .stones {
+      .stone-border {
+        border: 2px solid #dedede;
+      }
+
+      .stones-table {
+
+        button {
+          background: 0;
+          border: 0;
+          outline: 0;
+        }
+      }
+
+      table {
+        tbody {
+          tr {
+            td {
+              padding: 5px 0 10px 0;
+            }
+          }
+        }
+      }
+    }
+
+    .cost {
+      .cost-box {
+        border-radius: 5px;
+        background: #f5f5f5;
+        text-align: center;
+        padding: 10px 15px;
+        border: 1px solid rgba(0, 0, 0, 0.24);
+      }
+
+      .input-text {
+        padding: 5px 10px;
+        text-align: center;
+        width: 100%;
+        border: 1px solid #707070;
+      }
+    }
+  }
+}
+
+
+
+#dashboard {
+  .nav-card {
+    height: 60%;
+    width: 100%;
+    border-radius: 7px;
+    background: #fff;
+    border: 1px solid #707070;
+    padding: 15px 0;
+  }
+}
+
+#make-new-sale {
+  background: #eceff1 !important;
+
+  #selected-products {
+    table {
+      thead {
+        tr {
+          background: #f2f2f2;
+
+          th {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 3px dashed #ddd;
+          padding: 10px 0;
+
+          &:last-child {
+            border-bottom: 0;
+          }
+
+          td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            width: 15%;
+            text-align: center;
+            padding: 95px 0;
+          }
+        }
+      }
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background: #FFF;
+    }
+
+    .table-striped tbody tr:nth-of-type(even) {
+      background: #e6e6e6;
+    }
+
+    .inside-table {
+      position: absolute;
+      width: 75%;
+
+      thead {
+        tr {
+          background: #f2f2f2 !important;
+
+          &:last-child {
+            border-bottom: 0;
+          }
+
+          th {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          td {
+            width: 16.667%;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 9px 0;
+
+            .stone-input {
+              width: 65%;
+            }
+          }
         }
       }
     }

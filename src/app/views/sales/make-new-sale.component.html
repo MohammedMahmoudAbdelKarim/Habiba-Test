@@ -1,11 +1,9 @@
-<div class="animated fadeIn" id="addNewSale">
+<div class="animated fadeIn" id="make-new-sale">
   <!-- Start Header -->
   <header class="bg-blue px-5 py-3">
     <div class="row align-items-end">
       <!-- left-hand-side-of-header -->
-      <div
-        class="row align-items-start no-gutters w-100 justify-content-between"
-      >
+      <div class="row align-items-start w-100 justify-content-between">
         <div class="col-8">
           <!-- Titles -->
           <h6 class="col-12 p-0">Dashboard | Sales | Add new Sale</h6>
@@ -16,7 +14,7 @@
         <div class="col-4 row justify-content-end">
           <div class="dropdown">
             <button
-              class="btn btn-secondary dropdown-toggle"
+              class="btn dropdown-toggle"
               type="button"
               id="dropdownMenu2"
               data-toggle="dropdown"
@@ -26,12 +24,14 @@
               Welcome Habiba ,
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-              <button class="dropdown-item" type="button" (click)="logout()">Logout</button>
+              <button class="dropdown-item" type="button" (click)="logout()">
+                Logout
+              </button>
             </div>
           </div>
         </div>
         <div class="col-7"></div>
-        <div class="col-3 pr-4 row justify-content-end">
+        <div class="col-3 row justify-content-end">
           <button class="addBtn" routerLink="/sales/sales-list">
             <i class="icon-diamond mr-2 align-middle"></i>
             Sales List
@@ -41,496 +41,200 @@
     </div>
   </header>
   <!-- End Header -->
-  <div class="addNewSale">
-    <div class="page_main_blocks middle_page">
-      <div class="page_body_main row no-gutters justify-content-around">
-        <div class="page_card_prodect col-md-8 px-3">
-          <div class="row justify-content-center">
-            <div class="col-lg-offset-1 col-md-10 col-lg-10">
-              <form class="card-sm" [formGroup]="productSelectForm">
-                <div class="card-body relative row no-gutters align-items-end">
-                  <mat-form-field
-                    class="example-full-width col-8"
-                    appearance="outline"
-                  >
-                    <mat-label>Enter Item Code</mat-label>
-                    <input
-                      type="text"
-                      placeholder="Code"
-                      aria-label="Number"
-                      matInput
-                      [formControl]="filterCode"
-                      [matAutocomplete]="autoCode"
-                      [(ngModel)]="codeValue"
-                    />
-                    <mat-icon
-                      class="pointer"
-                      matSuffix
-                      aria-label="Clear"
-                      (click)="clearSearch()"
-                      *ngIf="codeValue"
-                      >close</mat-icon
-                    >
-                    <mat-autocomplete
-                      #autoCode="matAutocomplete"
-                      [displayWith]="displayCode"
-                    >
-                      <mat-option
-                        (onSelectionChange)="
-                          selectProduct($event.source.value, i)
-                        "
-                        *ngFor="
-                          let option of filterCodes | async;
-                          let i = index
-                        "
-                        [value]="option"
-                      >
-                        {{ option.label }}
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-form-field>
-                  <button
-                    class="btn addItemBtn"
-                    type="button"
-                    (click)="addItemTosellingProductListArray()"
-                    [disabled]="addDisAbledState"
-                  >
-                    ADD ITEM
-                  </button>
-                </div>
-                <mat-hint
-                  class="alert alert-danger w-100 d-block"
-                  *ngIf="errMessage.items"
-                  >{{ errMessage.items }}</mat-hint
-                >
-                <mat-hint
-                  class="alert alert-danger w-100 d-block"
-                  *ngIf="emptyArr"
-                >
-                  The Product is not available in that branch
-                </mat-hint>
-              </form>
-            </div>
-          </div>
-          <div id="selectedProducts" *ngIf="sellingProductListArray.length">
-            <h5>Products Selected : {{ sellingProductListArray.length }}</h5>
-            <table class="table table-responsive-sm table-striped">
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Product Code</th>
-                  <th>Weight</th>
-                  <th>Stones</th>
-                  <th>Total in USD</th>
-                  <th>Total in EGP</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let product of sellingProductListArray; let i = index"
-                >
-                  <td>
-                    <img
-                      *ngIf="product.image"
-                      width="148px"
-                      src="http://jewelry.ixscope.com/backend/img/products/{{
-                        product.image
-                      }}"
-                      [alt]="product.label"
-                    />
-                  </td>
-                  <td *ngIf="product.label">
-                    {{ product.label }}
-
-                    <h5 class="mt-4" *ngIf="product.stones.length">
-                      Stones {{ product.stones.legnth }}
-                    </h5>
-
-                    <form
-                      [formGroup]="editProductStoneForm"
-                      *ngIf="product.stones.length"
-                    >
-                      <table class="table inside-table table-striped">
-                        <thead>
-                          <tr class="header-tr">
-                            <th scope="col">Stone Name</th>
-                            <th scope="col">Quantity</th>
-                            <th class="styleBorderRight" scope="col">
-                              Weight (cts)
-                            </th>
-                            <th class="styleBorderRight-Left" scope="col">
-                              Cost ($)
-                            </th>
-                            <th class="styleBorderRight-Left" scope="col">
-                              Setting
-                            </th>
-                            <th scope="col">Total ($)</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr
-                            class="text-center"
-                            *ngFor="
-                              let stone of product.stones;
-                              let stoneIndex = index
-                            "
-                          >
-                            <td class="pb-0" *ngIf="stone.name">
-                              {{ stone.name }}
-                            </td>
-                            <td class="pb-0" *ngIf="stone.quantity">
-                              {{ stone.quantity }}
-                            </td>
-                            <td class="styleBorderRight" *ngIf="stone.weight">
-                              {{ stone.weight }}
-                            </td>
-                            <td class="styleBorderRight-Left">
-                              <input
-                                class="stoneEditableValue text-center"
-                                id="productStonePrice"
-                                value="{{ stone.price }}"
-                                formControlName="productStonePrice"
-                                autocomplete="off"
-                                (keyup)="
-                                  calculateStoneTotal(
-                                    $event,
-                                    stoneIndex,
-                                    i,
-                                    'sP'
-                                  )
-                                "
-                                (keypress)="numberCheckValidation($event)"
-                                maxlength="9"
-                              />
-                            </td>
-                            <td class="styleBorderRight-Left">
-                              <input
-                                class="stoneEditableValue text-center"
-                                id="productStonesetting"
-                                value="{{ stone.setting }}"
-                                formControlName="productStoneSetting"
-                                autocomplete="off"
-                                (keyup)="
-                                  calculateStoneTotal(
-                                    $event,
-                                    stoneIndex,
-                                    i,
-                                    'sS'
-                                  )
-                                "
-                                (keypress)="numberCheckValidation($event)"
-                                maxlength="9"
-                              />
-                            </td>
-                            <td class="" *ngIf="stone.total">
-                              {{ stone.total.toLocaleString() }}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </form>
-                  </td>
-                  <td>{{ product.gold_weight }}</td>
-                  <td>{{ product.stones.length }}</td>
-                  <td>
-                    {{ product.item_total_after_profit.toLocaleString() }}
-                  </td>
-                  <td>
-                    {{
-                      (
-                        product.item_total_after_profit * dollarPrice
-                      ).toLocaleString()
-                    }}
-                  </td>
-                  <td>
-                    <mat-icon
-                      class="text-grey pointer"
-                      (click)="removeItem($event, stoneIndex, i, 'sP')"
-                      >delete</mat-icon
-                    >
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <!-- <div class="allProdect row">
-            <ng-container
-              *ngFor="
-                let sellingProduct of sellingProductListArray;
-                let sellingProductIndex = index
-              "
+  <div class="row no-gutters">
+    <div class="col-md-8 p-5">
+      <form [formGroup]="productSelectForm">
+        <div class="row no-gutters align-items-end">
+          <mat-form-field
+            class="example-full-width col-9 mr-3"
+            appearance="outline"
+          >
+            <mat-label>Enter Item Code</mat-label>
+            <input
+              type="text"
+              placeholder="Enter Item Code"
+              aria-label="Number"
+              matInput
+              [formControl]="filterCode"
+              [matAutocomplete]="autoCode"
+              [(ngModel)]="codeValue"
+            />
+            <mat-icon
+              class="pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="clearSearch()"
+              *ngIf="codeValue"
+              >close</mat-icon
             >
-              <div class="col-md-6">
-                <div class="imgProudect">
-                  <img
-                    *ngIf="sellingProduct.image"
-                    class=""
-                    src="http://jewelry.ixscope.com/backend/img/products/{{
-                      sellingProduct.image
-                    }}"
-                  />
-                </div>
-                <div class="borderStyle">
-                  <div class="p-2 pl-3">
-                    <div class="detailsProdect">
-                      <h4 *ngIf="sellingProduct.category.name">
-                        {{ sellingProduct.category.name }}
-                        {{ sellingProduct.label }}
-                      </h4>
-                      <h4 class="weight">
-                        {{ sellingProduct.gold_weight }}(gm)
-                      </h4>
-                    </div>
-                  </div>
-                  <mat-icon
-                    class="float-right text-grey pointer delete"
-                    (click)="
-                      removeItem($event, stoneIndex, sellingProductIndex, 'sP')
-                    "
-                    >delete</mat-icon
-                  >
-                  <div *ngIf="sellingProduct.stones.length > 0">
-                    <ng-container
-                      *ngFor="
-                        let productStone of sellingProduct.stones;
-                        let stoneIndex = index
-                      "
-                    >
-                      <h4 class="p-2 pl-3" *ngIf="productStone.name">
-                        {{ productStone.name }}
-                      </h4>
-                      <div class="styleDetailsProudect">
-                        <form [formGroup]="editProductStoneForm">
-                          <table class="table table-borderless ">
-                            <thead>
-                              <tr class="header-tr">
-                                <th scope="col">Quantity</th>
-                                <th class="styleBorderRight" scope="col">
-                                  Weight (cts)
-                                </th>
-                                <th class="styleBorderRight-Left" scope="col">
-                                  Cost ($)
-                                </th>
-                                <th class="styleBorderRight-Left" scope="col">
-                                  Setting
-                                </th>
-                                <th scope="col">Total</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr class="text-center">
-                                <td class="pb-0" *ngIf="productStone.quantity">
-                                  {{ productStone.quantity }}
-                                </td>
-                                <td
-                                  class="styleBorderRight pb-0"
-                                  *ngIf="productStone.weight"
-                                >
-                                  {{ productStone.weight }}
-                                </td>
-                                <td class="styleBorderRight-Left pb-0">
-                                  <input
-                                    class="stoneEditableValue text-center"
-                                    id="productStonePrice"
-                                    value="{{ productStone.price }}"
-                                    formControlName="productStonePrice"
-                                    autocomplete="off"
-                                    (keyup)="
-                                      calculateStoneTotal(
-                                        $event,
-                                        stoneIndex,
-                                        sellingProductIndex,
-                                        'sP'
-                                      )
-                                    "
-                                    (keypress)="numberCheckValidation($event)"
-                                    maxlength="9"
-                                  />
-                                </td>
-                                <td class="styleBorderRight-Left pb-0">
-                                  <input
-                                    class="stoneEditableValue text-center"
-                                    id="productStonesetting"
-                                    value="{{ productStone.setting }}"
-                                    formControlName="productStoneSetting"
-                                    autocomplete="off"
-                                    (keyup)="
-                                      calculateStoneTotal(
-                                        $event,
-                                        stoneIndex,
-                                        sellingProductIndex,
-                                        'sS'
-                                      )
-                                    "
-                                    (keypress)="numberCheckValidation($event)"
-                                    maxlength="9"
-                                  />
-                                </td>
-                                <td class="pb-0" *ngIf="productStone.total">
-                                  {{ productStone.total.toLocaleString() }}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </form>
-                      </div>
-                      <hr
-                        *ngIf="
-                          ((sellingProduct.stones.length > 1 &&
-                            stoneIndex % 2 > 0) ||
-                            (sellingProduct.stones.length >= 2 &&
-                              stoneIndex % 2 == 0)) &&
-                          stoneIndex !== sellingProduct.stones.length - 1
+            <mat-autocomplete
+              #autoCode="matAutocomplete"
+              [displayWith]="displayCode"
+            >
+              <mat-option
+                (onSelectionChange)="selectProduct($event.source.value, i)"
+                *ngFor="let option of filterCodes | async; let i = index"
+                [value]="option"
+              >
+                {{ option.label }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <button
+            class="submit-btn col-2"
+            type="button"
+            (click)="addItemTosellingProductListArray()"
+            [disabled]="addDisAbledState"
+          >
+            ADD ITEM
+          </button>
+        </div>
+        <mat-hint
+          class="alert alert-danger w-100 d-block"
+          *ngIf="errMessage.items"
+          >{{ errMessage.items }}</mat-hint
+        >
+        <mat-hint
+          class="alert alert-danger mt-2 w-100 d-block"
+          *ngIf="emptyArr"
+        >
+          No product available in that branch
+        </mat-hint>
+      </form>
+      <div
+        id="selected-products"
+        class="mt-3"
+        *ngIf="sellingProductListArray.length"
+      >
+        <h5>Products Selected : {{ sellingProductListArray.length }}</h5>
+        <table class="table table-responsive-sm table-striped">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product Code</th>
+              <th>Weight</th>
+              <th>Stones</th>
+              <th>Total in USD</th>
+              <th>Total in EGP</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of sellingProductListArray; let i = index">
+              <td>
+                <img
+                  *ngIf="product.image"
+                  width="148px"
+                  src="http://jewelry.ixscope.com/backend/img/products/{{
+                    product.image
+                  }}"
+                  [alt]="product.label"
+                />
+              </td>
+              <td *ngIf="product.label">
+                {{ product.label }}
+
+                <h5 class="mt-4" *ngIf="product.stones.length">
+                  Stones {{ product.stones.legnth }}
+                </h5>
+
+                <form
+                  [formGroup]="editProductStoneForm"
+                  *ngIf="product.stones.length"
+                >
+                  <table class="table inside-table table-striped">
+                    <thead>
+                      <tr class="">
+                        <th scope="col" class="border-right">Stone Name</th>
+                        <th scope="col" class="border-right">Quantity</th>
+                        <th class="border-right" scope="col">
+                          Weight (cts)
+                        </th>
+                        <th class="border-right" scope="col">
+                          Cost ($)
+                        </th>
+                        <th class="border-right" scope="col">
+                          Setting
+                        </th>
+                        <th scope="col">Total ($)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        class="text-center"
+                        *ngFor="
+                          let stone of product.stones;
+                          let stoneIndex = index
                         "
-                      />
-                    </ng-container>
-                  </div>
-                  <div class="footerProdect">
-                    <h5 class="footerProdectLeft">
-                      Total in $
-                      <span *ngIf="sellingProduct.item_total_after_profit">{{
-                        sellingProduct.item_total_after_profit.toLocaleString()
-                      }}</span>
-                    </h5>
-                    <h5 class="footerProdectRight">
-                      Total in EGP
-                      <span>{{
-                        (
-                          sellingProduct.item_total_after_profit * dollarPrice
-                        ).toLocaleString()
-                      }}</span>
-                    </h5>
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-          </div> -->
-        </div>
-        <div id="add-sales-right-side" class="page_body_main-right col-md-3">
-          <form [formGroup]="invoiceDataform">
-            <!-- Start Form field -->
-            <div class="col-md-12">
-              <label
-                ><img src=".././../../assets/employee.svg" /> Client Name or
-                Mobile
-              </label>
-              <mat-form-field
-                class="example-full-width pb-0"
-                appearance="outline"
-              >
-                <mat-label>Client Name or Mobile</mat-label>
-                <input
-                  type="text"
-                  placeholder="Client"
-                  aria-label="Number"
-                  matInput
-                  [formControl]="clientNameData"
-                  [matAutocomplete]="autoClient"
-                  [(ngModel)]="clientValue"
-                />
+                      >
+                        <td class="pb-0 border-right" *ngIf="stone.name">
+                          {{ stone.name }}
+                        </td>
+                        <td class="pb-0 border-right" *ngIf="stone.quantity">
+                          {{ stone.quantity }}
+                        </td>
+                        <td class="border-right" *ngIf="stone.weight">
+                          {{ stone.weight }}
+                        </td>
+                        <td class="border-right">
+                          <input
+                            class="stone-input text-center"
+                            value="{{ stone.price }}"
+                            formControlName="productStonePrice"
+                            autocomplete="off"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, i, 'sP')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                          />
+                        </td>
+                        <td class="border-right">
+                          <input
+                            class="stone-input text-center"
+                            value="{{ stone.setting }}"
+                            formControlName="productStoneSetting"
+                            autocomplete="off"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, i, 'sS')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                          />
+                        </td>
+                        <td class="" *ngIf="stone.total">
+                          {{ stone.total }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </form>
+              </td>
+              <td>{{ product.gold_weight }}</td>
+              <td>{{ product.stones.length }}</td>
+              <td>
+                {{ product.item_total_after_profit }}
+              </td>
+              <td>
+                {{
+                  (
+                    product.item_total_after_profit * dollarPrice
+                  )
+                }}
+              </td>
+              <td>
                 <mat-icon
-                  class="pointer"
-                  matSuffix
-                  aria-label="Clear"
-                  (click)="clientValue = ''"
-                  *ngIf="clientValue"
-                  >close</mat-icon
+                  class="text-red pointer"
+                  (click)="removeItem($event, stoneIndex, i, 'sP')"
+                  >delete</mat-icon
                 >
-                <mat-autocomplete
-                  #autoClient="matAutocomplete"
-                  [displayWith]="displayClient"
-                >
-                  <mat-option
-                    (onSelectionChange)="getClientId($event.source.value)"
-                    *ngFor="let option of filteredClients | async"
-                    [value]="option"
-                  >
-                    {{ option.name }}
-                  </mat-option>
-                </mat-autocomplete>
-                <mat-hint
-                  class="pointer"
-                  (click)="myModalClient.show(clientsForm.reset())"
-                  align="end"
-                  style="color:#20a8d8; font-size: 15px;"
-                  >Add New Client</mat-hint
-                >
-              </mat-form-field>
-              <mat-hint
-                class="alert alert-danger w-100 d-block"
-                *ngIf="errMessage.client_id"
-                >{{ errMessage.client_id }}</mat-hint
-              >
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label>
-                  <img src="../.././../assets/calendar.svg" /> Date
-                </label>
-                <input
-                  matInput
-                  [matDatepicker]="picker"
-                  placeholder="Choose a Date"
-                  class="p-3 itemInput w-100 pointer"
-                  id="exampleInputEmail1"
-                  autocomplete="off"
-                  (click)="picker.open()"
-                  (dateInput)="entryDateChanged($event, 'from')"
-                  (keypress)="(false)"
-                  required
-                />
-                <mat-datepicker touchUi #picker> </mat-datepicker>
-              </div>
-              <mat-hint
-                class="alert alert-danger w-100 d-block"
-                *ngIf="errMessage.receipt_date"
-                >{{ errMessage.receipt_date }}</mat-hint
-              >
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label
-                  ><img src="../.././../assets/placeholder.svg" />Wherehouse
-                </label>
-                <select
-                  class="form-control"
-                  formControlName="branch"
-                  value=""
-                  (change)="getSelectedListOptionId($event.target)"
-                  required
-                >
-                  <option
-                    value=""
-                    disabled
-                    selected
-                    hidden
-                    *ngIf="isInvoiced"
-                    >{{ branch_name }}</option
-                  >
-                  <option value="" disabled selected hidden>{{
-                    branchesList[0].name
-                  }}</option>
-                  <option
-                    *ngFor="let branch of branchesList"
-                    [value]="branch.id"
-                  >
-                    {{ branch.name }}
-                  </option>
-                </select>
-                <mat-hint
-                  style="color:#20a8d8;"
-                  class="mt-1 float-right pointer"
-                  align="end"
-                  (click)="myModalBranch.show(branchesForm.reset())"
-                  >Add New Warehouse</mat-hint
-                >
-              </div>
-            </div>
-          </form>
-        </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+    <div class="col-md-4 p-5"></div>
   </div>
   <!-- Fixed Price -->
   <div class="PriceFixed row">
@@ -564,9 +268,7 @@
                 <input
                   class="px-3 py-2 itemInput w-75 text-center"
                   value="{{
-                    invoiceTotal !== 0
-                      ? (invoiceTotal * dollarPrice)
-                      : 0
+                    invoiceTotal !== 0 ? invoiceTotal * dollarPrice : 0
                   }}"
                   placeholder="Total EGP"
                   formControlName="total_egp"

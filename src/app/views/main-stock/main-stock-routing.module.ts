@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 // Solver
+import { metalSolver } from './../../resolvers/metal.solver';
 import { StonesAllSolver } from './../../resolvers/stones-index.solver';
 import { productsAllSolver } from '../../resolvers/products-index.solver';
 import { categoryListSolver } from '../../resolvers/category-list.solver';
@@ -48,7 +49,8 @@ const routes: Routes = [
           categoryList: categoryListSolver,
           branchList: branchListSolver,
           stoneList: stoneListSolver,
-          city: citySolver
+          city: citySolver,
+          metal: metalSolver
         }
       },
       {

@@ -1,9 +1,9 @@
-import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { MainServiceService } from './../../shared-services/main-service.service';
-import { BsModalRef, ModalDirective, idLocale } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap';
 @Component({
   templateUrl: 'add-new-item.component.html'
 })
@@ -22,7 +22,12 @@ export class AddNewItemComponent {
     gold_price: new FormControl('', Validators.required),
     gold_weight: new FormControl('', Validators.required),
     image: new FormControl(''),
-    stones: new FormControl('', Validators.required)
+    stones: new FormControl('', Validators.required),
+    metal_type: new FormControl('', Validators.required)
+  });
+  // Factor Form
+  factorForm = new FormGroup({
+    factor: new FormControl('')
   });
   // Stone Form
   addStockStoneForm = new FormGroup({
@@ -47,6 +52,7 @@ export class AddNewItemComponent {
   imageUploadedDisplay: boolean = false;
   editStoneMode: boolean = false;
   imageUploadedOnInput: boolean = true;
+  metalFlage: boolean = false;
   imageEncodedCharachter: any;
   totalCostWithOutProfit: any = 0;
   totalCostWithProfit: any = 0;
@@ -83,6 +89,8 @@ export class AddNewItemComponent {
   citiesListArray: any;
   errorMessage: any = [];
   modalError: any = [];
+  metals: any = [];
+  metal_types: any = '';
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -100,6 +108,8 @@ export class AddNewItemComponent {
       this.categoriesList = data.categoryList.data;
       // Get Cities
       this.citiesListArray = data.city.data;
+      // Get Metal Types
+      this.metals = data.metal.data;
     });
   }
   /* ----------------------------------- OnInit ------------------------ */
@@ -199,7 +209,8 @@ export class AddNewItemComponent {
         this.GoldPriceValue * this.addStockForm.value.gold_weight;
     }
     this.totalCostWithOutProfit = this.goldTotalPice + +this.stonesTotalPrice;
-    this.totalCostWithProfit = this.totalCostWithOutProfit * 4.4;
+    this.totalCostWithProfit =
+      this.totalCostWithOutProfit * this.factorForm.controls.factor.value;
   }
   /* ----------------------- Number Validation ---------------------- */
   numberCheckValidation(e) {
@@ -370,7 +381,8 @@ export class AddNewItemComponent {
       this.totalCostWithOutProfit =
         this.totalCostWithOutProfit -
         this.sentStonesArray[deletedStoneIndex].total;
-      this.totalCostWithProfit = this.totalCostWithOutProfit * 4.4;
+      this.totalCostWithProfit =
+        this.totalCostWithOutProfit * this.factorForm.controls.factor.value;
       this.sentStonesArray.splice(deletedStoneIndex, 1);
       this.editStoneMode = false;
       this.addStockStoneForm.patchValue({
@@ -393,7 +405,7 @@ export class AddNewItemComponent {
   }
   /* ----------------------------- Add New Item ----------------------------- */
   onSubmit(form) {
-    form.label = this.CategoryCode + this.categoryLabel;
+    form.label = this.CategoryCode + '00' + this.categoryLabel;
     form.stones = this.sentStonesArray;
     form.product_date = this.sentProductDate;
     for (const stone of this.sentStonesArray) {
@@ -420,6 +432,12 @@ export class AddNewItemComponent {
       this.imageExtention +
       ';base64,' +
       this.addStockForm.value.image;
+    form.profit_percent = this.factorForm.controls.factor.value;
+    console.log(form);
+    if (form.image == 'data:image/undefined;base64,') {
+      form.image = '';
+    }
+
     this.api.post('products', form).subscribe(
       newItem => {
         this.toast.success(
@@ -436,6 +454,25 @@ export class AddNewItemComponent {
         this.api.fireAlert('error', 'Please Fill All Data', '');
       }
     );
+  }
+
+  /* --------------------------- Get Factor Number -------------------------- */
+  getFactoryNumber(event) {
+    console.log(event);
+    console.log(this.factorForm.controls.factor.value);
+    this.totalCostWithProfit = Math.ceil(
+      this.totalCostWithOutProfit * this.factorForm.controls.factor.value
+    );
+  }
+  /* ------------------------ Get Metal -------------------------- */
+  onChangeMetal(event) {
+    console.log(event);
+    this.metal_types = event;
+    if (event == 1) {
+      this.metalFlage = true;
+    } else {
+      this.metalFlage = false;
+    }
   }
   /*--------------------------------- Logout -------------------------------- */
   logout() {

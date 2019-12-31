@@ -1,16 +1,13 @@
 <div class="animated fadeIn" id="dashboard">
-  <div class="">
+  <div class="p-5">
     <h3 class="mt-4" (click)="print()">Quick Links</h3>
-    <div class="row mt-5">
+    <div class="row mt-5 no-gutters">
       <div
-        id="printSection"
         class="col mx-2 row justify-content-center nav-card pointer relative"
+        routerLink="/sales/make-new-sale"
       >
-        <a
-          routerLink="/sales/make-new-sale"
-          class="d-flex justify-content-center align-items-center p-5"
-        >
-          <img src="../../../assets/icon/shopping-basket (3).svg" alt=""
+        <a class="d-flex justify-content-center align-items-center">
+          <img src="../../../assets/icon/shopping-basket.svg" alt=""
         /></a>
         <p class="col-12 mt-2 p-0 text-center">Add New Sales</p>
       </div>
@@ -18,61 +15,68 @@
         class="col mx-2 no-outline row justify-content-center nav-card pointer"
         routerLink="/main-stock/add-new-item"
       >
-        <a class="d-flex justify-content-center align-items-center p-5">
+        <a class="d-flex justify-content-center align-items-center">
           <img src="../../../assets/icon/gems.svg" alt=""
         /></a>
         <p class="col-12 mt-2 p-0 text-center">Add New Item</p>
       </div>
-      <div class="col mx-2 row justify-content-center nav-card pointer">
+      <div
+        class="col mx-2 row justify-content-center nav-card pointer"
+        routerLink="/settings/stones"
+      >
         <a
-          class="d-flex justify-content-center align-items-center p-5"
+          class="d-flex justify-content-center align-items-center"
           matBadgePosition="after"
-          routerLink="/invoices/all-invoices"
         >
-          <img src="../../../assets/icon/diamond (1).svg" alt=""
+          <img src="../../../assets/icon/diamond.svg" alt=""
         /></a>
         <p class="col-12 mt-2 p-0 text-center">Add New Stone</p>
       </div>
-      <div class="col mx-2 row justify-content-center nav-card pointer">
+      <div
+        class="col mx-2 row justify-content-center nav-card pointer"
+        routerLink="/settings/categories"
+      >
         <a
-          class="d-flex justify-content-center align-items-center p-5"
+          class="d-flex justify-content-center align-items-center"
           matBadgePosition="after"
-          routerLink="/clients/add-client"
         >
           <img src="../../../assets/icon/ring.svg" alt=""
         /></a>
 
         <p class="col-12 mt-2 p-0 text-center">Add New Catgory</p>
       </div>
-      <div class="col mx-2 row justify-content-center nav-card pointer">
-        <a
-          class="d-flex justify-content-center align-items-center p-5"
-          routerLink="/orders/all-orders"
-        >
-          <img src="../../../assets/icon/transfer (3).svg" alt=""
+      <div
+        class="col mx-2 row justify-content-center nav-card pointer"
+        routerLink="/main-stock/transfer"
+      >
+        <a class="d-flex justify-content-center align-items-center">
+          <img src="../../../assets/icon/transfer-2.svg" alt=""
         /></a>
         <p class="col-12 mt-2 p-0 text-center">Make New Transfer</p>
       </div>
-      <div class="col mx-2 row justify-content-center nav-card pointer">
+      <div
+        class="col mx-2 row justify-content-center nav-card pointer"
+        routerLink="/main-stock/transfer"
+      >
         <a
-          class="d-flex justify-content-center align-items-center p-5"
+          class="d-flex justify-content-center align-items-center"
           matBadgePosition="after"
         >
-          <!-- routerLink="/orders/today-orders" -->
-          <span class="badgeNumber badg_color_c"> 6 </span>
-          <img src="../../assets/icon/transfer (3).svg" alt=""
+          <img src="../../assets/icon/transfer-2.svg" alt=""
         /></a>
 
         <p class="col-12 mt-2 p-0 text-center">Pending Transfer</p>
       </div>
-      <div class="col mx-2 row justify-content-center nav-card pointer">
+      <div
+        class="col mx-2 row justify-content-center nav-card pointer"
+        routerLink="/settings/branches"
+      >
         <a
-          class="d-flex justify-content-center align-items-center p-5"
+          class="d-flex justify-content-center align-items-center"
           matBadgePosition="after"
           matBadgeColor="yellow"
-          routerLink="/orders/suspended-orders"
         >
-          <img src="../../../assets/icon/employee (1).svg" width="50px" alt=""
+          <img src="../../../assets/icon/employee.svg" width="50px" alt=""
         /></a>
         <p class="col-12 mt-2 p-0 text-center">Manage Branches</p>
       </div>

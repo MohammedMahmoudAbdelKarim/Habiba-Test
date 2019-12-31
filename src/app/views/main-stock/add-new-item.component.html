@@ -1,542 +1,840 @@
-<div class="animated fadeIn" id="add-new-item">
+<div class="animated fadeIn" id="make-new-item">
   <!-- Start Header -->
-  <header class="bg-blue py-3 px-5">
-      <div class="row align-items-end">
-        <!-- left-hand-side-of-header -->
-        <div class="row align-items-start no-gutters w-100">
-          <div class="col-8">
-            <!-- Titles -->
-            <h6 class="col-12 p-0">Dashboard | Main Stock | Add New Item</h6>
-            <h3 class="text-uppercase">Add New Item</h3>
-          </div>
-          <div class="col-4 row justify-content-end">
-            <div class="dropdown">
-              <button
-                class="btn btn-secondary dropdown-toggle"
-                type="button"
-                id="dropdownMenu2"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                Welcome Habiba ,
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                <button class="dropdown-item" type="button" (click)="logout()">Logout</button>
-              </div>
-            </div>
-          </div>
-          <div class="col row justify-content-end no-gutters">
-            <button class="addBtn" routerLink="/main-stock/stock-list">
-              <i class="icon-diamond mr-2 align-middle"></i>
-              View Stock List
+  <header class="bg-blue px-5 py-3">
+    <div
+      class="row align-items-start mb-2 justify-content-between no-gutters w-100"
+    >
+      <div class="col-8">
+        <!-- Titles -->
+        <h6 class="col-12 p-0">Dashboard | Main Stock | Add New Item</h6>
+        <h3 class="text-uppercase">
+          Add New Item
+        </h3>
+      </div>
+      <div class="col-4 row justify-content-end">
+        <div class="dropdown">
+          <button
+            class="btn dropdown-toggle"
+            type="button"
+            id="dropdownMenu2"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Welcome Habiba
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <button class="dropdown-item" type="button" (click)="logout()">
+              Logout
             </button>
           </div>
         </div>
       </div>
-    </header>
-  <!-- End Header  -->
-  <div class="addNewItemPage mb-5">
-    <div class="page_main_blocks middle_page">
-      <div class="page_body">
-        <div class="page_body_main">
-          <div class="prodectDetails">
-            <div class="row align-items-start justify-content-between">
-              <div class="col-lg-7 enterDetailsProdect">
-                <p class="text-right w-100">Mandatory fields *</p>
-                <div class="prodectDetailsForm">
-                  <div id="add_form">
-                    <h3>PRODUCT DETAILS</h3>
-                    <form #form="ngForm" class="row" [formGroup]="addStockForm">
-                      <div class="col-md-6 pl-0 pr-2">
-                        <div class="col-lg-12 p-0">
-                          <div class="form-group">
-                            <label for="exampleInputEmail1">Entry Date <span>*</span></label>
-                            <input matInput [matDatepicker]="picker" placeholder="Choose a Date"
-                              class="pointer p-3 itemInput w-100" id="exampleInputEmail1" autocomplete="off"
-                              (click)="picker.open()" (dateInput)="entryDateChanged($event, 'from')"
-                              (keypress)="(false)" autocomplete="off" formControlName="product_date" />
-                            <mat-datepicker-toggle class="dateButton" [for]="picker">
-                            </mat-datepicker-toggle>
-                            <mat-datepicker touchUi #picker> </mat-datepicker>
-                          </div>
-                          <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="addStockForm.controls.product_date.errors?.required && addStockForm.controls.product_date.touched && !errorMessage.product_date">This Field is Required</mat-hint>
-                          <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="errorMessage.product_date">
-                              {{errorMessage.product_date}}  
-                              </mat-hint>
-                        </div>
-                        <div class="col-12 p-0 row">
-                          <div class="col-md-8 p-0">
-                            <div class="form-group">
-                              <label for="exampleInputName2" class="title">Category <span>*</span></label>
-                              <select (change)="onChangeCategory($event.target.value)" class="p-3 itemInput w-100"
-                                formControlName="category_id" (change)="getSelectedListOptionId('category')">
-                                <option disabled selected="selected" value="">Please Select Category</option>
-                                <option *ngFor="
-                                            let category of categoriesList;
-                                            let i = index
-                                          " [value]="category.id">
-                                  {{ category.name }}</option>
-                              </select>
-                            </div>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="addStockForm.controls.category_id.errors?.required && addStockForm.controls.category_id.touched && !errorMessage.category_id">This Field is Required</mat-hint>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="errorMessage.category_id">
-                            {{errorMessage.category_id}}  
-                            </mat-hint>
-                            <div class="addBranch d-flex float-right">
-                              <a class="pointer text-blue" data-toggle="modal" (click)="myModal.show(categoriesForm.reset())"  (click)="clearError()">Add New Category</a>
-                            </div>
-                          </div>
-                          <div class="col-md-4 pr-xl-0 pr-lg-0 pr-md-0">
-                            <div class="form-group">
-                              <label for="exampleInputEmail2" class="title">Label</label>
-                              <input formControlName="label" id="exampleInputEmail2" autocomplete="off"
-                                class="stop p-3 itemInput w-100 label" [value]="label" placeholder="{{label}}"/>          
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-6 p-0">
-                            <div class="form-group">
-                              <label for="exampleInputEmail2" class="title">Gold Weight (gm) <span>*</span></label>
-                              <input autocomplete="off" class="p-3 itemInput w-100" id="exampleInputEmail2"
-                                (keyup)="calculateTotal($event, 0, 'gW')" (keypress)="numberCheckValidation($event)"
-                                formControlName="gold_weight" />
-                            </div>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="addStockForm.controls.gold_weight.errors?.required && addStockForm.controls.gold_weight.touched && !errorMessage.gold_weight">This Field is Required</mat-hint>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="errorMessage.gold_weight">
-                              {{errorMessage.gold_weight}}
-                            </mat-hint>
-                          </div>
-                          <div class="col-md-6 pr-0">
-                            <div class="form-group">
-                              <label for="exampleInputEmail2" class="title">Gold Price <span>*</span>
-                              </label>
-                              <input formControlName="gold_price" value="" class="p-3 itemInput w-100" id="exampleInputEmail2"
-                                (keyup)="calculateTotal($event, 0, 'gP')" (keypress)="numberCheckValidation($event)"
-                               autocomplete="off" />
-                            </div>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="addStockForm.controls.gold_price.errors?.required && addStockForm.controls.gold_price.touched && !errorMessage.gold_price">This Field is Required</mat-hint>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="errorMessage.gold_price">
-                              {{errorMessage.gold_price}}
-                            </mat-hint>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 pr-0 pl-5 row justify-content-end">
-                        <div class="w-100">
-                          <div class="col-lg-12 p-0">
-                            <div class="form-group">
-                              <label for="exampleInputName2" class="title">Branch <span>*</span></label>
-                              <select class="p-3 itemInput w-100" formControlName="branch_id"
-                                (change)="getSelectedListOptionId('branch')">
-                                <option disabled selected="selected" value="">Please Select Branch</option>
-                                <option *ngFor="let branch of branchesList" [value]="branch.id">
-                                  {{ branch.name }}</option>
-                              </select>
-                            </div>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="addStockForm.controls.branch_id.errors?.required && addStockForm.controls.branch_id.touched && !errorMessage.branch_id">This Field is Required</mat-hint>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="errorMessage.branch_id">
-                            {{errorMessage.branch_id}}
-                            </mat-hint>
-                            <div class="addBranch d-flex float-right">
-                              <a class="pointer text-blue" data-toggle="modal" (click)="myModal2.show(branchesForm.reset())" (click)="clearError()">Add New Branch</a>
-                            </div>
-                          </div>
-                          <div class="col-lg-12 mt-4 p-0">
-                            <label for="exampleInputName2" class="title">Upload Image </label>
-                            <div class="file-upload-wrapper">
-                              <div class="addFile">
-                                <div class="uploadImage">
-                                  <p>
-                                    <button (click)="deleteFunction('deleteImage',0)" [disabled]="imageUploadedOnInput"
-                                      [ngClass]="{
-                                                disabledImageDelete: imageUploadedOnInput
-                                              }">
-                                      <img class="pointer" src="../../../assets/icon-newlist/delete.png" alt="" />
-                                    </button>
-                                   <span class="text-grey" style="word-break: break-word">{{ imagePlaceHolder }}</span>
-                                  </p>
-                                </div>
-                                <button class="btn">Browse</button>
-                                <input id="uploadImage" type="file" alife-file-to-base64
-                                  (change)="onUploadChange($event)" accept="image/x-png,image/jpeg,image/jpg"
-                                  class="file-upload" data-max-file-size="2M" value="" autocomplete="off" />
-                              </div>
-                            </div>
-                            <div class="maxFile d-flex mt-2 float-right text-grey">
-                              Jpg, Png (Maximum 2 MB)
-                            </div>
-                            <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf=" errorMessage.image">{{errorMessage.image}}</mat-hint>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-lg-12 col-lg-12 col-sm-12 p-0">
-                        <form [formGroup]="addStockStoneForm">
-                          <div class="stoneDetails row mt-5">
-                            <div class="col-lg-6">
-                              <h4>STONE DETAILS</h4>
-                              <div class="form-group">
-                                <label for="exampleInputName2" class="title">Stone Type <span>*</span></label>
-                                <select class="p-3 itemInput w-100" value="" (change)="getSelectedListOptionId('stone')"
-                                  formControlName="stone">
-                                  <option disabled selected="selected" value="">Please Select Type</option>
-                                  <option *ngFor="let stone of stoneList">
-                                    {{ stone.name }}</option>
-                                </select>
-                              </div>
-                            </div>
-                            <div class="col-lg-6">
-                              <div class="addStone">
-                                <div class="col-lg-12 col-lg-6">
-                                  <div class="form-inline row">
-                                    <div class="col-lg-12 row justify-content-center">
-                                    <div class="col-md-12">
-                                      <div class="">
-                                        <label class="title">Quantity <span>*</span></label>
-                                        <input class="p-3 itemInput w-100 mt-2 text-center" formControlName="stone_quantity" value=""
-                                          (keypress)="
-                                                    numberCheckValidation($event)
-                                                  " placeholder="0" autocomplete="off" />
-                                      </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                      <div class="">
-                                        <label class="title">Weight (cts) <span>*</span></label>
-                                        <input class="p-3 itemInput w-100 mt-2 text-center" formControlName="stone_weight" value="" (keypress)="
-                                                    numberCheckValidation($event)
-                                                  " placeholder="0" autocomplete="off" />
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-lg-12 row justify-content-center">
-                                      <div class="col-md-12">
-                                          <div class="">
-                                            <label class="title mt-2">Cost ($) </label>
-                                            <input class="p-3 itemInput w-100 mt-2 text-center" formControlName="stone_cost" value="" (keypress)="
-                                                            numberCheckValidation($event)
-                                                          " placeholder="0" autocomplete="off" />
-                                          </div>
-                                        </div>
-                                    <div class="col-md-12">
-                                      <div class="">
-                                        <label class="title mt-2">Setting </label>
-                                        <input class="p-3 itemInput w-100 mt-2 text-center" formControlName="stone_setting" (keypress)="
-                                                      numberCheckValidation($event)
-                                                    " value="" placeholder="0" autocomplete="off" />
-                                                    <!-- <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="addStockStoneForm.controls.stone_setting.errors?.required && addStockStoneForm.controls.stone_setting.touched">This Field is Required</mat-hint> -->
-                                      </div>
-                                    </div>
-                                  </div>
-                                  </div>
-                                </div>
-                                <div class="col-lg-12 col-lg-6">
-                                  <div class="form-inline row justify-content-center mt-4">
-
-                                    <button class="btn" (click)="addStoneToItem(addStockStoneForm.value)"
-                                      [disabled]="!addStockStoneForm.valid">
-                                      {{
-                                                editStoneMode ? 'Save Stone' : 'Add Stone'
-                                              }}
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-                    </form>
+      <div class="col-12 row justify-content-end">
+        <div class="col-2 p-0 row justify-content-end">
+          <button class="addBtn" routerLink="/sales/make-new-sale">
+            <i class="icon-basket-loaded mr-2 align-middle"></i>
+            Stock List
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+  <div class="row mt-4 no-gutters p-5">
+    <div class="col-md-7" id="product-details">
+      <p class="text-red float-right">* Mandatory fields</p>
+      <h4 class="text-uppercase">PRODUCT DETAILS</h4>
+      <form
+        #form="ngForm"
+        class="row justify-content-between w-100 m-0"
+        [formGroup]="addStockForm"
+      >
+        <div class="col-md-7 pl-0 pr-5 mt-3">
+          <div class="col-md-12 p-0">
+            <label
+              >Entry Date <span class="text-red">*</span></label
+            >
+            <input
+              matInput
+              [matDatepicker]="picker"
+              placeholder="Choose a Date"
+              class="pointer p-3 input-text w-100"
+              autocomplete="off"
+              (click)="picker.open()"
+              (dateInput)="entryDateChanged($event, 'from')"
+              (keypress)="(false)"
+              autocomplete="off"
+              formControlName="product_date"
+            />
+            <mat-datepicker touchUi #picker> </mat-datepicker>
+            <mat-hint
+              class="d-inline-block text-center mt-3 w-100 alert alert-danger"
+              *ngIf="
+                addStockForm.controls.product_date.errors?.required &&
+                addStockForm.controls.product_date.touched &&
+                !errorMessage.product_date
+              "
+              >This Field is Required</mat-hint
+            >
+            <mat-hint
+              class="d-inline-block text-center mt-3 w-100 alert alert-danger"
+              *ngIf="errorMessage.product_date"
+            >
+              {{ errorMessage.product_date }}
+            </mat-hint>
+          </div>
+          <div class="col-12 row no-gutters p-0 mt-3">
+            <div class="col-md-12 p-0">
+              <label class="title"
+                >Metal Type<span class="text-red">*</span></label
+              >
+              <select
+                (change)="onChangeMetal($event.target.value)"
+                class="p-3 input-text w-100"
+                formControlName="metal_type"
+              >
+                <option disabled selected="selected" value=""
+                  >Please Select Metal Type</option
+                >
+                <option
+                  *ngFor="let metal of metals; let i = index"
+                  [value]="metal.id"
+                >
+                  {{ metal.name }}</option
+                >
+              </select>
+              <mat-hint
+                class="d-inline-block text-center mt-3 w-100 alert alert-danger"
+                *ngIf="
+                  addStockForm.controls.metal_type.errors?.required &&
+                  addStockForm.controls.metal_type.touched &&
+                  !errorMessage.metal_type
+                "
+                >This Field is Required</mat-hint
+              >
+              <mat-hint
+                class="d-inline-block mt-3 text-center w-100 alert alert-danger"
+                *ngIf="errorMessage.metal_types"
+              >
+                {{ errorMessage.metal_types }}
+              </mat-hint>
+            </div>
+          </div>
+          <div class="col-12 row no-gutters p-0 mt-3">
+            <div class="col-md-8 p-0">
+              <label class="title"
+                >Category <span class="text-red">*</span></label
+              >
+              <select
+                (change)="onChangeCategory($event.target.value)"
+                class="p-3 input-text w-100"
+                formControlName="category_id"
+                (change)="getSelectedListOptionId('category')"
+              >
+                <option disabled selected="selected" value=""
+                  >Please Select Category</option
+                >
+                <option
+                  *ngFor="let category of categoriesList; let i = index"
+                  [value]="category.id"
+                >
+                  {{ category.name }}</option
+                >
+              </select>
+              <div class="d-flex float-right">
+                <a
+                  class="pointer text-blue"
+                  data-toggle="modal"
+                  (click)="myModal.show(categoriesForm.reset())"
+                  (click)="clearError()"
+                  >Add New Category</a
+                >
+              </div>
+              <mat-hint
+                class="d-inline-block text-center mt-3 w-100 alert alert-danger"
+                *ngIf="
+                  addStockForm.controls.category_id.errors?.required &&
+                  addStockForm.controls.category_id.touched &&
+                  !errorMessage.category_id
+                "
+                >This Field is Required</mat-hint
+              >
+            </div>
+            <div class="col-md-4 pl-3">
+              <label class="title">Label</label>
+              <input
+                formControlName="label"
+                autocomplete="off"
+                class="stop p-3 input-text w-100 label"
+                [value]="label"
+                placeholder="{{ label }}"
+              />
+            </div>
+          </div>
+          <div class="col-12 row no-gutters p-0 mt-3">
+            <div class="col-md-6">
+              <label class="title"
+                >Gold Weight (gm) <span class="text-red">*</span></label
+              >
+              <input
+                autocomplete="off"
+                class="p-3 input-text text-center w-100"
+                (keyup)="calculateTotal($event, 0, 'gW')"
+                (keypress)="numberCheckValidation($event)"
+                formControlName="gold_weight"
+              />
+              <mat-hint
+                class="d-inline-block mt-3 text-center w-100 alert alert-danger"
+                *ngIf="
+                  addStockForm.controls.gold_weight.errors?.required &&
+                  addStockForm.controls.gold_weight.touched &&
+                  !errorMessage.gold_weight
+                "
+                >This Field is Required</mat-hint
+              >
+              <mat-hint
+                class="d-inline-block mt-3 text-center w-100 alert alert-danger"
+                *ngIf="errorMessage.gold_weight"
+              >
+                {{ errorMessage.gold_weight }}
+              </mat-hint>
+            </div>
+            <div class="col-md-6 pl-3">
+              <label class="title"
+                >Gold Price <span class="text-red">*</span>
+              </label>
+              <input
+                formControlName="gold_price"
+                value=""
+                class="p-3 input-text text-center w-100"
+                (keyup)="calculateTotal($event, 0, 'gP')"
+                (keypress)="numberCheckValidation($event)"
+                autocomplete="off"
+              />
+              <mat-hint
+                class="d-inline-block mt-3 text-center w-100 alert alert-danger"
+                *ngIf="
+                  addStockForm.controls.gold_price.errors?.required &&
+                  addStockForm.controls.gold_price.touched &&
+                  !errorMessage.gold_price
+                "
+                >This Field is Required</mat-hint
+              >
+              <mat-hint
+                class="d-inline-block mt-3 text-center w-100 alert alert-danger"
+                *ngIf="errorMessage.gold_price"
+              >
+                {{ errorMessage.gold_price }}
+              </mat-hint>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5 mt-3 pl-5 pr-0">
+          <div class="row no-gutters">
+            <div class="col-12 p-0">
+              <label for="exampleInputName2" class="title"
+                >Branch <span class="text-red">*</span></label
+              >
+              <select
+                class="p-3 itemInput w-100"
+                formControlName="branch_id"
+                (change)="getSelectedListOptionId('branch')"
+              >
+                <option disabled selected="selected" value=""
+                  >Please Select Branch</option
+                >
+                <option *ngFor="let branch of branchesList" [value]="branch.id">
+                  {{ branch.name }}</option
+                >
+              </select>
+              <div class="d-flex float-right">
+                <a
+                  class="pointer text-blue"
+                  data-toggle="modal"
+                  (click)="myModal2.show(branchesForm.reset())"
+                  (click)="clearError()"
+                  >Add New Branch</a
+                >
+              </div>
+              <mat-hint
+                class="d-inline-block mt-3 text-center w-100 alert alert-danger"
+                *ngIf="
+                  addStockForm.controls.branch_id.errors?.required &&
+                  addStockForm.controls.branch_id.touched &&
+                  !errorMessage.branch_id
+                "
+                >This Field is Required</mat-hint
+              >
+              <mat-hint
+                class="d-inline-block mt-3 text-center w-100 alert alert-danger"
+                *ngIf="errorMessage.branch_id"
+              >
+                {{ errorMessage.branch_id }}
+              </mat-hint>
+            </div>
+            <div class="col-12 p-0">
+              <label class="title">Upload Image</label>
+              <div class="file-upload-wrapper">
+                <div class="addFile">
+                  <div class="uploadImage">
+                    <p>
+                      <button
+                        (click)="deleteFunction('deleteImage', 0)"
+                        [disabled]="imageUploadedOnInput"
+                        [ngClass]="{
+                          disabledImageDelete: imageUploadedOnInput
+                        }"
+                      >
+                        <img
+                          class="pointer"
+                          src="../../../assets/icon/delete.svg"
+                          alt=""
+                        />
+                      </button>
+                      <span
+                        class="text-grey mt-1"
+                        style="word-break: break-word"
+                        >{{ imagePlaceHolder }}</span
+                      >
+                    </p>
                   </div>
+                  <button class="btn">Browse</button>
+                  <input
+                    id="uploadImage"
+                    type="file"
+                    alife-file-to-base64
+                    (change)="onUploadChange($event)"
+                    accept="image/x-png,image/jpeg,image/jpg"
+                    class="file-upload"
+                    data-max-file-size="2M"
+                    value=""
+                    autocomplete="off"
+                  />
                 </div>
               </div>
-              <div class="col-lg-4 showDetailsProdect">
-                <ng-container>
-                  <div class="row">
-                    <div class="col-lg-6 col-lg-6 col-sm-12">
-                      <div class="styleImageProudect">
-                        <img id="stockImageFile" src="{{ ImageSrc }}" class="w-50" style="height: auto;" alt="" />
-                      </div>
-                    </div>
-                    <div class="col-lg-6 col-lg-6 col-sm-12">
-                      <div class="showdetailsname">
-                        <p class="m-0">Product name</p>
-                        <span class="text-grey">
-                          {{addStockForm.value.category_id != '' ? sentFormCategotyId + ' ' + label: '-'}}
-                        </span>
-                      </div>
-                      <div class="showdetailsname">
-                        <p class="m-0">Branch</p>
-                        <span class="text-grey">{{
-                                    addStockForm.value.branch_id !== ''
-                                      ? sentFormBranchId
-                                      : '-'
-                                  }}
-                        </span>
-                      </div>
-                      <div class="showdetailsname">
-                        <p class="m-0">Date</p>
-                        <span class="text-grey">{{ entryDate }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </ng-container>
-                <div class="row ">
-                  <div class="col-lg-12 row p-0">
-                    <div class="col-md-4 pl-0">
-                      <div class="weightProudect">
-                        <p class="label">
-                          Gold Weight
-                          <span style="color: #333333; font-size: 12px;">gm</span>
-                        </p>
-                        <span class="text-grey font-2xl">{{
-                                  addStockForm.value.gold_weight !== ''
-                                    ? addStockForm.value.gold_weight
-                                    : '0'
-                                }}</span>
-                      </div>
-                    </div>
-                    <div class="col-md-4 pl-0">
-                      <div class="weightProudect">
-                        <p class="label">Gold Price ($)</p>
-                        <span class="text-grey font-2xl">
-                          {{
-                                    addStockForm.value.gold_price !== ''
-                                      ? addStockForm.value.gold_price
-                                      : '0'
-                                  }}</span>
-                      </div>
-                    </div>
-                    <div class="col-md-4 pl-0">
-                      <div class="weightProudect_total">
-                        <p class="label" style="font-weight: 800">Total ($)</p>
-                        <span class="font-2xl" style="font-weight: 800; color: #000">
-                          {{
-                                    addStockForm.value.gold_price !== '' &&
-                                    addStockForm.value.gold_weight !== ''
-                                      ? goldTotalPice
-                                      : '0'
-                                  }}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+              <div class="maxFile d-flex mt-2 float-right text-grey">
+                Jpg, Png (Maximum 2 MB)
+              </div>
+              <mat-hint
+                class="d-inline-block text-center w-100 alert alert-danger"
+                *ngIf="errorMessage.image"
+                >{{ errorMessage.image }}</mat-hint
+              >
+            </div>
+          </div>
+        </div>
+      </form>
+      <form
+        id="stones-details"
+        [formGroup]="addStockStoneForm"
+        class="row mt-4 no-gutters p-4"
+        *ngIf="metalFlage"
+      >
+        <div class="col-md-6 pr-3">
+          <h4>Stone Details</h4>
+          <div class="col-12 p-0">
+            <label class="title"
+              >Stone Type <span class="text-red">*</span></label
+            >
+            <select
+              class="p-3 input-text w-100"
+              value=""
+              (change)="getSelectedListOptionId('stone')"
+              formControlName="stone"
+            >
+              <option disabled selected="selected" value=""
+                >Please Select Type</option
+              >
+              <option *ngFor="let stone of stoneList"> {{ stone.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6 pl-5">
+          <div class="row no-gutters">
+            <div class="col-md-6 pl-0 pr-4">
+              <label class="title w-100 text-center"
+                >Quantity <span class="text-red">*</span></label
+              >
+              <input
+                class="p-3 input-text w-100 mt-2 text-center"
+                formControlName="stone_quantity"
+                value=""
+                (keypress)="numberCheckValidation($event)"
+                placeholder="0"
+                autocomplete="off"
+              />
+            </div>
+            <div class="col-md-6 pr-0 pl-4">
+              <label class="title w-100 text-center"
+                >Weight (cts) <span class="text-red">*</span></label
+              >
+              <input
+                class="p-3 input-text w-100 mt-2 text-center"
+                formControlName="stone_weight"
+                value=""
+                (keypress)="numberCheckValidation($event)"
+                placeholder="0"
+                autocomplete="off"
+              />
+            </div>
+            <div class="col-md-6 pl-0 pr-4">
+              <label class="title w-100 text-center mt-2"
+                >Cost ($) <span class="text-red">*</span></label
+              >
+              <input
+                class="p-3 input-text w-100 mt-2 text-center"
+                formControlName="stone_cost"
+                value=""
+                (keypress)="numberCheckValidation($event)"
+                placeholder="0"
+                autocomplete="off"
+              />
+            </div>
+            <div class="col-md-6 pr-0 pl-4">
+              <label class="title w-100 text-center mt-2"
+                >Setting <span class="text-red">*</span></label
+              >
+              <input
+                class="p-3 input-text w-100 mt-2 text-center"
+                formControlName="stone_setting"
+                (keypress)="numberCheckValidation($event)"
+                value=""
+                placeholder="0"
+                autocomplete="off"
+              />
+            </div>
+            <div class="col-12 mt-4 text-center">
+              <button
+                class="submit-btn"
+                (click)="addStoneToItem(addStockStoneForm.value)"
+                [disabled]="!addStockStoneForm.valid"
+              >
+                {{ editStoneMode ? 'Save Stone' : 'Add Stone' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-5 pl-5" id="total-details">
+      <div class="total-border px-4 py-2">
+        <div class="row no-gutters">
+          <div class="col-md-6">
+            <img src="{{ ImageSrc }}" class="w-50" alt="" id="stockImgFile" />
+          </div>
+          <div class="col-md-6">
+            <div class="">
+              <p class="m-0">Product Name</p>
+              <span class="text-grey">
+                {{
+                  addStockForm.value.category_id != ''
+                    ? sentFormCategotyId + ' ' + label
+                    : '-'
+                }}
+              </span>
+            </div>
+            <div class="">
+              <p class="m-0">Branch</p>
+              <span class="text-grey"
+                >{{
+                  addStockForm.value.branch_id !== '' ? sentFormBranchId : '-'
+                }}
+              </span>
+            </div>
+            <div class="">
+              <p class="m-0">Date</p>
+              <span class="text-grey">{{ entryDate }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-4">
+            <div class="gold-box">
+              <h4>Gold Weight <span>gm</span></h4>
+              <p>
+                {{
+                  addStockForm.value.gold_weight !== ''
+                    ? addStockForm.value.gold_weight
+                    : '0'
+                }}
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="gold-box">
+              <h4>Gold Price ($)</h4>
+              <p>
+                {{
+                  addStockForm.value.gold_price !== ''
+                    ? addStockForm.value.gold_price
+                    : '0'
+                }}
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="gold-box total">
+              <h4>Total ($)</h4>
+              <p>
+                {{
+                  addStockForm.value.gold_price !== '' &&
+                  addStockForm.value.gold_weight !== ''
+                    ? goldTotalPice
+                    : '0'
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="stones mt-3">
+          <h4>
+            Stone Details
+            <span class="text-grey"> {{ sentStonesArray.length }} Stones</span>
+          </h4>
+          <div class="stone-border p-2 text-center">
+            <span class="text-grey" *ngIf="sentStonesArray.length <= 0">{{
+              stonAreaPlaceHolder
+            }}</span>
+            <div
+              class="stones-table"
+              *ngFor="let stone of sentStonesArray; let stoneIndex = index"
+            >
+              <div
+                class="row my-3 no-gutters align-items-center justify-content-between"
+              >
+                <p class="text-left stoneName pl-3 mb-0">
+                  {{
+                    sentStonesArray.length > 0 ? stone.type_name : 'Stone Name'
+                  }}
+                </p>
+                <div class="row justify-content-end no-gutters">
+                  <button (click)="deleteFunction('deleteStone', stoneIndex)">
+                    <img src="../../../assets/icon/delete.svg" alt="" />
+                  </button>
+                  <button (click)="editStone(stoneIndex)">
+                    <img src="../../../assets/icon/edit.svg" alt="" />
+                  </button>
                 </div>
-                <ng-container>
-                  <div class="stones">
-                    <h4>Stone Details <span class="text-grey"> {{sentStonesArray.length}} Stones</span></h4>
-                    <div class="borderStonesTable text-center">
-                      <span class="text-grey" id="stoneAreaPlaceHolder"
-                        *ngIf="sentStonesArray.length <= 0">{{ stonAreaPlaceHolder }}</span>
-                      <div class="stonesTable" *ngFor="
-                                  let stone of sentStonesArray;
-                                  let stoneIndex = index
-                                ">
-                        <div class="deleteBlock editBlock row justify-content-end">
-                          <button (click)="deleteFunction('deleteStone', stoneIndex)">
-                            <img src="../../../assets/icon-newlist/delete.png" alt="" />
-                          </button>
-                          <button (click)="editStone(stoneIndex)">
-                            <img src="../../../assets/icon-newlist/edit (2).png" alt="" />
-                          </button>
-                        </div>
-                        <p class="text-left stoneName pl-3">
-                          {{
-                                    sentStonesArray.length > 0
-                                      ? stone.type_name
-                                      : 'Stone Name'
-                                  }}
-                        </p>
-                        <table class="table">
-                          <thead>
-                            <tr class="header-tr">
-                              <th class="styleBorderRight" scope="col">
-                                Quantity
-                              </th>
-                              <th class="styleBorderRight-Left" scope="col">
-                                Weight (cts)
-                              </th>
-                              <th class="styleBorderRight-Left" scope="col">
-                                Cost ($)
-                              </th>
-                              <th class="styleBorderRight-Left" scope="col">
-                                Setting
-                              </th>
-                              <th scope="col">Total ($)</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td class="styleBorderRight">
-                                {{
-                                          sentStonesArray.length > 0
-                                            ? stone.quantity
-                                            : '0'
-                                        }}
-                              </td>
-                              <td class="styleBorderRight-Left">
-                                {{
-                                          sentStonesArray.length > 0 ? stone.weight : '0'
-                                        }}
-                              </td>
-                              <td class="styleBorderRight-Left">
-                                {{
-                                          sentStonesArray.length > 0
-                                            ? stone.price?.toLocaleString()
-                                            : '0'
-                                        }}
-                              </td>
-                              <td class="styleBorderRight-Left">
-                                {{
-                                          sentStonesArray.length > 0
-                                            ? stone.setting?.toLocaleString()
-                                            : '0'
-                                        }}
-                              </td>
-                              <td>${{ stone.total?.toLocaleString() }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <hr *ngIf="
-                                    ((sentStonesArray.length > 1 && stoneIndex % 2 > 0) ||
-                                      (sentStonesArray.length >= 2 &&
-                                        stoneIndex % 2 == 0)) &&
-                                    stoneIndex !== sentStonesArray.length - 1
-                                  " />
-                      </div>
-                    </div>
-                  </div>
-                </ng-container>
-                <div>
-                  <div class="row justify-content-center">
-                    <div class="costProudect">
-                      <div class=" col-lg-12 ">
-                        <div class="row justify-content-center">
-                          <div class="col-md-12 row justify-content-center">
-                            <p class="col-12">Cost ($)</p>
-                            <input class="form-control w-100 costAfter stop font-2xl text-center" placeholder="{{
-                                        totalCostWithOutProfit.toLocaleString()
-                                      }}" disabled autocomplete="off" />
-                          </div>
-                          <div class="col-md-12 justify-content-center">
-                            <p class="col-12">Cost *4.4 in $</p>
-                            <input class="form-control w-100 costAfter font-2xl stop text-center m-auto" placeholder="{{
-                                        totalCostWithProfit.toLocaleString()
-                                      }}" disabled autocomplete="off" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="addItem" (click)="onSubmit(addStockForm.value)">
-                    <button [disabled]="
-                                !addStockForm.controls.product_date.value &&
-                                !addStockForm.controls.category_id.value &&
-                                !addStockForm.controls.branch_id.value &&
-                                !addStockForm.controls.label.value &&
-                                !addStockForm.controls.gold_weight.value &&
-                                !addStockForm.controls.gold_price.value ? true : false
-                              " [ngClass]="
-                                !addStockForm.controls.product_date.value &&
-                                !addStockForm.controls.category_id.value &&
-                                !addStockForm.controls.branch_id.value &&
-                                !addStockForm.controls.label.value &&
-                                !addStockForm.controls.gold_weight.value &&
-                                !addStockForm.controls.gold_price.value 
-                                ? 'disabledSubmitButton'
-                                : 'enableSubmitButton'
-                              ">
-                      Add Item
-                    </button>
-                  </div>
-                </div>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th class="border-right" scope="col">
+                      Quantity
+                    </th>
+                    <th class="border-right" scope="col">
+                      Weight (cts)
+                    </th>
+                    <th class="border-right" scope="col">
+                      Cost ($)
+                    </th>
+                    <th class="border-right" scope="col">
+                      Setting
+                    </th>
+                    <th scope="col">Total ($)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border-right">
+                      {{ sentStonesArray.length > 0 ? stone.quantity : '0' }}
+                    </td>
+                    <td class="border-right">
+                      {{ sentStonesArray.length > 0 ? stone.weight : '0' }}
+                    </td>
+                    <td class="border-right">
+                      {{
+                        sentStonesArray.length > 0
+                          ? stone.price?.toLocaleString()
+                          : '0'
+                      }}
+                    </td>
+                    <td class="border-right">
+                      {{
+                        sentStonesArray.length > 0
+                          ? stone.setting?.toLocaleString()
+                          : '0'
+                      }}
+                    </td>
+                    <td>${{ stone.total?.toLocaleString() }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <hr
+                *ngIf="
+                  ((sentStonesArray.length > 1 && stoneIndex % 2 > 0) ||
+                    (sentStonesArray.length >= 2 && stoneIndex % 2 == 0)) &&
+                  stoneIndex !== sentStonesArray.length - 1
+                "
+              />
+            </div>
+          </div>
+        </div>
+        <div class="cost mt-3">
+          <div class="row no-gutters">
+            <div class="col-md-12">
+              <h5 class="text-center mb-3">Cost ($)</h5>
+              <div class="cost-box">
+                {{ totalCostWithOutProfit ? totalCostWithOutProfit : '0' }}
+              </div>
+            </div>
+            <div class="col-md-12 mt-3" [formGroup]="factorForm">
+              <div class="row align-items-center no-gutters mb-3">
+                <h5 class="text-center col-3">Cost *</h5>
+                <input
+                  type="text"
+                  formControlName="factor"
+                  class="input-text col-6 p-3"
+                  (input)="getFactoryNumber($event)"
+                  placeholder="Factory example: 4.4"
+                />
+              </div>
+              <div class="cost-box">
+                {{ totalCostWithProfit ? totalCostWithProfit : '0' }}
               </div>
             </div>
           </div>
         </div>
+        <div class="mt-3">
+          <button
+          (click)="onSubmit(addStockForm.value)"
+            class="submit-btn w-100 text-center py-3"
+            [disabled]="
+              !addStockForm.controls.product_date.value ||
+              !addStockForm.controls.metal_type.value ||
+              !addStockForm.controls.category_id.value ||
+              !addStockForm.controls.gold_weight.value ||
+              !addStockForm.controls.gold_price.value ||
+              !addStockForm.controls.branch_id.value
+            "
+          >
+            Add Item
+          </button>
+        </div>
       </div>
     </div>
   </div>
+
   <!-- Add New Category Model -->
-  <div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-    aria-hidden="true">
+  <div
+    bsModal
+    #myModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Create New Category</h4>
-          <button type="button" class="close" (click)="myModal.hide()" aria-label="Close">
+          <button
+            type="button"
+            class="close"
+            (click)="myModal.hide()"
+            aria-label="Close"
+          >
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <form [formGroup]="categoriesForm" (ngSubmit)="onSubmitCat(categoriesForm)" #form="ngForm">
+          <form
+            [formGroup]="categoriesForm"
+            (ngSubmit)="onSubmitCat(categoriesForm)"
+            #form="ngForm"
+          >
             <div class="row">
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail2">Category Name <span class="text-red">*</span></label>
-                  <input class="form-control input-modal" value="" formControlName="name" autocomplete="off" placeholder="Category Name" />
+                  <label for="exampleInputEmail2"
+                    >Category Name <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="name"
+                    autocomplete="off"
+                    placeholder="Category Name"
+                  />
                 </div>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="categoriesForm.controls.name.errors?.required && categoriesForm.controls.name.touched && !modalError.name">This Field is Required</mat-hint>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="modalError.name">{{modalError.name}}</mat-hint>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    categoriesForm.controls.name.errors?.required &&
+                    categoriesForm.controls.name.touched &&
+                    !modalError.name
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.name"
+                >
+                  {{ modalError.name }}</mat-hint
+                >
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail3">Category Code <span class="text-red">*</span></label>
-                  <input class="form-control input-modal" value="" formControlName="code" autocomplete="off" placeholder="Category Code" />
+                  <label for="exampleInputEmail3"
+                    >Category Code <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="code"
+                    autocomplete="off"
+                    placeholder="Category Code"
+                  />
                 </div>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="categoriesForm.controls.code.errors?.required && categoriesForm.controls.code.touched && !modalError.code">This Field is Required</mat-hint>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="modalError.code">{{modalError.code}}</mat-hint>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    categoriesForm.controls.code.errors?.required &&
+                    categoriesForm.controls.code.touched &&
+                    !modalError.code
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.code"
+                >
+                  {{ modalError.code }}</mat-hint
+                >
               </div>
             </div>
             <div class="modal-footer">
-              <button type="submit" class="btn-modal-submit">Add Category</button>
+              <button type="submit" class="btn-modal-submit">
+                Add Category
+              </button>
             </div>
           </form>
         </div>
       </div>
     </div>
   </div>
-   <!-- Add New Branch Modal -->
-  <div bsModal #myModal2="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-    aria-hidden="true">
+  <!-- Add New Branch Modal -->
+  <div
+    bsModal
+    #myModal2="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Create New Branch</h4>
-          <button type="button" class="close" (click)="myModal2.hide()" aria-label="Close">
+          <button
+            type="button"
+            class="close"
+            (click)="myModal2.hide()"
+            aria-label="Close"
+          >
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <form [formGroup]="branchesForm" (ngSubmit)="onSubmitBranch(branchesForm)" #form="ngForm">
+          <form
+            [formGroup]="branchesForm"
+            (ngSubmit)="onSubmitBranch(branchesForm)"
+            #form="ngForm"
+          >
             <div class="row">
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail2">Branch Name <span class="text-red">*</span></label>
-                  <input class="form-control input-modal" value="" formControlName="name" autocomplete="off" placeholder="Branch Name" />
+                  <label for="exampleInputEmail2"
+                    >Branch Name <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="name"
+                    autocomplete="off"
+                    placeholder="Branch Name"
+                  />
                 </div>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="branchesForm.controls.name.errors?.required && branchesForm.controls.name.touched && !modalError.name">This Field is Required</mat-hint>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="modalError.name">{{modalError.name}}</mat-hint>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    branchesForm.controls.name.errors?.required &&
+                    branchesForm.controls.name.touched &&
+                    !modalError.name
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.name"
+                >
+                  {{ modalError.name }}</mat-hint
+                >
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail3">Branch Address <span class="text-red">*</span></label>
-                  <input class="form-control input-modal" value="" formControlName="address" autocomplete="off" placeholder="Branch Address" />
+                  <label for="exampleInputEmail3"
+                    >Branch Address <span class="text-red">*</span></label
+                  >
+                  <input
+                    class="form-control input-modal"
+                    value=""
+                    formControlName="address"
+                    autocomplete="off"
+                    placeholder="Branch Address"
+                  />
                 </div>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="branchesForm.controls.address.errors?.required && branchesForm.controls.address.touched && !modalError.address">This Field is Required</mat-hint>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="modalError.address">{{modalError.address}}</mat-hint>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    branchesForm.controls.address.errors?.required &&
+                    branchesForm.controls.address.touched &&
+                    !modalError.address
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.address"
+                >
+                  {{ modalError.address }}</mat-hint
+                >
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
                   <label>Branch City <span class="text-red">*</span></label>
-                  <select class="form-control input-modal" formControlName="city_id">
-                      <option value="" selected disabled>Please Select City</option>
-                    <option *ngFor="let city of citiesListArray; let i = index" [value]="city.id">{{ city.name }}
+                  <select
+                    class="form-control input-modal"
+                    formControlName="city_id"
+                  >
+                    <option value="" selected disabled
+                      >Please Select City</option
+                    >
+                    <option
+                      *ngFor="let city of citiesListArray; let i = index"
+                      [value]="city.id"
+                      >{{ city.name }}
                     </option>
                   </select>
                 </div>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="branchesForm.controls.city_id.errors?.required && branchesForm.controls.city_id.touched && !modalError.city_id">This Field is Required</mat-hint>
-                <mat-hint class="d-inline-block text-center w-100 alert alert-danger" *ngIf="modalError.city_id">{{modalError.city_id}}</mat-hint>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    branchesForm.controls.city_id.errors?.required &&
+                    branchesForm.controls.city_id.touched &&
+                    !modalError.city_id
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.city_id"
+                >
+                  {{ modalError.city_id }}</mat-hint
+                >
               </div>
             </div>
             <div class="modal-footer">

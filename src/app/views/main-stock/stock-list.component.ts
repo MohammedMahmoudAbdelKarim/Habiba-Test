@@ -10,7 +10,6 @@ import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { ModalDirective } from 'ngx-bootstrap';
-import Swal from 'sweetalert2';
 
 @Component({
   templateUrl: 'stock-list.component.html'
@@ -19,7 +18,18 @@ export class StockListComponent implements OnInit {
   /* ------------------------------------- Variables ------------------------ */
   // Modals
   @ViewChild('myModal', { static: false }) public myModal: ModalDirective;
-  @ViewChild('detailsModal', { static: false }) public detailsModal: ModalDirective;
+  @ViewChild('detailsModal', { static: false })
+  public detailsModal: ModalDirective;
+  @ViewChild('labelModal', { static: false })
+  public labelModal: ModalDirective;
+  @ViewChild('editModal', { static: false })
+  public editModal: ModalDirective;
+  @ViewChild('stoneModal', { static: false })
+  public stoneModal: ModalDirective;
+  @ViewChild('deleteModal', { static: false })
+  public deleteModal: ModalDirective;
+  @ViewChild('delete2Modal', { static: false })
+  public delete2Modal: ModalDirective;
   @ViewChild('myModalImg', { static: false }) public myModalImg: ModalDirective;
   // Tables Colums
   displayedColumns: string[] = [
@@ -45,6 +55,10 @@ export class StockListComponent implements OnInit {
   showDeletePopup: boolean = false;
   DeletingHold: boolean = false;
   deleteFlage: boolean = false;
+  checkItemDataCalculatedIsDefiend: boolean = false;
+  testValueBoolean: boolean = true;
+  stoneFlage: boolean = false;
+  flage: boolean = false;
   // ASYNC
   filteredBranches: Observable<string[]>;
   filteredCategories: Observable<string[]>;
@@ -63,8 +77,25 @@ export class StockListComponent implements OnInit {
   branchList: any;
   deleteItem: any;
   deletedStockIndex: any;
+  stoneTotal: any;
+  stonePrice: any;
+  stonesArray: any;
+  stoneSetting: any;
+  newPriceValue: any;
+  newWeightValue: any;
+  newSettingValue: any;
+  newQuantityValue: any;
+  newGoldPriceValue: any;
+  newGoldWeightValue: any;
+  ItemDataCalculated: any = {};
+  stoneList: any = [];
+  modalError: any = [];
+  newStoneArray: any = [];
+  testStonesArray: any = [];
   label: any = '';
   stockData: any = {};
+  labelData: any = {};
+  updatedItemData: any = {};
   branch_id: any = '';
   status_id: any = '';
   category_id: any = '';
@@ -78,8 +109,6 @@ export class StockListComponent implements OnInit {
   branch: string = '';
   imgUrl: string = 'img/products/';
   baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
-  flage: boolean = false;
-  modalError: any = [];
   transferName: any = '';
   transferCode: any = '';
   imgSrc: any = '';
@@ -90,6 +119,7 @@ export class StockListComponent implements OnInit {
   finalCost: any = '';
   productTransferID: any;
   checkedItems: any = 0;
+  stone_id: any = '';
   // Form Controls
   myControlBranch = new FormControl('');
   myControlCategory = new FormControl('');
@@ -106,6 +136,30 @@ export class StockListComponent implements OnInit {
   // Transfer Form
   transferForm = new FormGroup({
     branch_id: new FormControl('', Validators.required)
+  });
+  // Stock Form
+  stockUpdatForm = new FormGroup({
+    updateStockTotalPrice: new FormControl(''),
+    updateGoldWeight: new FormControl(''),
+    updateGoldPrice: new FormControl(''),
+    updateStonesQuantity: new FormControl(''),
+    updateSettingsSetting: new FormControl(''),
+    updateStonesWeight: new FormControl(''),
+    updateStonesPrice: new FormControl(''),
+    goldTotalPrice: new FormControl(''),
+    stoneTotal: new FormControl(''),
+    stoneTotal1: new FormControl(''),
+    stoneTotal2: new FormControl('')
+  });
+  // Add New Stone Form
+  stonesForm = new FormGroup({
+    id: new FormControl(''),
+    name: new FormControl('', Validators.required),
+    setting: new FormControl('', Validators.required),
+    price: new FormControl('', Validators.required),
+    weight: new FormControl('', Validators.required),
+    quantity: new FormControl('', Validators.required),
+    total: new FormControl('')
   });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
@@ -144,6 +198,9 @@ export class StockListComponent implements OnInit {
       };
       // -------------------------------------- Get Status
       this.statusList = data.statusList.data;
+      // -------------------------------------- Get Status
+      this.stoneList = data.stones.data.data;
+      console.log(this.stoneList);
     });
     // Filter Branches
     this.filteredBranches = this.myControlBranch.valueChanges.pipe(
@@ -623,7 +680,7 @@ export class StockListComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-      } row ${row.position + 1}`;
+    } row ${row.position + 1}`;
   }
   /* ---------------------------- Remove Multi-Items ----------------------- */
   mutliplyAction(event) {
@@ -632,8 +689,6 @@ export class StockListComponent implements OnInit {
   }
   removeMultiply() {
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
-    this.showDeletePopup = true;
-    this.deleteFlage = true;
     if (upperDeleteInputValue === 'DELETE') {
       const ids = [];
       this.selection.selected.forEach(item => {
@@ -665,7 +720,6 @@ export class StockListComponent implements OnInit {
             };
           });
         });
-      this.showDeletePopup = false;
     }
   }
   /* ------------------------------------ Popup ----------------------------- */
@@ -673,6 +727,7 @@ export class StockListComponent implements OnInit {
   openDetailsPopup(row) {
     this.detailsModal.show();
     this.stockData = row;
+    this.labelData = row;
     console.log(this.stockData);
     this.status = row.status.name;
     this.category = row.category.name;
@@ -684,13 +739,233 @@ export class StockListComponent implements OnInit {
     });
     const total = sum.reduce((a, b) => a + b, 0);
     this.totalCost = total + row.gold_total;
-    this.finalCost = Math.ceil(this.totalCost * 4.4);
+    this.finalCost = Math.ceil(this.totalCost * row.profit_percent);
+  }
+  // Open Label
+  openLabel(row) {
+    this.labelModal.show();
+    this.labelData = row;
   }
   // Open Edit Popup
   openUpdataPopup(stockData, stockId) {
     this.stockData = stockData;
+    this.updatedItemData = this.stockData;
+    this.editModal.show();
     console.log(stockData);
+    this.category = stockData.category.name;
+    this.branch = stockData.branch.name;
+    this.stones = stockData.stones;
+    this.stones = stockData.stones;
+    const sums = [];
+    stockData.stones.filter(stone => {
+      sums.push(stone.total);
+    });
+    const total = sums.reduce((a, b) => a + b, 0);
+    this.totalCost = total + stockData.gold_total;
+    this.finalCost = Math.ceil(this.totalCost * stockData.profit_percent);
     this.showUpdataPopup = true;
+    this.ItemDataCalculated = Object.assign({}, this.updatedItemData);
+    for (let i = 0; i < this.ItemDataCalculated.length; i++) {}
+    const items = this.updatedItemData.stones;
+    let sum = null;
+    items.forEach((value, index, arry) => {
+      sum += value.total;
+    });
+    if ((this.testValueBoolean = false)) {
+      this.newStoneArray = [];
+    }
+    const data = this.updatedItemData;
+    this.imgSrc = this.baseUrl + data.image;
+    this.stonePrice = +data.price;
+    this.stoneSetting = +data.setting;
+    this.stockUpdatForm.controls.updateGoldWeight.setValue(+data.gold_weight);
+    this.stockUpdatForm.controls.updateGoldPrice.setValue(+data.gold_price);
+    this.stockUpdatForm.controls.goldTotalPrice.setValue(+data.gold_total);
+    this.testStonesArray = data.stones;
+  }
+  /* --------------------- Total Calculate Stone Total ---------------------- */
+  calculateStoneTotal(e, stoneIndex, key) {
+    console.log(stoneIndex);
+
+    this.checkItemDataCalculatedIsDefiend = true;
+    if (this.ItemDataCalculated.stones.length > 0) {
+      this.stonesArray = this.ItemDataCalculated.stones;
+      if (key === 'gW') {
+        this.newGoldWeightValue = e.target.value;
+        this.ItemDataCalculated.gold_weight = this.newGoldWeightValue;
+        this.ItemDataCalculated.gold_total =
+          this.ItemDataCalculated.gold_weight *
+          this.ItemDataCalculated.gold_price;
+      }
+      if (key === 'gP') {
+        this.newGoldPriceValue = e.target.value;
+        this.ItemDataCalculated.gold_price = this.newGoldPriceValue;
+        this.ItemDataCalculated.gold_total =
+          this.ItemDataCalculated.gold_weight *
+          this.ItemDataCalculated.gold_price;
+      } else {
+        if (key === 'sQ') {
+          this.newQuantityValue = e.target.value;
+          this.stonesArray[stoneIndex].quantity = this.newQuantityValue;
+        }
+        if (key === 'sW') {
+          this.newWeightValue = e.target.value;
+          this.stonesArray[stoneIndex].weight = this.newWeightValue;
+        }
+        if (key === 'sP') {
+          this.newPriceValue = e.target.value;
+          this.stonesArray[stoneIndex].price = this.newPriceValue;
+        }
+        if (key === 'sS') {
+          this.newSettingValue = e.target.value;
+          this.stonesArray[stoneIndex].setting = this.newSettingValue;
+        }
+        const stoneTotal =
+          this.stonesArray[stoneIndex].quantity *
+            this.stonesArray[stoneIndex].setting +
+          this.stonesArray[stoneIndex].weight *
+            this.stonesArray[stoneIndex].price;
+        // Set New Stone
+        this.stonesArray[stoneIndex].total = stoneTotal;
+      }
+      // Start Calculate Total of Stone Total
+      const items = this.ItemDataCalculated.stones;
+      let sum = null;
+      items.forEach(value => {
+        sum += value.total;
+      });
+      // End Calculate Total of Stone Total
+      this.ItemDataCalculated.item_total =
+        this.ItemDataCalculated.gold_total + sum;
+      this.ItemDataCalculated.item_total_after_profit = Math.ceil(
+        this.ItemDataCalculated.item_total *
+          this.ItemDataCalculated.profit_percent
+      );
+    } else {
+      if (key === 'gW') {
+        this.newGoldWeightValue = e.target.value;
+        this.ItemDataCalculated.gold_weight = this.newGoldWeightValue;
+        this.ItemDataCalculated.gold_total =
+          this.ItemDataCalculated.gold_weight *
+          this.ItemDataCalculated.gold_price;
+      }
+      if (key === 'gP') {
+        this.newGoldPriceValue = e.target.value;
+        this.ItemDataCalculated.gold_price = this.newGoldPriceValue;
+        this.ItemDataCalculated.gold_total =
+          this.ItemDataCalculated.gold_weight *
+          this.ItemDataCalculated.gold_price;
+      }
+      this.ItemDataCalculated.item_total = Math.round(
+        Math.ceil(this.ItemDataCalculated.gold_total)
+      );
+      this.ItemDataCalculated.item_total_after_profit = Math.round(
+        Math.ceil(
+          this.ItemDataCalculated.item_total *
+            this.ItemDataCalculated.profit_percent
+        )
+      );
+    }
+  }
+  /* --------------------------- Number Validation ------------------------ */
+  numberCheckValidation(e) {
+    if ((48 <= e.keyCode && e.keyCode <= 57) || e.keyCode === 46) {
+    } else {
+      return false;
+    }
+  }
+  getSelectedListOptionId() {
+    // Get Stone Name
+    const name = this.stonesForm.value.name;
+    for (const stone of this.stoneList) {
+      if (name === stone.name) {
+        console.log(stone);
+        this.stone_id = stone.id;
+        console.log(this.stone_id);
+      }
+    }
+  }
+  /* ---------------------------------- Remove Stone ------------------------ */
+  removeStone(i) {
+    this.checkItemDataCalculatedIsDefiend = true;
+    this.testStonesArray.splice(i, 1);
+    // Start Calculate Total of Stone Total
+    const items = this.ItemDataCalculated.stones;
+    let sum = null;
+    items.forEach(value => {
+      sum += value.total;
+    });
+    // End Calculate Total of Stone Total
+    this.ItemDataCalculated.item_total =
+      this.ItemDataCalculated.gold_total + sum;
+    this.ItemDataCalculated.item_total_after_profit = Math.ceil(
+      this.ItemDataCalculated.item_total *
+        this.ItemDataCalculated.profit_percent
+    );
+  }
+  /* ------------------------------ Create New Stone ------------------------ */
+  onSubmitStone(form) {
+    this.newStoneArray = this.testStonesArray;
+    form.value.id = this.stone_id;
+    form.value.total = Math.ceil(
+      form.value.quantity * form.value.price +
+        form.value.weight * form.value.setting
+    );
+    if (
+      form.value.name &&
+      form.value.price &&
+      form.value.quantity &&
+      form.value.setting &&
+      form.value.weight
+    ) {
+      this.checkItemDataCalculatedIsDefiend = true;
+      this.stoneFlage = true;
+      this.newStoneArray.push(form.value);
+      this.stoneModal.hide();
+      const items = this.ItemDataCalculated.stones;
+      let sum = null;
+      items.forEach(value => {
+        sum += value.total;
+      });
+      this.ItemDataCalculated.item_total =
+        this.ItemDataCalculated.gold_total + sum;
+      this.ItemDataCalculated.item_total_after_profit = Math.ceil(
+        this.ItemDataCalculated.item_total *
+          this.ItemDataCalculated.profit_percent
+      );
+    } else {
+      this.api.fireAlert('error', 'Please Fill in All Data', '');
+    }
+    this.stone_id = '';
+  }
+  /* --------------------- Update Item ---------------------- */
+  onSubmit(form) {
+    // tslint:disable-next-line: no-unused-expression
+    this.stoneFlage === true;
+    if (this.stoneFlage === true) {
+      console.log('New Stones Add');
+    } else {
+      this.newStoneArray = [];
+    }
+    this.updatedItemData = this.ItemDataCalculated;
+    if (this.updatedItemData.stones.length === 0) {
+      delete this.updatedItemData.stones;
+    }
+    this.api
+      .put('products/' + this.updatedItemData.id, this.updatedItemData)
+      .subscribe(value => {
+        this.toast.success(
+          this.updatedItemData.label + ' ' + ' was successfully Updated',
+          'Success!',
+          {
+            timeOut: 1000
+          }
+        );
+        setTimeout(() => {
+          this.editModal.hide();
+          location.reload();
+        }, 1000);
+      });
   }
   // Close Edit Popup
   closeUpdataPopup() {
@@ -701,7 +976,7 @@ export class StockListComponent implements OnInit {
     this.deleteForm.controls.deleteInput.setValue('');
     console.log(row);
     this.deleteItem = row;
-    this.showDeletePopup = true;
+    this.deleteModal.show();
   }
   // Close Delete Popup
   closeDeletePopup() {
@@ -863,5 +1138,13 @@ export class StockListComponent implements OnInit {
   logout() {
     sessionStorage.removeItem('token');
     this.router.navigate(['/']);
+  }
+
+  /* ------------------------------------- Print ---------------------------- */ print() {
+    this.detailsModal.hide();
+    this.labelModal.show();
+    setTimeout(() => {
+      window.print();
+    }, 500);
   }
 }

@@ -37,6 +37,8 @@ import { stoneListSolver } from '../../resolvers/stoneList.solver';
 import { citySolver } from '../../resolvers/cities.solver';
 import { StonesAllSolver } from '../../resolvers/stones-index.solver';
 import { transferAllSolver } from '../../resolvers/transfer-index.solver';
+import { metalSolver } from '../../resolvers/metal.solver';
+
 // Components
 import { StockListComponent } from './stock-list.component';
 import { stockListEditComponent } from './stock-list-edit.component';
@@ -88,7 +90,8 @@ import { TransferComponent } from './transfer.component';
     stoneListSolver,
     citySolver,
     StonesAllSolver,
-    transferAllSolver
+    transferAllSolver,
+    metalSolver
   ]
 })
 export class MainStockModule {}

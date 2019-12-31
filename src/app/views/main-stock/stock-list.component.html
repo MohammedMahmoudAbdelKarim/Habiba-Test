@@ -170,7 +170,7 @@
       <div
         class="col pointer mr-3 pl-3 row align-items-center"
         *ngIf="checkedItems > 1"
-        (click)="removeMultiply()"
+        (click)="delete2Modal.show()"
       >
         <div id="multi-delete" class="d-flex align-items-center">
           <i class="fas fa-trash-alt text-white"></i>
@@ -359,19 +359,19 @@
                 class="basic_button"
                 type="button"
                 (click)="
-                  openUpdataPopup(row, index); itemStockDetailsData = row
+                  openUpdataPopup(row, index)
                 "
               >
                 <img src="../../../assets/icon/edit.svg" alt="" />
                 <span class="tooltiptext">Edit</span>
               </button>
-              <button id="editButton" class="basic_button" type="button">
+              <button id="editButton" class="basic_button" type="button" (click)="openLabel(row)">
                 <img src="../../../assets/icon/barcode.svg" alt="" />
                 <span class="tooltiptext">Label</span>
               </button>
               <button
                 id="editButton"
-                (click)="opendeletePopup(row); deletedStockIndex = index"
+                (click)="opendeletePopup(row)"
                 class="basic_button"
                 type="button"
               >
@@ -388,7 +388,6 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-
     <!-- Pagination -->
     <mat-paginator
       [pageSizeOptions]="[10, 20, 30, 40, 50]"
@@ -396,7 +395,6 @@
     ></mat-paginator>
   </div>
   <!-- End Table -->
-
   <!-- Details -->
   <div
     id="details"
@@ -428,7 +426,7 @@
               <p>{{ status }}</p>
             </div>
           </div>
-          <div class="row no-gutters mt-3">
+          <div class="row align-items-end no-gutters mt-3">
             <div class="col-5" id="img">
               <img
                 class="w-100"
@@ -460,7 +458,7 @@
                   </tr>
                 </tbody>
               </table>
-              <div class="col-12 row justify-content-between">
+              <div class="col-12 mt-5 row justify-content-between">
                 <div class="col-4">
                   <div class="gold-box">
                   <h3 class="head-title">Gold Weight</h3>
@@ -481,6 +479,7 @@
                 </div>
               </div>
             </div>
+          </div>
             <div class="mt-5 w-100" id="stones">
               <h2
           class="head-title text-left"
@@ -502,7 +501,7 @@
             >{{ stones.length }} Stone</span
           >
         </h2>
-        <div class="stone-border">
+        <div class="stone-border" *ngIf="stones.length">
           <div class="stone-table" *ngFor="let stone of stones">
             <table>
               <thead>
@@ -528,28 +527,27 @@
             </table>
           </div>
         </div>
-            </div>
             <div id="cost" class="mt-5 w-100">
 <div class="row w-50 m-auto justify-content-between">
-  <div class="col-6 row justify-content-start">
+  <div class="col-6 row justify-content-center">
     <h4 class="col-12">Cost</h4>
-    <div class="cost-box col-12">{{totalCost}}</div>
+    <div class="cost-box col-6">{{totalCost}}</div>
   </div>
-  <div class="col-6 row justify-content-end">
-    <h4 class="col-12">Cost  *4.4 in $</h4>
-    <div class="cost-box col-12">{{finalCost}}</div>
+  <div class="col-6 row justify-content-center">
+    <h4 class="col-12">Cost * {{stockData.profit_percent}} in $</h4>
+    <div class="cost-box col-6">{{finalCost}}</div>
   </div>
 </div>
             </div>
             <footer class="row mt-5 justify-content-center w-100">
               <div class=" col-md-10 col-md-offset-1">
                 <div class="row justify-content-center">
-                  <div class="col-md-6 row justify-content-center align-items-center pointer">
+                  <div class="col-md-6 row justify-content-center align-items-center pointer" (click)="print()">
                     
                       <img src="../../../assets/icon/printer.svg" alt="" class="mr-2"/>
                       <span>Print Label</span>
                   </div>
-                  <div class="col-md-6 row justify-content-center align-items-center pointer">
+                  <div class="col-md-6 row justify-content-center align-items-center pointer" (click)="labelModal.show()">
                       <img src="../../../assets/icon/label.svg" alt="" class="mr-2"/>
                       <span>View Label</span> 
                   </div>
@@ -561,8 +559,506 @@
       </div>
     </div>
   </div>
+  <!-- Edit -->
+  <div
+  id="details"
+  bsModal
+  #editModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header pb-0 border-bottom-0">
+        <button
+          type="button"
+          class="close"
+          (click)="editModal.hide()"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">Close</span>
+        </button>
+      </div>
+      <!-- Body -->
+      <form (ngSubmit)="onSubmit(stockUpdatForm.value)"
+        #form="ngForm"
+        [formGroup]="stockUpdatForm">
+      <div class="modal-body p-4" *ngIf="stockData">
+        <div class="d-flex justify-content-between">
+          <h4 class="text-uppercase">{{ category }} {{ stockData.label }}</h4>
+          <div class="status text-center text-uppercase" [ngClass]="status">
+            <p>{{ status }}</p>
+          </div>
+        </div>
+        <div class="row align-items-end no-gutters mt-3">
+          <div class="col-5" id="img">
+            <img
+              class="w-100"
+              height="205px"
+              src="http://jewelry.ixscope.com/backend/img/products/{{
+                stockData.image
+              }}"
+              [alt]="stockData.label"
+            />
+          </div>
+          <div class="col-7 pl-5 row no-gutters justify-content-end">
+            <table class="col-12" id="table-details">
+              <thead>
+                <tr class="text-center">
+                  <th scope="col" class="head-title border-right">
+                    Category
+                  </th>
+                  <th scope="col" class="head-title border-right">Code</th>
+                  <th scope="col" class="head-title border-right">Branch</th>
+                  <th scope="col" class="head-title">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="border-right">{{ category }}</td>
+                  <td class="border-right">{{ stockData.label }}</td>
+                  <td class="border-right">{{ branch }}</td>
+                  <td>{{ stockData.product_date }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="col-12 mt-5 row justify-content-between">
+              <div class="col-4">
+                <div class="gold-box">
+                <h3 class="head-title">Gold Weight</h3>
+                <input
+                          class="input-text"
+                          formControlName="updateGoldWeight"
+                          value=""
+                          (keyup)="calculateStoneTotal($event, 0, 'gW')"
+                          (keypress)="numberCheckValidation($event)"
+                          maxlength="9"
+                          autocomplete="off"
+                        />
+                        <span class="ml-2">gm</span>
+              </div>
+              </div>
+              <div class="col-4">
+                <div class="gold-box">
+                  <h3 class="head-title">Gold Price</h3>
+                  <input
+                          class="input-text"
+                          formControlName="updateGoldPrice"
+                          value=""
+                          (keyup)="calculateStoneTotal($event, 0, 'gP')"
+                          (keypress)="numberCheckValidation($event)"
+                          maxlength="9"
+                          autocomplete="off"
+                        />
+                        <span class="ml-2">$</span>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="gold-box">
+                  <h3 class="head-title">Total</h3>
+                  <input
+                          disabled="true"
+                          class="input-text"
+                          formControlName="goldTotalPrice"
+                          value="{{
+                            !checkItemDataCalculatedIsDefiend
+                              ? updatedItemData.gold_total
+                              : ItemDataCalculated.gold_total
+                          }}"
+                          autocomplete="off"
+                        />
+                        <span class="ml-2">$</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          <div class="mt-5 w-100" id="stones">
+            <h2
+        class="head-title text-left"
+        [ngClass]="stones.length == 0 ? 'text-red' : ''"
+      >
+        {{
+          stones.length > 0
+            ? 'STONES'
+            : 'No stone available to this product'
+        }}
+        <span
+          class="ml-3"
+          *ngIf="stones.length > 1"
+          >{{ stones.length }} Stones</span
+        >
+        <span
+          class="ml-3"
+          *ngIf="stones.length == 1"
+          >{{ stones.length }} Stone</span
+        >
+      </h2>
+      <i class="fas fa-plus-circle col-2 row pr-5 pointer justify-content-end col-1 font-2xl"
+                (click)="stoneModal.show(stonesForm.reset())"
+              ></i>
+      <div class="stone-border" *ngIf="stones.length">
+        <div class="stone-table" *ngFor="let stone of stones; let stoneIndex = index">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="border-right">Name</th>
+                <th scope="col" class="border-right text-center">Quantity</th>
+                <th scope="col" class="border-right text-center">Weight (cts)</th>
+                <th scope="col" class="border-right text-center">Cost ($)</th>
+                <th scope="col" class="border-right text-center">Setting</th>
+                <th scope="col" class="border-right text-center">Total</th>
+                <th scope="col" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border-right">{{stone.name}}</td>
+                <td class="border-right text-center">
+                  <input
+                            class="input-s"
+                            value="{{ +stone.quantity }}"
+                            formControlName="updateStonesQuantity"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sQ')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                </td>
+                <td class="border-right text-center">
+                  <input
+                            class="input-s"
+                            value="{{ +stone.weight }}"
+                            formControlName="updateStonesWeight"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sW')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                </td>
+                <td class="border-right text-center">
+                  <input
+                            class="input-s"
+                            value="{{ +stone.price }}"
+                            formControlName="updateStonesPrice"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sP')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                </td>
+                <td class="border-right text-center">
+                  <input
+                            class="input-s"
+                            value="{{ +stone.setting }}"
+                            formControlName="updateSettingsSetting"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, 'sS')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                            autocomplete="off"
+                          />
+                </td>
+                <td class="border-right text-center">{{stone.total}}</td>
+                <td class="text-center"><i
+                  class="fas fa-trash-alt text-red pointer font-1xl"
+                  (click)="removeStone(stoneIndex)"
+                ></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+          <div id="cost" class="mt-5 w-100">
+<div class="row w-50 m-auto justify-content-between">
+<div class="col-6 row justify-content-center">
+  <h4 class="col-12">Cost</h4>
+  <div class="cost-box col-6">{{ItemDataCalculated.item_total}}</div>
+</div>
+<div class="col-6 row justify-content-center">
+  <h4 class="col-12">Cost  {{ItemDataCalculated.profit_percent}} in $</h4>
+  <div class="cost-box col-6">{{ ItemDataCalculated.item_total_after_profit}}</div>
+</div>
+</div>
+          </div>
+          
+          <footer class="row mt-5 justify-content-center w-100">
+            <div
+            class="w-50"
+          [ngClass]="
+            !checkItemDataCalculatedIsDefiend
+              ? 'disabledUpdate'
+              : 'updataButton'
+          "
+        >
+          <button class="submit-btn w-100" [disabled]="!checkItemDataCalculatedIsDefiend ? true : false">
+            Update
+          </button>
+        </div>
+          </footer>
+        </div>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+  <!-- Add New Stone Model -->
+  <div
+  id="stoneModel"
+    bsModal
+    #stoneModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Create New Stone</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="stoneModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="stonesForm"
+            (ngSubmit)="onSubmitStone(stonesForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-12 row">
+                <div class="form-group col-12 no-gutters">
+                  <label class="title-4"
+                    >Stone Type <span class="text-red">*</span></label
+                  >
+                  <select
+                    class="p-3 itemInput w-100"
+                    formControlName="name"
+                    (change)="getSelectedListOptionId()"
+                  >
+                    <option disabled selected="selected" value=""
+                      >Please Select Type</option
+                    >
+                    <option *ngFor="let stone of stoneList">
+                      {{ stone.name }}</option
+                    >
+                  </select>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 mt-2 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.name.errors?.required &&
+                      stonesForm.controls.name.touched &&
+                      !modalError.name
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.name"
+                    >{{ modalError.name }}</mat-hint
+                  >
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="title-4"
+                      >Quantity <span class="text-red">*</span></label
+                    >
+                    <input
+                      class="input-text"
+                      value=""
+                      formControlName="quantity"
+                      autocomplete="off"
+                      placeholder="Quantity"
+                    />
+                  </div>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.quantity.errors?.required &&
+                      stonesForm.controls.quantity.touched &&
+                      !modalError.quantity
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.quantity"
+                    >{{ modalError.quantity }}</mat-hint
+                  >
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="title-4"
+                      >Weight (cts) <span class="text-red">*</span></label
+                    >
+                    <input
+                      class="input-text"
+                      value=""
+                      formControlName="weight"
+                      autocomplete="off"
+                      placeholder="Weight(cts)"
+                    />
+                  </div>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.weight.errors?.required &&
+                      stonesForm.controls.weight.touched &&
+                      !modalError.weight
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.weight"
+                    >{{ modalError.weight }}</mat-hint
+                  >
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="title-4"
+                      >Cost ($) <span class="text-red">*</span></label
+                    >
+                    <input
+                      class="input-text"
+                      value=""
+                      formControlName="price"
+                      autocomplete="off"
+                      placeholder="Cost($)"
+                    />
+                  </div>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.price.errors?.required &&
+                      stonesForm.controls.price.touched &&
+                      !modalError.price
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.price"
+                    >{{ modalError.price }}</mat-hint
+                  >
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="title-4"
+                      >Setting <span class="text-red">*</span></label
+                    >
+                    <input
+                      class="input-text"
+                      value=""
+                      formControlName="setting"
+                      autocomplete="off"
+                      placeholder="Setting"
+                    />
+                  </div>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="
+                      stonesForm.controls.setting.errors?.required &&
+                      stonesForm.controls.setting.touched &&
+                      !modalError.setting
+                    "
+                    >This Field is Required</mat-hint
+                  >
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.setting"
+                    >{{ modalError.setting }}</mat-hint
+                  >
+                </div>
+              </div>
+              <div class="modal-footer border-0">
+                <button
+                  type="submit"
+                  class="submit-btn"
+                  [disabled]="
+                    !stonesForm.controls.name.value &&
+                    !stonesForm.controls.quantity.value &&
+                    !stonesForm.controls.weight.value &&
+                    !stonesForm.controls.price.value &&
+                    !stonesForm.controls.setting.value
+                  "
+                  [ngClass]="
+                    !stonesForm.controls.name.value &&
+                    !stonesForm.controls.quantity.value &&
+                    !stonesForm.controls.weight.value &&
+                    !stonesForm.controls.price.value &&
+                    !stonesForm.controls.setting.value
+                      ? 'disabledSubmitButton'
+                      : 'enableSubmitButton'
+                  "
+                >
+                  Add Stone
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- Label -->
+    <div
+    id="labelModel"
+    bsModal
+    #labelModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content print-content" id="label-1">
+        <!-- Body -->
+        <div class="modal-body">
+          <h4 class="text-center">{{ labelData.label }}</h4>
+          <h4 class="text-center">
+            Gold
+            <span class="ml-3">{{ labelData.gold_weight }}</span>
+          </h4>
+        </div>
+      </div>
+      <div class="modal-content print-content mt-5" id="label-2">
+        <!-- Body -->
+        <div class="modal-body">
+          <table>
+            <tbody>
+              <tr class="text-center" *ngFor="let stone of labelData.stones">
+                <td>{{ stone.quantity }}</td>
+                <td>{{ stone.code }}</td>
+                <td>{{ stone.setting }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Make Transfer -->
   <div
+  id="transfer"
     bsModal
     #myModal="bs-modal"
     class="modal fade"
@@ -573,8 +1069,9 @@
   >
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">{{ transferName }} {{ transferCode }}</h4>
+        <div class="modal-header d-flex align-items-baseline">
+          <img class="mr-2" src="../../../assets/icon/transfer.svg" alt="">
+          <h4>Make New Transfer</h4>
           <button
             type="button"
             class="close"
@@ -586,6 +1083,10 @@
         </div>
         <!-- Body -->
         <div class="modal-body">
+          <h4 class="modal-title mb-4 row">
+            <div class="col-6 row justify-content-center align-items-baseline transfer-title"><span class="mr-2">Current Branch: </span> {{transferName}}</div>
+            <div class="col-6 row justify-content-end align-items-baseline transfer-title"><span class="mr-2">Code: </span>{{transferCode}}</div>
+          </h4>
           <form
             [formGroup]="transferForm"
             (ngSubmit)="onSubmitTransfer(transferForm)"
@@ -594,8 +1095,8 @@
             <div class="row">
               <div class="col-md-12 row">
                 <div class="form-group col-12 no-gutters">
-                  <label for="exampleInputName2" class="title"
-                    >New Branch<span class="text-red">*</span></label
+                  <label class="title-4"
+                    >Transfer To: <span class="text-red">*</span></label
                   >
                   <select
                     class="p-3 itemInput w-100"
@@ -630,7 +1131,7 @@
               <div class="modal-footer border-0">
                 <button
                   type="submit"
-                  class="btn-modal-submit"
+                  class="submit-btn"
                   [disabled]="!transferForm.controls.branch_id.value"
                   [ngClass]="
                     !transferForm.controls.branch_id.value
@@ -647,6 +1148,112 @@
       </div>
     </div>
   </div>
+    <!-- Delete One Item -->
+    <div
+    id="deleteModal"
+      bsModal
+      #deleteModal="bs-modal"
+      class="modal fade"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header d-flex align-items-baseline border-0">
+            <button
+              type="button"
+              class="close"
+              (click)="deleteModal.hide()"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">Close</span>
+            </button>
+          </div>
+          <!-- Body -->
+          <div class="modal-body">
+            <h4 class="modal-title mb-4 text-center">
+              <span>For delete item please type</span> DELETE
+            </h4>
+            <form
+              [formGroup]="deleteForm"
+              (ngSubmit)="deleteStock()"
+              #form="ngForm"
+            >
+              <div class="row">
+                <div class="col-md-8 row">
+                  <div class="form-group col-12 no-gutters">
+                    <input type="text" class="input-text w-100" formControlName="deleteInput" placeholder="DELETE">
+                  </div>
+                </div>
+                <div class="col-md-4 modal-footer border-0 p-0">
+                  <button
+                    type="submit"
+                    class="submit-btn"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+      <!-- Delete Two Item -->
+      <div
+      id="deleteModal"
+        bsModal
+        #delete2Modal="bs-modal"
+        class="modal fade"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header d-flex align-items-baseline border-0">
+              <button
+                type="button"
+                class="close"
+                (click)="delete2Modal.hide()"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">Close</span>
+              </button>
+            </div>
+            <!-- Body -->
+            <div class="modal-body">
+              <h4 class="modal-title mb-4 text-center">
+                <span>For delete items please type</span> DELETE
+              </h4>
+              <form
+                [formGroup]="deleteForm"
+                (ngSubmit)="removeMultiply()"
+                #form="ngForm"
+              >
+                <div class="row">
+                  <div class="col-md-8 row">
+                    <div class="form-group col-12 no-gutters">
+                      <input type="text" class="input-text w-100" formControlName="deleteInput" placeholder="DELETE">
+                    </div>
+                  </div>
+                  <div class="col-md-4 modal-footer border-0 p-0">
+                    <button
+                      type="submit"
+                      class="submit-btn"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
   <!-- Image Modal -->
   <div
     bsModal
