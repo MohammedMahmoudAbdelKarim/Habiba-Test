@@ -81,7 +81,7 @@ export const navItems: INavData[] = [
     ]
   },
   {
-    name: 'Invoices & Reports',
+    name: 'Invoices',
     url: '/invoices',
     icon: 'icon-doc',
     children: [

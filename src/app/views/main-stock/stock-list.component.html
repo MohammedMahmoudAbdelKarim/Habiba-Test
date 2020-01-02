@@ -170,7 +170,7 @@
       <div
         class="col pointer mr-3 pl-3 row align-items-center"
         *ngIf="checkedItems > 1"
-        (click)="delete2Modal.show()"
+        (click)="deleteMultiply()"
       >
         <div id="multi-delete" class="d-flex align-items-center">
           <i class="fas fa-trash-alt text-white"></i>
@@ -235,6 +235,7 @@
         <th mat-header-cell *matHeaderCellDef>IMAGE</th>
         <td mat-cell class="pointer" *matCellDef="let row">
           <img
+          *ngIf="row.image"
             width="75px"
             height="70px"
             class="img-fluid"
@@ -247,6 +248,7 @@
             (click)="openImage(img)"
             class="pointer"
           />
+          <span *ngIf="!row.image">No Image</span>
         </td>
       </ng-container>
       <!-- Column -->
@@ -359,7 +361,7 @@
                 class="basic_button"
                 type="button"
                 (click)="
-                  openUpdataPopup(row, index)
+                  openUpdataPopup(row)
                 "
               >
                 <img src="../../../assets/icon/edit.svg" alt="" />
@@ -428,6 +430,7 @@
           </div>
           <div class="row align-items-end no-gutters mt-3">
             <div class="col-5" id="img">
+              <img [src]="stockData.barcode" class="w-100 mb-3" alt="">
               <img
                 class="w-100"
                 height="205px"
@@ -437,7 +440,7 @@
                 [alt]="stockData.label"
               />
             </div>
-            <div class="col-7 pl-5 row no-gutters justify-content-end">
+            <div class="col-7 pl-5 row no-gutters justify-content-center">
               <table class="col-12" id="table-details">
                 <thead>
                   <tr class="text-center">
@@ -458,23 +461,26 @@
                   </tr>
                 </tbody>
               </table>
-              <div class="col-12 mt-5 row justify-content-between">
+              <div class="col-12 mt-5 row justify-content-between no-gutters">
                 <div class="col-4">
                   <div class="gold-box">
                   <h3 class="head-title">Gold Weight</h3>
-                  <p>{{stockData.gold_weight}} gm</p>
+                  <p>(gm)</p>
+                  <p style="font-size: 1rem; font-weight: 500;">{{stockData.gold_weight}}</p>
                 </div>
                 </div>
-                <div class="col-4">
+                <div class="col-4 pl-1">
                   <div class="gold-box">
                     <h3 class="head-title">Gold Price</h3>
-                    <p>$ {{stockData.gold_price}}</p>
+                    <p>($)</p>
+                    <p style="font-size: 1rem; font-weight: 500;">{{stockData.gold_price}}</p>
                   </div>
                 </div>
-                <div class="col-4">
+                <div class="col-4 pl-2">
                   <div class="gold-box">
                     <h3 class="head-title">Total</h3>
-                    <p>$ {{stockData.gold_total}}</p>
+                    <p>($)</p>
+                    <p style="font-size: 1rem; font-weight: 900;">{{stockData.gold_total}}</p>
                   </div>
                 </div>
               </div>
@@ -528,14 +534,14 @@
           </div>
         </div>
             <div id="cost" class="mt-5 w-100">
-<div class="row w-50 m-auto justify-content-between">
+<div class="row w-75 m-auto justify-content-between">
   <div class="col-6 row justify-content-center">
-    <h4 class="col-12">Cost</h4>
-    <div class="cost-box col-6">{{totalCost}}</div>
+    <h4 class="col-12 text-uppercase">Cost</h4>
+    <div class="cost-box col-12">{{totalCost}}</div>
   </div>
   <div class="col-6 row justify-content-center">
-    <h4 class="col-12">Cost * {{stockData.profit_percent}} in $</h4>
-    <div class="cost-box col-6">{{finalCost}}</div>
+    <h4 class="col-12 text-uppercase">Cost * {{stockData.profit_percent}} in $</h4>
+    <div class="cost-box col-12">{{finalCost}}</div>
   </div>
 </div>
             </div>
@@ -587,7 +593,7 @@
         #form="ngForm"
         [formGroup]="stockUpdatForm">
       <div class="modal-body p-4" *ngIf="stockData">
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between align-items-end">
           <h4 class="text-uppercase">{{ category }} {{ stockData.label }}</h4>
           <div class="status text-center text-uppercase" [ngClass]="status">
             <p>{{ status }}</p>
@@ -595,6 +601,7 @@
         </div>
         <div class="row align-items-end no-gutters mt-3">
           <div class="col-5" id="img">
+            <img [src]="stockData.barcode" class="w-100 mb-3" alt="">
             <img
               class="w-100"
               height="205px"
@@ -625,10 +632,11 @@
                 </tr>
               </tbody>
             </table>
-            <div class="col-12 mt-5 row justify-content-between">
+            <div class="col-12 mt-5 row justify-content-between no-gutters">
               <div class="col-4">
                 <div class="gold-box">
                 <h3 class="head-title">Gold Weight</h3>
+                <p>(gm)</p>
                 <input
                           class="input-text"
                           formControlName="updateGoldWeight"
@@ -638,12 +646,12 @@
                           maxlength="9"
                           autocomplete="off"
                         />
-                        <span class="ml-2">gm</span>
               </div>
               </div>
-              <div class="col-4">
+              <div class="col-4 pl-1">
                 <div class="gold-box">
                   <h3 class="head-title">Gold Price</h3>
+                  <p>($)</p>
                   <input
                           class="input-text"
                           formControlName="updateGoldPrice"
@@ -653,12 +661,12 @@
                           maxlength="9"
                           autocomplete="off"
                         />
-                        <span class="ml-2">$</span>
                 </div>
               </div>
-              <div class="col-4">
+              <div class="col-4 pl-2">
                 <div class="gold-box">
                   <h3 class="head-title">Total</h3>
+                  <p>($)</p>
                   <input
                           disabled="true"
                           class="input-text"
@@ -670,7 +678,6 @@
                           }}"
                           autocomplete="off"
                         />
-                        <span class="ml-2">$</span>
                 </div>
               </div>
             </div>
@@ -780,14 +787,14 @@
         </div>
       </div>
           <div id="cost" class="mt-5 w-100">
-<div class="row w-50 m-auto justify-content-between">
+<div class="row w-75 m-auto justify-content-between">
 <div class="col-6 row justify-content-center">
-  <h4 class="col-12">Cost</h4>
-  <div class="cost-box col-6">{{ItemDataCalculated.item_total}}</div>
+  <h4 class="col-12 text-uppercase">Cost</h4>
+  <div class="cost-box col-12">{{ItemDataCalculated.item_total}}</div>
 </div>
 <div class="col-6 row justify-content-center">
-  <h4 class="col-12">Cost  {{ItemDataCalculated.profit_percent}} in $</h4>
-  <div class="cost-box col-6">{{ ItemDataCalculated.item_total_after_profit}}</div>
+  <h4 class="col-12 text-uppercase">Cost * {{ItemDataCalculated.profit_percent}} in $</h4>
+  <div class="cost-box col-12">{{ ItemDataCalculated.item_total_after_profit}}</div>
 </div>
 </div>
           </div>
@@ -849,7 +856,7 @@
                     >Stone Type <span class="text-red">*</span></label
                   >
                   <select
-                    class="p-3 itemInput w-100"
+                    class="p-2 itemInput w-100"
                     formControlName="name"
                     (change)="getSelectedListOptionId()"
                   >
@@ -881,7 +888,7 @@
                       >Quantity <span class="text-red">*</span></label
                     >
                     <input
-                      class="input-text"
+                      class="input-text p-2"
                       value=""
                       formControlName="quantity"
                       autocomplete="off"
@@ -909,11 +916,11 @@
                       >Weight (cts) <span class="text-red">*</span></label
                     >
                     <input
-                      class="input-text"
+                      class="input-text p-2"
                       value=""
                       formControlName="weight"
                       autocomplete="off"
-                      placeholder="Weight(cts)"
+                      placeholder="Weight (cts)"
                     />
                   </div>
                   <mat-hint
@@ -937,11 +944,11 @@
                       >Cost ($) <span class="text-red">*</span></label
                     >
                     <input
-                      class="input-text"
+                      class="input-text p-2"
                       value=""
                       formControlName="price"
                       autocomplete="off"
-                      placeholder="Cost($)"
+                      placeholder="Cost ($)"
                     />
                   </div>
                   <mat-hint
@@ -965,7 +972,7 @@
                       >Setting <span class="text-red">*</span></label
                     >
                     <input
-                      class="input-text"
+                      class="input-text p-2"
                       value=""
                       formControlName="setting"
                       autocomplete="off"
@@ -999,15 +1006,6 @@
                     !stonesForm.controls.price.value &&
                     !stonesForm.controls.setting.value
                   "
-                  [ngClass]="
-                    !stonesForm.controls.name.value &&
-                    !stonesForm.controls.quantity.value &&
-                    !stonesForm.controls.weight.value &&
-                    !stonesForm.controls.price.value &&
-                    !stonesForm.controls.setting.value
-                      ? 'disabledSubmitButton'
-                      : 'enableSubmitButton'
-                  "
                 >
                   Add Stone
                 </button>
@@ -1033,25 +1031,33 @@
       <div class="modal-content print-content" id="label-1">
         <!-- Body -->
         <div class="modal-body">
-          <h4 class="text-center">{{ labelData.label }}</h4>
-          <h4 class="text-center">
-            Gold
-            <span class="ml-3">{{ labelData.gold_weight }}</span>
-          </h4>
-        </div>
-      </div>
-      <div class="modal-content print-content mt-5" id="label-2">
-        <!-- Body -->
-        <div class="modal-body">
-          <table>
-            <tbody>
-              <tr class="text-center" *ngFor="let stone of labelData.stones">
-                <td>{{ stone.quantity }}</td>
-                <td>{{ stone.code }}</td>
-                <td>{{ stone.setting }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="row no-gutters align-items-center">
+            <div class="col-6">
+            <div class="col-12 text-center">
+              <h4>{{labelData.label}}</h4>
+            </div>
+            <div class="col-12 mt-2">
+              <img [src]="labelData.barcode" class="w-100" alt="">
+            </div>
+            <div class="col-12 mt-2 text-center">
+              <h4 class="text-center">
+                Gold
+                <span class="ml-3">{{ labelData.gold_weight }}</span>
+              </h4>
+            </div>
+          </div>
+          <div class="col-6">
+            <table>
+              <tbody>
+                <tr class="text-center" *ngFor="let stone of labelData.stones">
+                  <td>{{ stone.quantity }}</td>
+                  <td>{{ stone.code }}</td>
+                  <td>{{ stone.setting }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1084,7 +1090,7 @@
         <!-- Body -->
         <div class="modal-body">
           <h4 class="modal-title mb-4 row">
-            <div class="col-6 row justify-content-center align-items-baseline transfer-title"><span class="mr-2">Current Branch: </span> {{transferName}}</div>
+            <div class="col-6 row no-gutters justify-content-start align-items-baseline transfer-title"><span class="mr-2">Current Branch: </span> {{transferName}}</div>
             <div class="col-6 row justify-content-end align-items-baseline transfer-title"><span class="mr-2">Code: </span>{{transferCode}}</div>
           </h4>
           <form
@@ -1093,13 +1099,13 @@
             #form="ngForm"
           >
             <div class="row">
-              <div class="col-md-12 row">
-                <div class="form-group col-12 no-gutters">
+              <div class="col-md-12 row no-gutters">
+                <div class="form-group col-12 no-gutters mb-0">
                   <label class="title-4"
                     >Transfer To: <span class="text-red">*</span></label
                   >
                   <select
-                    class="p-3 itemInput w-100"
+                    class="input-text w-100"
                     formControlName="branch_id"
                   >
                     <option disabled selected="selected" value=""
@@ -1139,6 +1145,7 @@
                       : 'enableSubmitButton'
                   "
                 >
+                <img class="mr-2" src="../../../assets/icon/transfer.svg" alt="">
                   Transfer
                 </button>
               </div>

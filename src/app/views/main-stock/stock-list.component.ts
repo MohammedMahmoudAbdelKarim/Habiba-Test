@@ -36,6 +36,7 @@ export class StockListComponent implements OnInit {
     'select',
     'img',
     'category.name',
+
     'label',
     'branch.name',
     'gold_weight',
@@ -680,7 +681,7 @@ export class StockListComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* ---------------------------- Remove Multi-Items ----------------------- */
   mutliplyAction(event) {
@@ -701,6 +702,7 @@ export class StockListComponent implements OnInit {
         .delete('products', { params: { 'ids[]': ids } })
         .subscribe(data => {
           this.toast.success('The Items are Successfully delete', '!Success');
+          this.delete2Modal.hide();
           this.api.get('products').subscribe(value => {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
@@ -720,6 +722,9 @@ export class StockListComponent implements OnInit {
             };
           });
         });
+    }
+    else {
+      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
   /* ------------------------------------ Popup ----------------------------- */
@@ -755,7 +760,7 @@ export class StockListComponent implements OnInit {
     this.category = stockData.category.name;
     this.branch = stockData.branch.name;
     this.stones = stockData.stones;
-    this.stones = stockData.stones;
+    this.status = stockData.status.name;
     const sums = [];
     stockData.stones.filter(stone => {
       sums.push(stone.total);
@@ -765,7 +770,7 @@ export class StockListComponent implements OnInit {
     this.finalCost = Math.ceil(this.totalCost * stockData.profit_percent);
     this.showUpdataPopup = true;
     this.ItemDataCalculated = Object.assign({}, this.updatedItemData);
-    for (let i = 0; i < this.ItemDataCalculated.length; i++) {}
+    for (let i = 0; i < this.ItemDataCalculated.length; i++) { }
     const items = this.updatedItemData.stones;
     let sum = null;
     items.forEach((value, index, arry) => {
@@ -786,7 +791,6 @@ export class StockListComponent implements OnInit {
   /* --------------------- Total Calculate Stone Total ---------------------- */
   calculateStoneTotal(e, stoneIndex, key) {
     console.log(stoneIndex);
-
     this.checkItemDataCalculatedIsDefiend = true;
     if (this.ItemDataCalculated.stones.length > 0) {
       this.stonesArray = this.ItemDataCalculated.stones;
@@ -822,9 +826,9 @@ export class StockListComponent implements OnInit {
         }
         const stoneTotal =
           this.stonesArray[stoneIndex].quantity *
-            this.stonesArray[stoneIndex].setting +
+          this.stonesArray[stoneIndex].setting +
           this.stonesArray[stoneIndex].weight *
-            this.stonesArray[stoneIndex].price;
+          this.stonesArray[stoneIndex].price;
         // Set New Stone
         this.stonesArray[stoneIndex].total = stoneTotal;
       }
@@ -839,7 +843,7 @@ export class StockListComponent implements OnInit {
         this.ItemDataCalculated.gold_total + sum;
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-          this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
       );
     } else {
       if (key === 'gW') {
@@ -862,7 +866,7 @@ export class StockListComponent implements OnInit {
       this.ItemDataCalculated.item_total_after_profit = Math.round(
         Math.ceil(
           this.ItemDataCalculated.item_total *
-            this.ItemDataCalculated.profit_percent
+          this.ItemDataCalculated.profit_percent
         )
       );
     }
@@ -900,7 +904,7 @@ export class StockListComponent implements OnInit {
       this.ItemDataCalculated.gold_total + sum;
     this.ItemDataCalculated.item_total_after_profit = Math.ceil(
       this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+      this.ItemDataCalculated.profit_percent
     );
   }
   /* ------------------------------ Create New Stone ------------------------ */
@@ -909,7 +913,7 @@ export class StockListComponent implements OnInit {
     form.value.id = this.stone_id;
     form.value.total = Math.ceil(
       form.value.quantity * form.value.price +
-        form.value.weight * form.value.setting
+      form.value.weight * form.value.setting
     );
     if (
       form.value.name &&
@@ -931,7 +935,7 @@ export class StockListComponent implements OnInit {
         this.ItemDataCalculated.gold_total + sum;
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-          this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
       );
     } else {
       this.api.fireAlert('error', 'Please Fill in All Data', '');
@@ -967,33 +971,22 @@ export class StockListComponent implements OnInit {
         }, 1000);
       });
   }
-  // Close Edit Popup
-  closeUpdataPopup() {
-    this.showUpdataPopup = false;
-  }
   // Open Delete Popup
   opendeletePopup(row) {
-    this.deleteForm.controls.deleteInput.setValue('');
     console.log(row);
     this.deleteItem = row;
+    this.deleteForm.controls.deleteInput.setValue('');
     this.deleteModal.show();
   }
-  // Close Delete Popup
-  closeDeletePopup() {
+  // Open Multi Delete
+  deleteMultiply() {
     this.deleteForm.controls.deleteInput.setValue('');
-    this.showDeletePopup = false;
+    this.delete2Modal.show();
   }
   /* -------------------------- Delete Item ----------------------------- */
   deleteStock() {
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
-    const perPageValue = this.selectNumberOfProductForm.value.numberOfProducts;
     if (upperDeleteInputValue === 'DELETE') {
-      console.log('Deleted One Item');
-    } else {
-      this.api.fireAlert('error', 'Error in writing delete', '');
-    }
-    console.log(this.deleteFlage);
-    if (!this.deleteFlage) {
       this.api.delete('products/' + this.deleteItem.id).subscribe(value => {
         // tslint:disable-next-line: triple-equals
         if (value['status'] == 'success') {
@@ -1001,6 +994,7 @@ export class StockListComponent implements OnInit {
             this.deleteItem.label + ' ' + 'has been Deleted',
             'Success!'
           );
+          this.deleteModal.hide();
           this.api
             .get('products', {
               per_page: 50
@@ -1024,15 +1018,9 @@ export class StockListComponent implements OnInit {
               };
             });
         }
-        this.DeletingHold = false;
-        this.showDeletePopup = false;
-        return this.products;
       });
     } else {
-      this.showDeletePopup = true;
-      if (upperDeleteInputValue === 'DELETE') {
-        this.removeMultiply();
-      }
+      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
   // Reload Page
@@ -1140,7 +1128,8 @@ export class StockListComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  /* ------------------------------------- Print ---------------------------- */ print() {
+  /* ------------------------------------- Print ---------------------------- */
+  print() {
     this.detailsModal.hide();
     this.labelModal.show();
     setTimeout(() => {

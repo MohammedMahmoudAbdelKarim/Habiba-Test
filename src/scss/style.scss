@@ -26,6 +26,7 @@
   }
 }
 
+
 /* ----------------------------------- Variables -------------------------------------*/
 // Colors
 $blue: #20a8d8;
@@ -126,13 +127,10 @@ body {
 }
 
 .file-upload-wrapper p {
-  letter-spacing: 0.09px;
   color: #858585;
-  position: absolute;
   text-align: center;
-  margin-left: 17%;
-  margin-top: 13px;
-  display: flex;
+  width: 100%;
+  font-size: 12px;
 }
 
 .file-upload-wrapper .btn {
@@ -146,25 +144,14 @@ body {
   width: 100%;
 }
 
-.file-upload-wrapper .uploadImage {
-  position: absolute;
-  top: 16px;
-  left: 25px;
-}
-
 .file-upload-wrapper {
   text-align: center;
-  padding: 52px;
-  border: 1px solid #cccccc;
+  padding: 20px 20px 35px 20px;
   border: 1px solid #707070;
 }
 
 .file-upload-wrapper .uploadImage p {
-  display: flex;
-  margin-top: 21px;
   color: #333333;
-  margin-left: 3px;
-  width: max-content;
 }
 
 
@@ -188,10 +175,10 @@ body {
   }
 
   .nav-dropdown-items {
-    margin-left: 25px;
+    margin-left: 10px;
 
     i {
-      font-size: 15px;
+      font-size: 10px;
     }
   }
 }
@@ -270,12 +257,14 @@ body {
 }
 
 .mat-form-field-label-wrapper {
-  top: -1.2rem !important;
+  top: -1.3rem !important;
+  height: 170% !important;
 }
 
 .mat-form-field-appearance-outline .mat-form-field-infix {
-  padding: 6px 0 !important;
+  padding: 3px 0 !important;
   width: 100% !important;
+  font-size: .8rem;
 
 }
 
@@ -304,7 +293,7 @@ table {
 
 td.mat-footer-cell,
 th.mat-header-cell {
-  @include typoStyle(0.8rem, normal);
+  @include typoStyle(0.7rem, normal);
   letter-spacing: 0.01em;
   text-align: left;
   color: $white;
@@ -416,7 +405,7 @@ header {
 
   #multi-delete {
     background: #FF0034;
-    padding: 0.625rem;
+    padding: 7px;
     width: 100%;
     justify-content: center;
   }
@@ -425,10 +414,11 @@ header {
     border: 0;
     outline: 0;
     color: $white;
-    padding: 0.75rem;
+    padding: 8px;
     background: #065a84;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.16);
     width: 100%;
+    font-size: .8rem;
   }
 }
 
@@ -471,12 +461,19 @@ header {
   }
 
   #transfer {
+    .modal-header {
+      h4 {
+        font-size: 1rem;
+      }
+    }
+
     select {
       border: 1px solid #707070;
+      padding: 10px;
     }
 
     .title-4 {
-      @include typoStyle(1.2rem, 400);
+      @include typoStyle(.9rem, 400);
     }
 
     .transfer-title {
@@ -490,14 +487,25 @@ header {
 
   #labelModel {
     table {
-      width: 20%;
+      width: 100%;
       margin: 20px auto;
+
+      tbody {
+        tr {
+          margin: 5px 0;
+
+          td {
+            font-size: 1.3125rem;
+            font-weight: 600;
+          }
+        }
+      }
     }
   }
 
   #stoneModel {
     .title-4 {
-      @include typoStyle(.9rem, 700);
+      @include typoStyle(.9rem, 400);
     }
 
     .input-text {
@@ -545,7 +553,7 @@ header {
     .input-text {
       padding: 5px 10px;
       text-align: center;
-      width: 70%;
+      width: 100%;
       border: 1px solid #707070;
 
     }
@@ -576,10 +584,6 @@ header {
       text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
     }
 
-    #img {
-      border: 1px solid #333;
-    }
-
     .head-title {
       @include typoStyle(.9rem, bold);
       letter-spacing: 0.01em;
@@ -593,10 +597,19 @@ header {
   #table-details {
     width: 100%;
 
+    thead {
+      tr {
+        th {
+          width: 25%;
+          font-size: 0.75rem;
+        }
+      }
+    }
+
     tbody {
       tr {
         td {
-          @include typoStyle(.9rem, normal);
+          @include typoStyle(.7rem, normal);
           text-align: center;
           letter-spacing: 0.01em;
           color: #292929;
@@ -607,12 +620,16 @@ header {
   }
 
   .gold-box {
-    padding: 20px 19px;
+    padding: 8px;
     border-radius: 5px;
     background: #f5f5f5;
     border: 1px solid rgba(0, 0, 0, 0.24);
     height: 100%;
     box-shadow: 0 2px 6px rgba(0, 0, 0, .16);
+
+    h3.head-title {
+      font-size: .75rem !important;
+    }
 
     p {
       @include typoStyle(.8rem, 500);
@@ -653,6 +670,8 @@ header {
         tr {
           th {
             padding: 7px 0;
+            font-size: .7rem;
+            text-transform: uppercase;
           }
         }
       }
@@ -674,7 +693,6 @@ header {
   #cost {
     h4 {
       @include typoStyle(15px, bold);
-      letter-spacing: 0.01em;
       color: #333;
       text-align: center;
     }
@@ -709,7 +727,7 @@ header {
   label {
     font-family: Arial;
     font-weight: normal;
-    font-size: 15px;
+    font-size: 13px;
     letter-spacing: 0.01em;
     color: #333;
     text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
@@ -717,7 +735,7 @@ header {
 
   #product-details {
     h4 {
-      @include typoStyle(1.1rem, bold);
+      @include typoStyle(.9rem, bold);
       letter-spacing: 0.01em;
       text-align: left;
       color: #333;
@@ -737,7 +755,7 @@ header {
     border: 2px dotted #707070;
 
     h4 {
-      @include typoStyle(1.1rem, bold);
+      @include typoStyle(1rem, bold);
       letter-spacing: 0.01em;
       color: #333;
       text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
@@ -746,6 +764,11 @@ header {
   }
 
   #total-details {
+    p {
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+      font-weight: 600;
+    }
+
     .total-border {
       border: 1px solid #707070;
       height: 100%;
@@ -754,11 +777,11 @@ header {
     .gold-box {
       background: #fff;
       border: 1px solid #707070;
-      padding: 10px 9px;
+      padding: 10px;
       height: 100%;
 
       h4 {
-        @include typoStyle(.9rem, 900);
+        @include typoStyle(.8rem, 900);
         text-align: center;
 
         span {
@@ -766,9 +789,16 @@ header {
         }
       }
 
+      .unit {
+        @include typoStyle(.8rem, 900);
+
+      }
+
       p {
         text-align: center;
         @include typoStyle(1.2rem, 500);
+        text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+
       }
     }
 
@@ -782,6 +812,14 @@ header {
     }
 
     .stones {
+      h4 {
+        font-size: 1rem;
+
+        span {
+          font-size: .9rem;
+        }
+      }
+
       .stone-border {
         border: 2px solid #dedede;
       }
@@ -793,13 +831,21 @@ header {
           border: 0;
           outline: 0;
         }
-      }
 
-      table {
-        tbody {
-          tr {
-            td {
-              padding: 5px 0 10px 0;
+        table {
+          thead {
+            tr {
+              th {
+                font-size: .7rem;
+              }
+            }
+          }
+
+          tbody {
+            tr {
+              td {
+                padding: 5px 0 10px 0;
+              }
             }
           }
         }
@@ -807,6 +853,10 @@ header {
     }
 
     .cost {
+      h5 {
+        font-size: .9rem;
+      }
+
       .cost-box {
         border-radius: 5px;
         background: #f5f5f5;

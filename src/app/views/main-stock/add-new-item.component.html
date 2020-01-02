@@ -43,7 +43,7 @@
   <!-- End Header -->
   <div class="row mt-4 no-gutters p-5">
     <div class="col-md-7" id="product-details">
-      <p class="text-red float-right">* Mandatory fields</p>
+      <p class="text-red float-right">* Mandatory Fields</p>
       <h4 class="text-uppercase">PRODUCT DETAILS</h4>
       <form
         #form="ngForm"
@@ -59,7 +59,7 @@
               matInput
               [matDatepicker]="picker"
               placeholder="Choose a Date"
-              class="pointer p-3 input-text w-100"
+              class="pointer p-2 input-text w-100"
               autocomplete="off"
               (click)="picker.open()"
               (dateInput)="entryDateChanged($event, 'from')"
@@ -91,7 +91,7 @@
               >
               <select
                 (change)="onChangeMetal($event.target.value)"
-                class="p-3 input-text w-100"
+                class="p-2 input-text w-100"
                 formControlName="metal_type"
               >
                 <option disabled selected="selected" value=""
@@ -128,7 +128,7 @@
               >
               <select
                 (change)="onChangeCategory($event.target.value)"
-                class="p-3 input-text w-100"
+                class="p-2 input-text w-100"
                 formControlName="category_id"
                 (change)="getSelectedListOptionId('category')"
               >
@@ -148,6 +148,7 @@
                   data-toggle="modal"
                   (click)="myModal.show(categoriesForm.reset())"
                   (click)="clearError()"
+                  style="font-size: .8rem;"
                   >Add New Category</a
                 >
               </div>
@@ -166,7 +167,7 @@
               <input
                 formControlName="label"
                 autocomplete="off"
-                class="stop p-3 input-text w-100 label"
+                class="stop p-2 input-text w-100 label"
                 [value]="label"
                 placeholder="{{ label }}"
               />
@@ -179,7 +180,7 @@
               >
               <input
                 autocomplete="off"
-                class="p-3 input-text text-center w-100"
+                class="p-2 input-text text-center w-100"
                 (keyup)="calculateTotal($event, 0, 'gW')"
                 (keypress)="numberCheckValidation($event)"
                 formControlName="gold_weight"
@@ -207,7 +208,7 @@
               <input
                 formControlName="gold_price"
                 value=""
-                class="p-3 input-text text-center w-100"
+                class="p-2 input-text text-center w-100"
                 (keyup)="calculateTotal($event, 0, 'gP')"
                 (keypress)="numberCheckValidation($event)"
                 autocomplete="off"
@@ -230,14 +231,14 @@
             </div>
           </div>
         </div>
-        <div class="col-md-5 mt-3 pl-5 pr-0">
+        <div class="col-md-5 mt-3 pr-0">
           <div class="row no-gutters">
             <div class="col-12 p-0">
               <label for="exampleInputName2" class="title"
                 >Branch <span class="text-red">*</span></label
               >
               <select
-                class="p-3 itemInput w-100"
+                class="p-2 itemInput w-100"
                 formControlName="branch_id"
                 (change)="getSelectedListOptionId('branch')"
               >
@@ -251,6 +252,7 @@
               <div class="d-flex float-right">
                 <a
                   class="pointer text-blue"
+                  style="font-size: .8rem;"
                   data-toggle="modal"
                   (click)="myModal2.show(branchesForm.reset())"
                   (click)="clearError()"
@@ -294,7 +296,7 @@
                       </button>
                       <span
                         class="text-grey mt-1"
-                        style="word-break: break-word"
+                        style="word-break: break-word;"
                         >{{ imagePlaceHolder }}</span
                       >
                     </p>
@@ -313,7 +315,7 @@
                   />
                 </div>
               </div>
-              <div class="maxFile d-flex mt-2 float-right text-grey">
+              <div class="maxFile d-flex mt-2 float-right text-grey" style="font-size: 12px;">
                 Jpg, Png (Maximum 2 MB)
               </div>
               <mat-hint
@@ -338,7 +340,7 @@
               >Stone Type <span class="text-red">*</span></label
             >
             <select
-              class="p-3 input-text w-100"
+              class="p-2 input-text w-100"
               value=""
               (change)="getSelectedListOptionId('stone')"
               formControlName="stone"
@@ -357,7 +359,7 @@
                 >Quantity <span class="text-red">*</span></label
               >
               <input
-                class="p-3 input-text w-100 mt-2 text-center"
+                class="p-2 input-text w-100 mt-2 text-center"
                 formControlName="stone_quantity"
                 value=""
                 (keypress)="numberCheckValidation($event)"
@@ -370,7 +372,7 @@
                 >Weight (cts) <span class="text-red">*</span></label
               >
               <input
-                class="p-3 input-text w-100 mt-2 text-center"
+                class="p-2 input-text w-100 mt-2 text-center"
                 formControlName="stone_weight"
                 value=""
                 (keypress)="numberCheckValidation($event)"
@@ -383,7 +385,7 @@
                 >Cost ($) <span class="text-red">*</span></label
               >
               <input
-                class="p-3 input-text w-100 mt-2 text-center"
+                class="p-2 input-text w-100 mt-2 text-center"
                 formControlName="stone_cost"
                 value=""
                 (keypress)="numberCheckValidation($event)"
@@ -396,7 +398,7 @@
                 >Setting <span class="text-red">*</span></label
               >
               <input
-                class="p-3 input-text w-100 mt-2 text-center"
+                class="p-2 input-text w-100 mt-2 text-center"
                 formControlName="stone_setting"
                 (keypress)="numberCheckValidation($event)"
                 value=""
@@ -425,7 +427,7 @@
           </div>
           <div class="col-md-6">
             <div class="">
-              <p class="m-0">Product Name</p>
+              <p class="m-0 detail">Product Name</p>
               <span class="text-grey">
                 {{
                   addStockForm.value.category_id != ''
@@ -435,7 +437,7 @@
               </span>
             </div>
             <div class="">
-              <p class="m-0">Branch</p>
+              <p class="m-0 detail">Branch</p>
               <span class="text-grey"
                 >{{
                   addStockForm.value.branch_id !== '' ? sentFormBranchId : '-'
@@ -443,15 +445,16 @@
               </span>
             </div>
             <div class="">
-              <p class="m-0">Date</p>
+              <p class="m-0 detail">Date</p>
               <span class="text-grey">{{ entryDate }}</span>
             </div>
           </div>
         </div>
-        <div class="row mt-2">
+        <div class="row mt-2 no-gutters">
           <div class="col-md-4">
             <div class="gold-box">
-              <h4>Gold Weight <span>gm</span></h4>
+              <h4>Gold Weight</h4>
+              <p class="unit">(gm)</p>
               <p>
                 {{
                   addStockForm.value.gold_weight !== ''
@@ -461,9 +464,10 @@
               </p>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 pl-1">
             <div class="gold-box">
-              <h4>Gold Price ($)</h4>
+              <h4>Gold Price</h4>
+              <p class="unit">($)</p>
               <p>
                 {{
                   addStockForm.value.gold_price !== ''
@@ -473,9 +477,10 @@
               </p>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 pl-2">
             <div class="gold-box total">
-              <h4>Total ($)</h4>
+              <h4>Total</h4>
+              <p class="unit">($)</p>
               <p>
                 {{
                   addStockForm.value.gold_price !== '' &&
@@ -493,7 +498,7 @@
             <span class="text-grey"> {{ sentStonesArray.length }} Stones</span>
           </h4>
           <div class="stone-border p-2 text-center">
-            <span class="text-grey" *ngIf="sentStonesArray.length <= 0">{{
+            <span class="text-red" style="font-size: .8rem;" *ngIf="sentStonesArray.length <= 0">{{
               stonAreaPlaceHolder
             }}</span>
             <div
@@ -546,18 +551,18 @@
                     <td class="border-right">
                       {{
                         sentStonesArray.length > 0
-                          ? stone.price?.toLocaleString()
+                          ? stone.price
                           : '0'
                       }}
                     </td>
                     <td class="border-right">
                       {{
                         sentStonesArray.length > 0
-                          ? stone.setting?.toLocaleString()
+                          ? stone.setting
                           : '0'
                       }}
                     </td>
-                    <td>${{ stone.total?.toLocaleString() }}</td>
+                    <td>{{ stone.total }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -574,20 +579,20 @@
         <div class="cost mt-3">
           <div class="row no-gutters">
             <div class="col-md-12">
-              <h5 class="text-center mb-3">Cost ($)</h5>
+              <h5 class="text-uppercase mb-3">Cost ($)</h5>
               <div class="cost-box">
                 {{ totalCostWithOutProfit ? totalCostWithOutProfit : '0' }}
               </div>
             </div>
             <div class="col-md-12 mt-3" [formGroup]="factorForm">
               <div class="row align-items-center no-gutters mb-3">
-                <h5 class="text-center col-3">Cost *</h5>
+                <h5 class="col-3 text-uppercase">Cost *</h5>
                 <input
                   type="text"
                   formControlName="factor"
-                  class="input-text col-6 p-3"
+                  class="input-text col-9 p-2"
                   (input)="getFactoryNumber($event)"
-                  placeholder="Factory example: 4.4"
+                  placeholder="Factor Example: 4.4"
                 />
               </div>
               <div class="cost-box">

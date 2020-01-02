@@ -114,7 +114,7 @@ export class AddNewItemComponent {
   }
   /* ----------------------------------- OnInit ------------------------ */
   // tslint:disable-next-line: use-lifecycle-interface
-  ngOnInit() {}
+  ngOnInit() { }
   /* ----------------------------------- Open Modal ------------------------ */
   openModel(template: TemplateRef<any>) {
     this.categoriesForm.reset();
@@ -209,8 +209,8 @@ export class AddNewItemComponent {
         this.GoldPriceValue * this.addStockForm.value.gold_weight;
     }
     this.totalCostWithOutProfit = this.goldTotalPice + +this.stonesTotalPrice;
-    this.totalCostWithProfit =
-      this.totalCostWithOutProfit * this.factorForm.controls.factor.value;
+    this.totalCostWithProfit = Math.ceil(
+      this.totalCostWithOutProfit * this.factorForm.controls.factor.value);
   }
   /* ----------------------- Number Validation ---------------------- */
   numberCheckValidation(e) {
@@ -284,9 +284,9 @@ export class AddNewItemComponent {
       ].type_name = this.addStockStoneForm.value.stone;
       this.sentStonesArray[this.editstoneIndex].total =
         this.addStockStoneForm.value.stone_cost *
-          this.addStockStoneForm.value.stone_weight +
+        this.addStockStoneForm.value.stone_weight +
         this.addStockStoneForm.value.stone_quantity *
-          this.addStockStoneForm.value.stone_setting;
+        this.addStockStoneForm.value.stone_setting;
       this.editStoneMode = false;
     } else {
       this.sentStonesArray.push({
@@ -298,9 +298,9 @@ export class AddNewItemComponent {
         type_name: this.addStockStoneForm.value.stone,
         total:
           this.addStockStoneForm.value.stone_cost *
-            this.addStockStoneForm.value.stone_weight +
+          this.addStockStoneForm.value.stone_weight +
           this.addStockStoneForm.value.stone_quantity *
-            this.addStockStoneForm.value.stone_setting
+          this.addStockStoneForm.value.stone_setting
       });
     }
     this.addStockStoneForm.patchValue({
@@ -381,8 +381,8 @@ export class AddNewItemComponent {
       this.totalCostWithOutProfit =
         this.totalCostWithOutProfit -
         this.sentStonesArray[deletedStoneIndex].total;
-      this.totalCostWithProfit =
-        this.totalCostWithOutProfit * this.factorForm.controls.factor.value;
+      this.totalCostWithProfit = Math.ceil(
+        this.totalCostWithOutProfit * this.factorForm.controls.factor.value);
       this.sentStonesArray.splice(deletedStoneIndex, 1);
       this.editStoneMode = false;
       this.addStockStoneForm.patchValue({
@@ -398,7 +398,7 @@ export class AddNewItemComponent {
       this.imageDeleted = true;
       this.imageUploadedDisplay = false;
       (document.getElementById('uploadImage') as HTMLInputElement).value = '';
-      this.imagePlaceHolder = 'stock image';
+      this.imagePlaceHolder = 'Stock Image';
       this.addStockForm.value.image = '';
       this.ImageSrc = '../../../assets/default.png';
     }
