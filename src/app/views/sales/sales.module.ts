@@ -36,6 +36,8 @@ import { salesAllSolver } from '../../resolvers/sales-index.solver';
 import { ReceiptsAllSolver } from '../../resolvers/receipts-index.solver';
 import { safeBoxActionsSolver } from '../../resolvers/safe-box-actions.solver';
 import { safeboxIndexSolver } from '../../resolvers/safe-box-index.solver';
+import { metalSolver } from './../../resolvers/metal.solver';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -78,7 +80,8 @@ import { safeboxIndexSolver } from '../../resolvers/safe-box-index.solver';
     salesAllSolver,
     ReceiptsAllSolver,
     safeBoxActionsSolver,
+    metalSolver,
     safeboxIndexSolver
   ]
 })
-export class SalesModule {}
+export class SalesModule { }

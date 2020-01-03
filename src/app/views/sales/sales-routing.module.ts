@@ -14,6 +14,7 @@ import { ReceiptsAllSolver } from '../../resolvers/receipts-index.solver';
 import { safeBoxActionsSolver } from '../../resolvers/safe-box-actions.solver';
 import { productsAllSolver } from './../../resolvers/products-index.solver';
 import { safeboxIndexSolver } from '../../resolvers/safe-box-index.solver';
+import { metalSolver } from './../../resolvers/metal.solver';
 const routes: Routes = [
   {
     path: '',
@@ -33,7 +34,8 @@ const routes: Routes = [
         },
         resolve: {
           branchList: branchListSolver,
-          receipts: ReceiptsAllSolver
+          receipts: ReceiptsAllSolver,
+          metal: metalSolver
         }
       },
       {
@@ -89,4 +91,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class SalesRoutingModule {}
+export class SalesRoutingModule { }

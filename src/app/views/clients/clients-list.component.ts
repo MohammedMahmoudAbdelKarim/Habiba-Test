@@ -18,6 +18,10 @@ export class ClientsListComponent implements OnInit {
   // Modals
   @ViewChild('myModal', { static: false }) public myModal: ModalDirective;
   @ViewChild('myModal2', { static: false }) public myModal2: ModalDirective;
+  @ViewChild('deleteModal', { static: false })
+  public deleteModal: ModalDirective;
+  @ViewChild('delete2Modal', { static: false })
+  public delete2Modal: ModalDirective;
   // Tables Colums
   displayedColumns: string[] = [
     'select',
@@ -90,7 +94,7 @@ export class ClientsListComponent implements OnInit {
   }
 
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() {}
+  ngOnInit() { }
   /* ---------------------------- Filter Clients ------------------------ */
   private filterClient(value) {
     // tslint:disable-next-line: triple-equals
@@ -180,7 +184,7 @@ export class ClientsListComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* ---------------------------- Remove Multi-Items ------------------------ */
   mutliplyAction(event) {
@@ -189,8 +193,6 @@ export class ClientsListComponent implements OnInit {
   }
   removeMultiply() {
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
-    this.showDeletePopup = true;
-    this.deleteFlage = true;
     if (upperDeleteInputValue === 'DELETE') {
       const ids = [];
       this.selection.selected.forEach(item => {
@@ -203,13 +205,16 @@ export class ClientsListComponent implements OnInit {
         .delete('clients', { params: { 'ids[]': ids } })
         .subscribe(data => {
           this.toast.success('The Clients are Successfully delete', '!Success');
+          this.delete2Modal.hide();
           this.api.get('clients').subscribe(value => {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
           });
         });
-      this.showDeletePopup = false;
+    }
+    else {
+      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
   /* -------------------------- Create New Clients ----------------------- */
@@ -290,39 +295,30 @@ export class ClientsListComponent implements OnInit {
     this.clientsForm.controls.mobile.setValue(clientData.mobile);
     this.clientsForm.controls.email.setValue(clientData.email);
   }
-  // Close Update Popup
-  closeUpdataPopup() {
-    this.showUpdataPopup = false;
-  }
   // Open Delete Popup
   opendeletePopup(row) {
-    this.deleteForm.controls.deleteInput.setValue('');
+    console.log(row);
     this.deleteItem = row;
-    this.showDeletePopup = true;
-    this.DeletingHold = true;
-  }
-  // Close Delete Popup
-  closeDeletePopup() {
     this.deleteForm.controls.deleteInput.setValue('');
-    this.showDeletePopup = false;
+    this.deleteModal.show();
+  }
+  // Open Multi Delete
+  deleteMultiply() {
+    this.deleteForm.controls.deleteInput.setValue('');
+    this.delete2Modal.show();
   }
   /* -------------------------- Delete Client ----------------------------- */
   deleteClient() {
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
     if (upperDeleteInputValue === 'DELETE') {
-      console.log('Deleted One Item');
-    } else {
-      this.api.fireAlert('error', 'Error in writing delete', '');
-    }
-    console.log(this.deleteFlage);
-    if (!this.deleteFlage) {
       this.api.delete('clients/' + this.deleteItem.id).subscribe(value => {
         // tslint:disable-next-line: triple-equals
         if (value['status'] == 'success') {
           this.toast.success(
-            this.deleteItem.label + ' ' + 'has been Deleted',
+            this.deleteItem.name + ' ' + 'has been Deleted',
             'Success!'
           );
+          this.deleteModal.hide();
           this.api
             .get('clients', {
               per_page: 50
@@ -334,15 +330,9 @@ export class ClientsListComponent implements OnInit {
               this.dataSource.sort = this.sort;
             });
         }
-        this.DeletingHold = false;
-        this.showDeletePopup = false;
-        return this.clientList;
       });
     } else {
-      this.showDeletePopup = true;
-      if (upperDeleteInputValue === 'DELETE') {
-        this.removeMultiply();
-      }
+      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
   // Reload Page

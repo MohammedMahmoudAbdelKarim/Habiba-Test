@@ -33,7 +33,7 @@
         <div class="col-7"></div>
         <div class="col-3 row justify-content-end">
           <button class="addBtn" routerLink="/sales/sales-list">
-            <i class="icon-diamond mr-2 align-middle"></i>
+            <i class="icon-basket-loaded mr-2 align-middle"></i>
             Sales List
           </button>
         </div>
@@ -44,7 +44,7 @@
   <div class="row no-gutters">
     <div class="col-md-8 p-5">
       <form [formGroup]="productSelectForm">
-        <div class="row no-gutters align-items-end">
+        <div class="row no-gutters align-items-end justify-content-between">
           <mat-form-field
             class="example-full-width col-9 mr-3"
             appearance="outline"
@@ -85,12 +85,14 @@
             type="button"
             (click)="addItemTosellingProductListArray()"
             [disabled]="addDisAbledState"
+            style="padding: 7px; font-weight: 700"
           >
+          <i class="icon-basket-loaded mr-2 align-middle"></i>
             ADD ITEM
           </button>
         </div>
         <mat-hint
-          class="alert alert-danger w-100 d-block"
+          class="alert alert-danger mt-2 w-100 d-block"
           *ngIf="errMessage.items"
           >{{ errMessage.items }}</mat-hint
         >
@@ -124,7 +126,7 @@
               <td>
                 <img
                   *ngIf="product.image"
-                  width="148px"
+                  width="100%"
                   src="http://jewelry.ixscope.com/backend/img/products/{{
                     product.image
                   }}"
@@ -223,66 +225,188 @@
                 }}
               </td>
               <td>
-                <mat-icon
-                  class="text-red pointer"
-                  (click)="removeItem($event, stoneIndex, i, 'sP')"
-                  >delete</mat-icon
-                >
+                <img class="pointer" src="../../../assets/icon/delete.svg" (click)="removeItem($event, stoneIndex, i, 'sP')" alt="">
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <div class="col-md-4 p-5"></div>
+    <div class="col-md-4 p-5" id="sale-details">
+      <form [formGroup]="invoiceDataform" class="row no-gutters">
+        <!-- Start Form field -->
+        <div class="col-md-12">
+          <label
+            ><img src=".././../../assets/icon/employee-2.svg" /> 
+            <span class="ml-2">Client Name or Mobile</span>
+          </label>
+          <mat-form-field
+            class="example-full-width pb-0"
+            appearance="outline"
+          >
+            <mat-label>Client Name or Mobile</mat-label>
+            <input
+              type="text"
+              placeholder="Client"
+              aria-label="Number"
+              matInput
+              [formControl]="clientNameData"
+              [matAutocomplete]="autoClient"
+              [(ngModel)]="clientValue"
+            />
+            <mat-icon
+              class="pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="clientValue = ''"
+              *ngIf="clientValue"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoClient="matAutocomplete"
+              [displayWith]="displayClient"
+            >
+              <mat-option
+                (onSelectionChange)="getClientId($event.source.value)"
+                *ngFor="let option of filteredClients | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-hint
+              class="pointer mt-4"
+              (click)="clearError()"
+              (click)="myModalClient.show(clientsForm.reset())"
+              align="end"
+              style="color:#20a8d8; font-size: 12px;"
+              >Add New Client</mat-hint
+            >
+          </mat-form-field>
+          <mat-hint
+            class="alert alert-danger mt-2 w-100 d-block"
+            *ngIf="errMessage.client_id"
+            >{{ errMessage.client_id }}</mat-hint
+          >
+        </div>
+        <div class="col-md-12 mt-3">
+          <div class="form-group">
+            <label>
+              <img src="../.././../assets/icon/calendar.svg" /> 
+              <span class="ml-2">Date</span>             
+            </label>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              placeholder="Choose a Date"
+              class="input-text w-100 pointer"
+              id="exampleInputEmail1"
+              autocomplete="off"
+              (click)="picker.open()"
+              (dateInput)="entryDateChanged($event, 'from')"
+              (keypress)="(false)"
+              required
+            />
+            <mat-datepicker touchUi #picker> </mat-datepicker>
+          </div>
+          <mat-hint
+            class="alert alert-danger w-100 d-block"
+            *ngIf="errMessage.receipt_date"
+            >{{ errMessage.receipt_date }}</mat-hint
+          >
+        </div>
+        <div class="col-md-12 mt-3">
+          <div class="form-group">
+            <label
+              ><img src="../.././../assets/icon/placeholder.svg" />
+              <span class="ml-2">Warehouse</span>
+            </label>
+            <select
+              class="input-text w-100"
+              formControlName="branch"
+              value=""
+              (change)="getSelectedListOptionId($event.target)"
+              required
+            >
+            <option
+                    value=""
+                    disabled
+                    selected
+                    hidden
+                    *ngIf="isInvoiced"
+                    >{{ branch_name }}</option
+                  >
+              <option value="" disabled selected hidden>{{
+                branchesList[0].name
+              }}</option>
+              <option
+                *ngFor="let branch of branchesList"
+                [value]="branch.id"
+              >
+                {{ branch.name }}
+              </option>
+            </select>
+            <mat-hint
+              style="color:#20a8d8;
+              font-size: 12px;"
+              class="mt-1 float-right pointer"
+              align="end"
+              (click)="clearError()"
+              (click)="myModalBranch.show(branchesForm.reset())"
+              >Add New Warehouse</mat-hint
+            >
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
   <!-- Fixed Price -->
-  <div class="PriceFixed row">
+  <div class="price-fixed row no-gutters">
     <div class="col-lg-8 py-3">
       <form [formGroup]="paidAmountForm">
-        <table class="table table-borderless ">
+        <table class="table border-0 ">
           <thead>
-            <tr class="header-tr">
-              <th scope="col" style="text-align: center;">Total USD</th>
+            <tr class="border-0">
+              <th scope="col" class="border-right text-center">Total USD</th>
               <th
-                class="styleBorderRight"
+                class="border-right text-center"
                 scope="col"
-                style="text-align: center;"
               >
                 Total EGP
               </th>
-              <th class="styleBorderRight" scope="col">Amount Paid</th>
+              <th class="border-right text-center" scope="col">Amount Paid</th>
               <th scope="col">Payment Method</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td
-                class=""
+                class="border-right text-center"
                 style=" font-size: 19px;
-                font-weight: 600; text-align: center;"
+                font-weight: 600;"
               >
-                {{ invoiceTotal.toLocaleString() }}
+                {{ invoiceTotal }}
               </td>
-              <td class="styleBorderRight" style="text-align: center;">
+              <td class="border-right text-center">
                 <input
-                  class="px-3 py-2 itemInput w-75 text-center"
+                  class="input-text w-100 text-center"
                   value="{{
                     invoiceTotal !== 0 ? invoiceTotal * dollarPrice : 0
                   }}"
                   placeholder="Total EGP"
                   formControlName="total_egp"
                   autocomplete="off"
+                  (input)="calculateRemaining()"
                 />
               </td>
-              <td class="styleBorderRight text-center text-red">
+              <td class="border-right text-center">
                 <input
-                  class="px-3 py-2 itemInput w-75 text-center mr-1"
-                  placeholder="Insert paid amount"
+                  class="input-text w-75 text-center mr-1"
+                  placeholder="Insert Paid Amount"
                   formControlName="paidAmount"
                   autocomplete="off"
                   #paidAmount
-                  (input)="calculateRemaining(paidAmount)"
+                  (input)="calculateRemaining()"
                 />
                 EGP
                 <span
@@ -290,15 +414,14 @@
                   class="text-white bg-transparent d-block mt-3"
                   >Remaining Amount</span
                 >
-                <span style="font-size: 15px" *ngIf="remainingPrice">{{
+                <span style="font-size: 12px" *ngIf="remainingPrice">{{
                   remainingPrice
-                }}</span>
+                }} EGP</span>
               </td>
               <td class="text-center text-red">
                 <select
                   (change)="getPaymentType($event.target.value)"
-                  class="itemInput w-50 text-center"
-                  style="padding: 13px"
+                  class="input-text w-100 text-center"
                 >
                   <option value="1" selected="selected">Cash</option>
                   <option value="2">Visa</option>
@@ -311,7 +434,8 @@
       </form>
     </div>
     <div class="col-md-4 p-0">
-      <button class="btn" type="submit" (click)="onSubmit()">
+      <button class="submit-btn" type="submit" (click)="onSubmit()">
+        <i class="icon-basket-loaded mr-2 align-middle"></i>
         Confirm & Generate Invoice
       </button>
     </div>
@@ -329,6 +453,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
+          <i class="icon-settings mt-2 mr-2 align-middle"></i>
           <h4 class="modal-title">Create New Warehouse</h4>
           <button
             type="button"
@@ -348,11 +473,11 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail2"
+                  <label
                     >Warehouse Name <span class="text-red">*</span></label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="name"
                     autocomplete="off"
@@ -376,11 +501,11 @@
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail3"
+                  <label
                     >Warehouse Address <span class="text-red">*</span></label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="address"
                     autocomplete="off"
@@ -406,10 +531,10 @@
                 <div class="form-group">
                   <label>Warehouse City <span class="text-red">*</span></label>
                   <select
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     formControlName="city_id"
                   >
-                    <option value="" selected="selected" disabled hidden
+                    <option value="" selected disabled
                       >Please Select City</option
                     >
                     <option
@@ -435,8 +560,12 @@
                 >
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn-modal-submit">
+            <div class="modal-footer border-0 justify-content-start px-0">
+              <button
+                type="submit"
+                class="submit-btn"
+              >
+              <i class="icon-settings mt-2 mr-2 align-middle"></i>
                 Add Warehouse
               </button>
             </div>
@@ -458,6 +587,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
+          <i class="icon-people mt-2 mr-2 align-middle"></i>
           <h4 class="modal-title">Create New Client</h4>
           <button
             type="button"
@@ -477,11 +607,11 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail2"
+                  <label
                     >Client Name <span class="text-red">*</span></label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="name"
                     autocomplete="off"
@@ -505,11 +635,11 @@
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail3"
+                  <label
                     >Client Mobile <span class="text-red">*</span></label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="mobile"
                     autocomplete="off"
@@ -533,11 +663,11 @@
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail3"
-                    >Client Email <span class="text-red">*</span></label
+                  <label
+                    >Client Email</label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="email"
                     autocomplete="off"
@@ -546,22 +676,17 @@
                 </div>
                 <mat-hint
                   class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="
-                    clientsForm.controls.email.errors?.required &&
-                    clientsForm.controls.email.touched &&
-                    !modalError.email
-                  "
-                  >This Field is Required</mat-hint
-                >
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
                   *ngIf="modalError.email"
                   >{{ modalError.email }}</mat-hint
                 >
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn-modal-submit">
+            <div class="modal-footer border-0 justify-content-start px-0">
+              <button
+                type="submit"
+                class="submit-btn"
+              >
+              <i class="icon-people mt-2 mr-2 align-middle"></i>
                 Add Client
               </button>
             </div>

@@ -48,49 +48,49 @@ export class AddNewItemComponent {
     address: new FormControl('', Validators.required),
     city_id: new FormControl('', Validators.required)
   });
-  imageDeleted: boolean = false;
-  imageUploadedDisplay: boolean = false;
-  editStoneMode: boolean = false;
-  imageUploadedOnInput: boolean = true;
   metalFlage: boolean = false;
-  imageEncodedCharachter: any;
-  totalCostWithOutProfit: any = 0;
-  totalCostWithProfit: any = 0;
-  stonAreaPlaceHolder: any = 'No Stones Added Yet';
-  branchesList: any = [];
-  categoriesList: any = [];
-  stoneList: any = [];
+  imageDeleted: boolean = false;
+  editStoneMode: boolean = false;
+  imageUploadedDisplay: boolean = false;
+  imageUploadedOnInput: boolean = true;
+  sentImage: any;
   imageFile: any;
-  imagePlaceHolder: any = 'Stock Image';
   StochImage: any;
   goldTotalPice: any;
-  stonesTotalPrice: any = 0;
-  label: any = '';
-  entryDate: any = '-';
-  GoldWeightValue: any;
-  GoldPriceValue: any;
-  sentImage: any;
-  sentFormCategotyId: any;
-  sentFormBranchId: any;
-  sentFormStoneId: any;
-  sentProductDate: any;
-  sentStonesArray: any = [];
-  ImageSrc: any = '../../../assets/default.png';
-  imageBase64StringCharacter: any;
-  base64textString: any = [];
   imageExtention: any;
   editeStoneName: any;
-  editeStoneNameIndex: any;
+  GoldPriceValue: any;
   editstoneIndex: any;
-  goldWeightValue: any;
   goldPriceValue: any;
+  sentFormStoneId: any;
+  sentProductDate: any;
+  goldWeightValue: any;
+  GoldWeightValue: any;
+  citiesListArray: any;
+  sentFormBranchId: any;
+  sentFormCategotyId: any;
+  editeStoneNameIndex: any;
+  imageEncodedCharachter: any;
+  imageBase64StringCharacter: any;
+  stonesTotalPrice: any = 0;
+  totalCostWithProfit: any = 0;
+  totalCostWithOutProfit: any = 0;
+  metals: any = [];
+  stoneList: any = [];
+  modalError: any = [];
+  errorMessage: any = [];
+  branchesList: any = [];
+  categoriesList: any = [];
+  sentStonesArray: any = [];
+  base64textString: any = [];
+  imagePlaceHolder: any = 'Stock Image';
+  stonAreaPlaceHolder: any = 'No Stones Added Yet';
+  ImageSrc: any = '../../../assets/default.png';
+  label: any = '';
+  entryDate: any = '-';
+  metal_types: any = '';
   CategoryCode: any = '';
   categoryLabel: any = '';
-  citiesListArray: any;
-  errorMessage: any = [];
-  modalError: any = [];
-  metals: any = [];
-  metal_types: any = '';
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -133,7 +133,6 @@ export class AddNewItemComponent {
       value => {
         // tslint:disable-next-line: no-shadowed-variable
         this.api.get('categories/active').subscribe(value => {
-          console.log(value);
           this.categoriesList = value.data;
         });
         this.toast.success(
@@ -145,7 +144,6 @@ export class AddNewItemComponent {
         );
         this.myModal.hide();
         this.api.get('categories/active').subscribe(data => {
-          console.log(data);
           // Get Categories
           this.categoriesList = data.data;
         });
@@ -420,7 +418,7 @@ export class AddNewItemComponent {
         ';base64,' +
         this.addStockForm.value.image;
     } else {
-      console.log('Image With No /');
+      console.log('Image Without /');
       this.sentImage =
         'data:image/' +
         this.imageExtention +
@@ -433,11 +431,9 @@ export class AddNewItemComponent {
       ';base64,' +
       this.addStockForm.value.image;
     form.profit_percent = this.factorForm.controls.factor.value;
-    console.log(form);
     if (form.image == 'data:image/undefined;base64,') {
       form.image = '';
     }
-
     this.api.post('products', form).subscribe(
       newItem => {
         this.toast.success(
@@ -455,18 +451,14 @@ export class AddNewItemComponent {
       }
     );
   }
-
   /* --------------------------- Get Factor Number -------------------------- */
   getFactoryNumber(event) {
-    console.log(event);
-    console.log(this.factorForm.controls.factor.value);
     this.totalCostWithProfit = Math.ceil(
       this.totalCostWithOutProfit * this.factorForm.controls.factor.value
     );
   }
   /* ------------------------ Get Metal -------------------------- */
   onChangeMetal(event) {
-    console.log(event);
     this.metal_types = event;
     if (event == 1) {
       this.metalFlage = true;

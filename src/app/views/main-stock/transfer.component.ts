@@ -5,10 +5,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
-import { ToastrService } from 'ngx-toastr';
 import { ModalDirective } from 'ngx-bootstrap';
 @Component({
   templateUrl: 'transfer.component.html'
@@ -36,63 +35,28 @@ export class TransferComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   // Boolean
-  showDetailsPopup: boolean = false;
-  showUpdataPopup: boolean = false;
-  showDeletePopup: boolean = false;
-  DeletingHold: boolean = false;
-  deleteFlage: boolean = false;
   flage: boolean = false;
   // ASYNC
   filteredBranches: Observable<string[]>;
-  filteredCategories: Observable<string[]>;
-  filteredCodes: Observable<string[]>;
-  filteredStatus: Observable<string[]>;
   // Arrays and Inital Variables
   hideme: any = [];
   products: any = [];
-  statusList: any = [];
-  pageNumbers: any = [];
-  categoryList: any = [];
   modalError: any = [];
-  productNumbersList: any = [];
-  baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
-  imgUrl: string = 'img/products/';
-  category_id: any = '';
   branch_id: any = '';
-  status_id: any = '';
   label: any = '';
-  stockData: any = '';
-  transferCode: any = '';
-  transferName: any = '';
   totalSearch: any = '';
   branchValue: any = '';
   imgSrc: any = '';
-  branchList: any;
-  deleteItem: any;
   data: any;
   pageEvent: any;
-  productTransferID: any;
   checkedItems: any = 0;
   per_page: number = 50;
   // Form Controls
   myControlBranch = new FormControl('');
-  myControlCategory = new FormControl('');
-  myControlCode = new FormControl('');
-  myControlStatus = new FormControl('');
-  /* ----------------------------------- Form ------------------------ */
-  // Delete Form
-  deleteForm = new FormGroup({
-    deleteInput: new FormControl('')
-  });
-  // Transfer Form
-  transferForm = new FormGroup({
-    branch_id: new FormControl('', Validators.required)
-  });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
     private route: ActivatedRoute,
-    private toast: ToastrService,
     private router: Router
   ) {
     this.route.data.subscribe(data => {
@@ -119,8 +83,6 @@ export class TransferComponent implements OnInit {
             return item[property];
         }
       };
-      // Get Status
-      this.statusList = data.statusList.data;
     });
     // Filter Branches
     this.filteredBranches = this.myControlBranch.valueChanges.pipe(
@@ -137,37 +99,35 @@ export class TransferComponent implements OnInit {
   private filterBranch(value) {
     // tslint:disable-next-line: triple-equals
     if (value == '' || value == undefined) {
-      this.route.data.subscribe(data => {
-        this.branch_id = '';
-        // Send Request
-        this.api
-          .get('transfer', {
-            per_page: 50
-          })
-          // tslint:disable-next-line: no-shadowed-variable
-          .subscribe(value => {
-            setTimeout(() => {
-              this.dataSource = new MatTableDataSource(value.data.data);
-              this.dataSource.sort = this.sort;
-              this.dataSource.paginator = this.paginator;
-              // Sort item inside inner Object
-              this.dataSource.sortingDataAccessor = (item, property) => {
-                switch (property) {
-                  case 'product.label':
-                    return item.product.label;
-                  case 'from_branch.name':
-                    return item.from_branch.name;
-                  case 'product.gold_total':
-                    return item.product.gold_total;
-                  case 'employee.name':
-                    return item.employee.name;
-                  default:
-                    return item[property];
-                }
-              };
-            }, 300);
-          });
-      });
+      this.branch_id = '';
+      // Send Request
+      this.api
+        .get('transfer', {
+          per_page: 50
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'product.label':
+                  return item.product.label;
+                case 'from_branch.name':
+                  return item.from_branch.name;
+                case 'product.gold_total':
+                  return item.product.gold_total;
+                case 'employee.name':
+                  return item.employee.name;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
     }
     // tslint:disable-next-line: triple-equals
     if (typeof value == 'object') {
@@ -272,50 +232,7 @@ export class TransferComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
-  }
-  /* ---------------------------- Remove Multi-Items ----------------------- */
-  mutliplyAction(event) {
-    this.flage = event.checked;
-    this.checkedItems = this.selection.selected.length;
-  }
-  removeMultiply() {
-    const upperDeleteInputValue = this.deleteForm.value.deleteInput;
-    this.showDeletePopup = true;
-    this.deleteFlage = true;
-    if (upperDeleteInputValue === 'DELETE') {
-      const ids = [];
-      this.selection.selected.forEach(item => {
-        const index: number = this.data.findIndex(d => d === item);
-        ids.push(item.id);
-      });
-      this.checkedItems = 0;
-      this.selection.clear();
-      this.api
-        .delete('products', { params: { 'ids[]': ids } })
-        .subscribe(data => {
-          this.toast.success('The Items are Successfully delete', '!Success');
-          this.api.get('products').subscribe(value => {
-            this.dataSource = new MatTableDataSource(value.data.data);
-            this.dataSource.sort = this.sort;
-            this.dataSource.paginator = this.paginator;
-            // Sort item inside inner Object
-            this.dataSource.sortingDataAccessor = (item, property) => {
-              switch (property) {
-                case 'category.name':
-                  return item.category.name;
-                case 'branch.name':
-                  return item.branch.name;
-                case 'status.name':
-                  return item.status.name;
-                default:
-                  return item[property];
-              }
-            };
-          });
-        });
-      this.showDeletePopup = false;
-    }
+      } row ${row.position + 1}`;
   }
   /* -------------------------- Open Image Modal ---------------------------- */
   openImage(event) {

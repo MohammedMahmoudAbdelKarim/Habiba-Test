@@ -1,4 +1,4 @@
-<div class="animated fadeIn" id="salesList">
+<div class="animated fadeIn" id="sales-list">
   <!-- Start Header -->
   <header class="bg-blue px-5 py-3">
     <div class="row align-items-end">
@@ -100,51 +100,74 @@
             </mat-autocomplete>
           </mat-form-field>
         </div>
-        <!-- Date -->
+        <!-- From Date -->
+        <div class="col p-0 mr-3">
+          <input
+            style="padding: 5px 8px;"
+            [matDatepicker]="picker"
+            placeholder="Date From"
+            class="itemInput pointer w-100"
+            id="exampleInputEmail1"
+            autocomplete="off"
+            (click)="picker.open()"
+            (dateInput)="entryDateFrom($event, 'from')"
+            (keypress)="(false)"
+            required
+          />
+          <mat-datepicker touchUi #picker></mat-datepicker>
+        </div>
+        <!-- To Date -->
+        <div class="col p-0 mr-3">
+          <input
+            style="padding: 5px;"
+            [matDatepicker]="picker2"
+            placeholder="Date To"
+            class="itemInput pointer w-100"
+            id="exampleInputEmail1"
+            autocomplete="off"
+            (click)="picker2.open()"
+            (dateInput)="entryDateTo($event, 'to')"
+            (keypress)="(false)"
+            required
+          />
+          <mat-datepicker touchUi #picker2></mat-datepicker>
+        </div>
+        <!-- Metal -->
         <div class="col p-0 mr-3">
           <mat-form-field class="example-full-width" appearance="outline">
-            <mat-label>Date</mat-label>
+            <mat-label>Metal Type</mat-label>
             <input
               type="text"
-              placeholder="Date"
+              placeholder="Metal Type"
               aria-label="Number"
               matInput
-              [formControl]="myControlDate"
-              [matAutocomplete]="autoDate"
-              [(ngModel)]="dateValue"
+              [formControl]="myControlMetal"
+              [matAutocomplete]="autoMetal"
+              [(ngModel)]="metalValue"
             />
             <mat-icon
               class="text-black-50 pointer"
               matSuffix
               aria-label="Clear"
-              (click)="dateValue = ''"
+              (click)="metalValue = ''"
               >close</mat-icon
             >
             <mat-autocomplete
-              #autoDate="matAutocomplete"
-              [displayWith]="displayDate"
+              #autoMetal="matAutocomplete"
+              [displayWith]="displaMetal"
             >
               <mat-option
-                *ngFor="let option of filteredDates | async"
+                *ngFor="let option of filteredMetals | async"
                 [value]="option"
               >
-                {{ option.receipts.receipt_date }}
+                {{ option.name }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
         </div>
-        <!-- Delete -->
-        <div
-          class="col mr-3 pointer mt-2 pl-3 pr-0 row align-items-center"
-          *ngIf="checkedItems > 1"
-          (click)="removeMultiply()"
-        >
-          <i class="fas fa-trash-alt font-2xl text-white"></i>
-          <span class="text-white pl-2">Delete Items</span>
-        </div>
         <div class="col row justify-content-end no-gutters">
           <button class="addBtn w-100" routerLink="/sales/make-new-sale">
-            <i class="icon-diamond mr-2 align-middle"></i>
+            <i class="icon-basket-loaded mr-2 align-middle"></i>
             Make New Sales
           </button>
         </div>
@@ -219,6 +242,13 @@
         </td>
       </ng-container>
       <!-- Column -->
+      <ng-container matColumnDef="product.metal.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>METAL TYPE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.product.metal.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
       <ng-container matColumnDef="receipts.receipt_number">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>
           INVOICE NUMBER
@@ -270,90 +300,28 @@
           <ng-container>
             <div id="showOrdercontrols" *ngIf="hideme[row.id]">
               <button
-                class="basic_button"
-                type="button"
-                (click)="routeToSale(row)"
-              >
-                <a target="blank">
-                  <img
-                    src="../../../assets/icon-dashboard/invoice (1).png"
-                    alt=""
-                  />
-                </a>
-                <span class="tooltiptext">Invoice</span>
-              </button>
-
-              <button
                 id="editButton"
-                (click)="openDetailsPopup(row.id); itemStockDetailsData = row"
+                (click)="openDetailsPopup(row); itemStockDetailsData = row;"
                 class="basic_button"
                 type="button"
               >
-                <img src="../../../assets/icon-dashboard/invoice.png" alt="" />
+                <img src="../../../assets/icon/details.svg" alt="" />
                 <span class="tooltiptext">Details</span>
               </button>
               <button
                 id="editButton"
                 class="basic_button"
                 type="button"
-                (click)="
-                  openUpdataPopup(row, index); itemStockDetailsData = row
-                "
+                (click)="routeToReturn(row)"
               >
-                <img src="../../../assets/icon-dashboard/edit.png" alt="" />
+                <img src="../../../assets/icon/exchange.svg" alt="" />
                 <span class="tooltiptext">Return</span>
-              </button>
-              <button
-                id="editButton"
-                class="basic_button"
-                type="button"
-                *ngIf="row.payment_status == 0"
-                (click)="myModalPayment.show(paymentForm.reset())"
-                (click)="openPayment(row)"
-              >
-                <img src="../../../assets/icon-dashboard/barcode.png" alt="" />
-                <span class="tooltiptext">Payment</span>
               </button>
             </div>
           </ng-container>
           <button class="buttonListItems">
-            <img src="../../../assets/icon-dashboard/menu.svg" alt="" />
+            <img src="../../../assets/icon/menu.svg" alt="" />
           </button>
-          <div id="Deletepopup" *ngIf="showDeletePopup">
-            <div
-              class="popupStyle"
-              id="backDrop"
-              (click)="closeDeletePopup()"
-            ></div>
-            <div id="DeletepopupData">
-              <div class="headerClose">
-                <a (click)="closeDeletePopup()">
-                  close
-                </a>
-              </div>
-              <p>For Delete Items Please Type <span>DELETE</span></p>
-              <form class="form-inline" [formGroup]="deleteForm">
-                <div class="form-group">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="DELETE"
-                    formControlName="deleteInput"
-                    value=""
-                    autocomplete="off"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  class="btn btn-default"
-                  (click)="deleteStock()"
-                  (click)="removeMultiply()"
-                >
-                  Delete
-                </button>
-              </form>
-            </div>
-          </div>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -366,11 +334,11 @@
     ></mat-paginator>
   </div>
   <!-- End Table -->
-
-  <!-- Make Payment -->
-  <div
+    <!-- Details -->
+    <div
+    id="details"
     bsModal
-    #myModalPayment="bs-modal"
+    #detailsModal="bs-modal"
     class="modal fade"
     tabindex="-1"
     role="dialog"
@@ -379,97 +347,142 @@
   >
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Add New Payment</h4>
+        <div class="modal-header pb-0 border-bottom-0">
           <button
             type="button"
             class="close"
-            (click)="myModalPayment.hide()"
+            (click)="detailsModal.hide()"
             aria-label="Close"
           >
-            <span aria-hidden="true">&times;</span>
+            <span aria-hidden="true">Close</span>
           </button>
         </div>
-        <div class="modal-body">
-          <form
-            [formGroup]="paymentForm"
-            (ngSubmit)="onSubmitPayment(paymentForm)"
-            #form="ngForm"
-          >
-            <div class="row">
-              <div class="col-md-12 row">
-                <div class="form-group col-12 no-gutters">
-                  <label for="exampleInputName2" class="title"
-                    >Amount<span class="text-red">*</span></label
-                  >
-                  <input
-                    id="exampleInputName2"
-                    formControlName="paidAmount"
-                    autocomplete="off"
-                    placeholder="EGP"
-                    class="p-3 itemInput w-100 text-center"
-                  />
+        <!-- Body -->
+        <div class="modal-body p-4" *ngIf="stockData">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="text-uppercase">{{ stockData.product.category.name }} {{stockData.product.label}}</h4>
+            <div class="text-center text-uppercase">
+              <h4>Invoice Number: <span class="text-blue"> {{ stockData.receipts.receipt_number }}</span></h4>
+            </div>
+          </div>
+          <div class="row align-items-end no-gutters mt-3">
+            <div class="col-5" id="img">
+              <img [src]="stockData.product.barcode" class="w-100 mb-3" alt="">
+              <img
+                class="w-100"
+                height="205px"
+                src="http://jewelry.ixscope.com/backend/img/products/{{
+                  stockData.product.image
+                }}"
+                [alt]="stockData.label"
+              />
+            </div>
+            <div class="col-7 pl-5 row no-gutters justify-content-center">
+              <table class="col-12" id="table-details">
+                <thead>
+                  <tr class="text-center">
+                    <th scope="col" class="head-title border-right">
+                      Category
+                    </th>
+                    <th scope="col" class="head-title border-right">Code</th>
+                    <th scope="col" class="head-title border-right">Branch</th>
+                    <th scope="col" class="head-title">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border-right">{{ stockData.product.category.name }}</td>
+                    <td class="border-right">{{ stockData.product.label }}</td>
+                    <td class="border-right">{{ stockData.receipts.branch.name }}</td>
+                    <td>{{ stockData.receipts.receipt_date }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="col-12 mt-5 row justify-content-between no-gutters">
+                <div class="col-4">
+                  <div class="gold-box">
+                  <h3 class="head-title">Gold Weight</h3>
+                  <p>(gm)</p>
+                  <p style="font-size: 1rem; font-weight: 500;">{{stockData.product.gold_weight}}</p>
                 </div>
-                <div class="form-group col-12 no-gutters">
-                  <label for="exampleInputName2" class="title"
-                    >Payment Method<span class="text-red">*</span></label
-                  >
-                  <select
-                    (change)="getPaymentType($event.target.value)"
-                    class="itemInput p-3 w-100 text-center"
-                    style="padding: 13px"
-                  >
-                    <option value="1" selected="selected">Cash</option>
-                    <option value="2">Visa</option>
-                    <option value="3">Bank Check</option>
-                  </select>
                 </div>
-              </div>
-              <div class="modal-footer border-0">
-                <button
-                  type="submit"
-                  class="btn-modal-submit"
-                  [disabled]="!paymentForm.controls.paidAmount.value"
-                  [ngClass]="
-                    !paymentForm.controls.paidAmount.value
-                      ? 'disabledSubmitButton'
-                      : 'enableSubmitButton'
-                  "
-                >
-                  PAY NOW
-                </button>
+                <div class="col-4 pl-1">
+                  <div class="gold-box">
+                    <h3 class="head-title">Gold Price</h3>
+                    <p>($)</p>
+                    <p style="font-size: 1rem; font-weight: 500;">{{stockData.product.gold_price}}</p>
+                  </div>
+                </div>
+                <div class="col-4 pl-2">
+                  <div class="gold-box">
+                    <h3 class="head-title">Total</h3>
+                    <p>($)</p>
+                    <p style="font-size: 1rem; font-weight: 900;">{{stockData.product.gold_total}}</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Image Modal -->
-  <div
-    bsModal
-    #myModalImg="bs-modal"
-    class="modal fade"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="myModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content border-0" style="background: 0;">
-        <div class="modal-header border-0">
-          <button
-            type="button"
-            class="close"
-            (click)="myModalImg.hide()"
-            aria-label="Close"
+          </div>
+            <div class="mt-5 w-100" id="stones">
+              <h2
+          class="head-title text-left"
+          [ngClass]="stockData.stones.length == 0 ? 'text-red' : ''"
+        >
+          {{
+            stockData.stones.length > 0
+              ? 'STONES'
+              : 'No stone available to this product'
+          }}
+          <span
+            class="ml-3"
+            *ngIf="stockData.stones.length > 1"
+            >{{ stockData.stones.length }} Stones</span
           >
-            <span class="text-white" aria-hidden="true">&times;</span>
-          </button>
+          <span
+            class="ml-3"
+            *ngIf="stockData.stones.length == 1"
+            >{{ stockData.stones.length }} Stone</span
+          >
+        </h2>
+        <div class="stone-border" *ngIf="stockData.stones.length">
+          <div class="stone-table" *ngFor="let stone of stockData.stones">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" class="border-right">Name</th>
+                  <th scope="col" class="border-right text-center">Quantity</th>
+                  <th scope="col" class="border-right text-center">Weight (cts)</th>
+                  <th scope="col" class="border-right text-center">Cost ($)</th>
+                  <th scope="col" class="border-right text-center">Setting</th>
+                  <th scope="col" class="text-center">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="border-right">{{stone.name}}</td>
+                  <td class="border-right text-center">{{stone.quantity}}</td>
+                  <td class="border-right text-center">{{stone.weight}}</td>
+                  <td class="border-right text-center">{{stone.price}}</td>
+                  <td class="border-right text-center">{{stone.setting}}</td>
+                  <td class="text-center">{{stone.total}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="modal-body">
-          <img style="width: 100%; height: auto;" [src]="imgSrc" alt="" />
+            <div id="cost" class="mt-5 w-100">
+<div class="row w-75 m-auto justify-content-between">
+  <div class="col-6 row justify-content-center">
+    <h4 class="col-12 text-uppercase">Cost</h4>
+    <div class="cost-box col-12">{{stockData.product.item_total}}</div>
+  </div>
+  <div class="col-6 row justify-content-center">
+    <h4 class="col-12 text-uppercase">Cost * {{stockData.product.profit_percent}} in $</h4>
+    <div class="cost-box col-12">{{stockData.product.item_total_after_profit}}</div>
+  </div>
+</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

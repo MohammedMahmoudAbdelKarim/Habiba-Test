@@ -16,6 +16,8 @@ import { startWith, map } from 'rxjs/operators';
 })
 export class SalesListComponent {
   // Variables
+  @ViewChild('detailsModal', { static: false })
+  public detailsModal: ModalDirective;
   selection = new SelectionModel<any>(true, []);
   //  --------------------------------------   Tables Colums
   displayedColumns: string[] = [
@@ -24,6 +26,7 @@ export class SalesListComponent {
     'product.label',
     'receipts.branch.name',
     'receipts.receipt_date',
+    'product.metal.name',
     'receipts.receipt_number',
     'product.item_total_after_profit',
     'receipts.employee.name',
@@ -40,19 +43,16 @@ export class SalesListComponent {
   // ------------------------------------------------- Sort & Pagination
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild('myModalPayment', { static: false })
-  public myModalPayment: ModalDirective;
-  @ViewChild('myModalImg', { static: false }) public myModalImg: ModalDirective;
   // ------------------------------------------------ Form Controls
   myControlBranch = new FormControl('');
   myControlInvoice = new FormControl('');
   myControlDate = new FormControl('');
-  myControlStatus = new FormControl('');
+  myControlMetal = new FormControl('');
   // ------------------------------------------------------ ASYNC
   filteredBranches: Observable<string[]>;
   filteredInvoices: Observable<string[]>;
   filteredDates: Observable<string[]>;
-  filteredStatus: Observable<string[]>;
+  filteredMetals: Observable<string[]>;
   // ----------------------------------------------- Arrays and Inital Variables
   hideme: any = [];
   products: any = [];
@@ -67,6 +67,7 @@ export class SalesListComponent {
   branch_id: any = '';
   status_id: any = '';
   branchList: any;
+  metalValue: any = '';
   deleteItem: any;
   receipt_date: any = '';
   data: any;
@@ -87,6 +88,16 @@ export class SalesListComponent {
   imgSrc: any = '';
   payment_id: any = '';
   payment_method: any = '1';
+  metals: any = [];
+  page: any = '';
+  per_page: number = 50;
+  pageEvent: any;
+  totalSearch: any = '';
+  productTransferID: any;
+  metal_type: any = '';
+  entryDate: any = '';
+  fromDate: any = '';
+  toDate: any = '';
 
   // ---------------------------------------------- Form
   deleteForm = new FormGroup({
@@ -98,11 +109,6 @@ export class SalesListComponent {
   paymentForm = new FormGroup({
     paidAmount: new FormControl('', Validators.required)
   });
-  page: any = '';
-  per_page: number = 50;
-  pageEvent: any;
-  totalSearch: any = '';
-  productTransferID: any;
   // Constructor
   constructor(
     private api: MainServiceService,
@@ -114,11 +120,12 @@ export class SalesListComponent {
       console.log(data);
       // --------------------------------------  Get Branches
       this.branchList = data.branchList.data;
+      // --------------------------------------  Get Metals
+      this.metals = data.metal.data;
       // --------------------------------------- Get Sales
       this.products = data.receipts.data.data;
       this.data = Object.assign(data.receipts.data.data);
       console.log(data.receipts.data.data);
-
       this.dataSource = new MatTableDataSource(data.receipts.data.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -127,6 +134,8 @@ export class SalesListComponent {
         switch (property) {
           case 'product.label':
             return item.product.label;
+          case 'product.metal.name':
+            return item.product.metal.name;
           case 'receipts.branch.name':
             return item.receipts.branch.name;
           case 'receipts.employee.name':
@@ -153,6 +162,10 @@ export class SalesListComponent {
       startWith(''),
       map(value => this.fitlerDate(value))
     );
+    this.filteredMetals = this.myControlMetal.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterMetal(value))
+    )
   }
 
   // Oninit
@@ -175,6 +188,7 @@ export class SalesListComponent {
           branch_id: this.branch_id,
           receipt_number: this.receipt_number,
           receipt_date: this.receipt_date,
+          metal_type: this.metal_type,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -189,6 +203,8 @@ export class SalesListComponent {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
                 case 'receipts.branch.name':
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
@@ -213,6 +229,7 @@ export class SalesListComponent {
           branch_id: this.branch_id,
           receipt_number: this.receipt_number,
           receipt_date: this.receipt_date,
+          metal_type: this.metal_type,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -227,6 +244,8 @@ export class SalesListComponent {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
                 case 'receipts.branch.name':
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
@@ -257,6 +276,8 @@ export class SalesListComponent {
         switch (property) {
           case 'product.label':
             return item.product.label;
+          case 'product.metal.name':
+            return item.product.metal.name;
           case 'receipts.branch.name':
             return item.receipts.branch.name;
           case 'receipts.employee.name':
@@ -287,7 +308,9 @@ export class SalesListComponent {
         .get('sales', {
           branch_id: this.branch_id,
           receipt_number: this.receipt_number,
-          receipt_date: this.receipt_date,
+          metal_type: this.metal_type,
+          from_date: this.fromDate,
+          to_date: this.toDate,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -302,6 +325,8 @@ export class SalesListComponent {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
                 case 'receipts.branch.name':
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
@@ -325,7 +350,9 @@ export class SalesListComponent {
         .get('sales', {
           branch_id: this.branch_id,
           receipt_number: this.receipt_number,
-          receipt_date: this.receipt_date,
+          metal_type: this.metal_type,
+          from_date: this.fromDate,
+          to_date: this.toDate,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -340,6 +367,8 @@ export class SalesListComponent {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
                 case 'receipts.branch.name':
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
@@ -371,6 +400,8 @@ export class SalesListComponent {
         switch (property) {
           case 'product.label':
             return item.product.label;
+          case 'product.metal.name':
+            return item.product.metal.name;
           case 'receipts.branch.name':
             return item.receipts.branch.name;
           case 'receipts.employee.name':
@@ -391,16 +422,143 @@ export class SalesListComponent {
     return invoice ? invoice.receipts.receipt_number : invoice;
   }
   // ----------------------------------------- Filter Dates
-  private fitlerDate(value) {
+  /* ---------------------------- Data Format Change ------------------------ */
+  // 1
+  entryDateFrom(event, type) {
+    if (event.targetElement.value) {
+      this.api
+        .get('sales', {
+          branch_id: this.branch_id,
+          receipt_number: this.receipt_number,
+          metal_type: this.metal_type,
+          per_page: 50
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value);
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'client.name':
+                  return item.client.name;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+    }
+    let entryDateArray;
+    entryDateArray = event.targetElement.value.split('/');
+    this.entryDate =
+      entryDateArray[1] + '/' + entryDateArray[0] + '/' + entryDateArray[2];
+    this.fromDate =
+      entryDateArray[2] + '/' + entryDateArray[0] + '/' + entryDateArray[1];
+    this.api
+      .get('sales', {
+        branch_id: this.branch_id,
+        receipt_number: this.receipt_number,
+        metal_type: this.metal_type,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        per_page: 50
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'client.name':
+                return item.client.name;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
+  // 2
+  entryDateTo(event, type) {
+    if (event.targetElement.value) {
+      this.api
+        .get('sales', {
+          branch_id: this.branch_id,
+          receipt_number: this.receipt_number,
+          metal_type: this.metal_type,
+          per_page: 50
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'client.name':
+                  return item.client.name;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+    }
+    let entryDateArray;
+    entryDateArray = event.targetElement.value.split('/');
+    this.entryDate =
+      entryDateArray[1] + '/' + entryDateArray[0] + '/' + entryDateArray[2];
+    this.toDate =
+      entryDateArray[2] + '/' + entryDateArray[0] + '/' + entryDateArray[1];
+    this.api
+      .get('sales', {
+        branch_id: this.branch_id,
+        receipt_number: this.receipt_number,
+        metal_type: this.metal_type,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        per_page: 50
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'client.name':
+                return item.client.name;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
+  // ----------------------------------- Filter Metal
+  private filterMetal(value) {
     // tslint:disable-next-line: triple-equals
     if (value == '' || value == undefined) {
-      this.receipt_date = '';
+      this.metal_type = '';
       // Send Request
       this.api
         .get('sales', {
           branch_id: this.branch_id,
           receipt_number: this.receipt_number,
-          receipt_date: this.receipt_date,
+          metal_type: this.metal_type,
+          from_date: this.fromDate,
+          to_date: this.toDate,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -415,6 +573,8 @@ export class SalesListComponent {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
                 case 'receipts.branch.name':
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
@@ -430,15 +590,16 @@ export class SalesListComponent {
     }
     // tslint:disable-next-line: triple-equals
     if (typeof value == 'object') {
-      const filterValue = value.receipts.receipt_date;
-      this.receipt_date = value.receipts.receipt_date;
-      console.log(this.receipt_date);
+      const filterValue = value.name;
+      this.metal_type = value.id;
       // Send Request
       this.api
         .get('sales', {
           branch_id: this.branch_id,
           receipt_number: this.receipt_number,
-          receipt_date: this.receipt_date,
+          metal_type: this.metal_type,
+          from_date: this.fromDate,
+          to_date: this.toDate,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -453,6 +614,8 @@ export class SalesListComponent {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
                 case 'receipts.branch.name':
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
@@ -465,15 +628,15 @@ export class SalesListComponent {
             };
           }, 300);
         });
-      return this.products.filter(option =>
-        option.receipts.receipt_date.includes(filterValue)
+      return this.metals.filter(option =>
+        option.name.includes(filterValue)
       );
       // tslint:disable-next-line: triple-equals
     } else if (typeof value == 'string') {
       // value = this.tem_category;
       const filterValueName = value;
       const info = this.products.filter(option =>
-        option.receipts.receipt_date.includes(filterValueName)
+        option.product.metal.name.includes(filterValueName)
       );
       console.log(info);
       this.dataSource = new MatTableDataSource(info);
@@ -484,6 +647,8 @@ export class SalesListComponent {
         switch (property) {
           case 'product.label':
             return item.product.label;
+          case 'product.metal.name':
+            return item.product.metal.name;
           case 'receipts.branch.name':
             return item.receipts.branch.name;
           case 'receipts.employee.name':
@@ -494,17 +659,16 @@ export class SalesListComponent {
             return item[property];
         }
       };
-      return this.products.filter(option =>
-        option.receipts.receipt_date.includes(filterValueName)
+      return this.metals.filter(option =>
+        option.name.includes(filterValueName)
       );
     }
   }
   // ----------------------------------------- Display Codes
-  displayDate(date): string {
-    console.log(date);
-    return date ? date.receipts.receipt_date : date;
+  displaMetal(metal): string {
+    console.log(metal);
+    return metal ? metal.name : metal;
   }
-
   /* -------------------------------- Checkbox---------------------------- */
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -536,94 +700,20 @@ export class SalesListComponent {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
 
   /* ------------------------------------ Popup ----------------------------- */
-  openDetailsPopup(id) {
-    console.log(id);
-
-    this.showDetailsPopup = true;
-  }
-  openUpdataPopup(stockData, stockId) {
-    this.stockData = stockData;
-    console.log(stockData);
-    this.showUpdataPopup = true;
-  }
-  closeUpdataPopup() {
-    this.showUpdataPopup = false;
-  }
-
-  // Open Delete Popup
-  opendeletePopup(row) {
-    console.log(row);
-    this.deleteItem = row;
-    this.showDeletePopup = true;
-    // this.DeletingHold = true;
-  }
-
-  // Close Delete Popup
-  closeDeletePopup() {
-    this.deleteForm.controls.deleteInput.setValue('');
-    this.showDeletePopup = false;
-  }
-
-  getPaymentType(event) {
-    console.log(event);
-    this.payment_method = event;
-  }
-
-  openPayment(row) {
-    console.log(row.receipt_number);
-    this.payment_id = row.id;
-  }
-  onSubmitPayment(form) {
-    console.log(form.value);
-    console.log(this.payment_id);
-    this.api
-      .post('receipts/' + this.payment_id + '/pay', {
-        payment_amount: form.value.paidAmount,
-        payment_method: this.payment_method
-      })
-      .subscribe(value => {
-        console.log(value);
-        if (value.status == 'success') {
-          this.myModalPayment.hide();
-          this.toast.success('Thank You' + '!Success');
-          this.api.get('receipts', { per_page: 50 }).subscribe(data => {
-            console.log(data);
-
-            this.dataSource = new MatTableDataSource(data.data.data);
-            // console.log(data.sales.data.last_page);
-            // console.log(this.pageNumbers);
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-            // Sort item inside inner Object
-            this.dataSource.sortingDataAccessor = (item, property) => {
-              switch (property) {
-                case 'products[0].label':
-                  return item.products[0].label;
-                case 'branch.name':
-                  return item.branch.name;
-                case 'status.name':
-                  return item.status.name;
-                default:
-                  return item[property];
-              }
-            };
-          });
-        }
-      });
-  }
-
-  reloadPage() {
-    console.log('Reload');
+  openDetailsPopup(row) {
+    this.detailsModal.show();
+    this.stockData = row;
+    console.log(this.stockData);
   }
   // --------------------------- Pagniation & Number of items showed in the page
   onPaginateChange(event) {
     console.log(event.pageSize);
     this.api
-      .get('receipts', {
+      .get('sales', {
         per_page: event.pageSize
       })
       .subscribe((productList: any) => {
@@ -634,12 +724,16 @@ export class SalesListComponent {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sortingDataAccessor = (item, property) => {
           switch (property) {
-            case 'category.name':
-              return item.category.name;
-            case 'branch.name':
-              return item.branch.name;
-            case 'status.name':
-              return item.status.name;
+            case 'product.label':
+              return item.product.label;
+            case 'product.metal.name':
+              return item.product.metal.name;
+            case 'receipts.branch.name':
+              return item.receipts.branch.name;
+            case 'receipts.employee.name':
+              return item.receipts.employee.name;
+            case 'receipts.receipt_number':
+              return item.receipts.receipt_number;
             default:
               return item[property];
           }
@@ -647,74 +741,10 @@ export class SalesListComponent {
       });
   }
 
-  // Open Image Modal
-  openImage(event) {
-    this.myModalImg.show();
-    console.log(event.src);
-    this.imgSrc = event.src;
-  }
-
-  // Transfer Action
-  onSubmitTransfer(form) {
-    console.log(form.value);
-    console.log(this.productTransferID);
-
-    this.api
-      .put('branches/' + form.value.branch_id + '/transfer', {
-        product_id: this.productTransferID
-      })
-      .subscribe(val => {
-        console.log(val);
-        this.toast.success(
-          'The product has been successfully transfered',
-          '!Success'
-        );
-        this.api
-          .get('receipts', {
-            branch_id: this.branch_id,
-            receipt_number: this.receipt_number,
-            receipt_date: this.receipt_date,
-            status_id: this.status_id,
-            per_page: 50
-          })
-          // tslint:disable-next-line: no-shadowed-variable
-          .subscribe(value => {
-            console.log(value);
-            this.dataSource = new MatTableDataSource(value.data.data);
-            this.dataSource.sort = this.sort;
-            this.dataSource.paginator = this.paginator;
-            // Sort item inside inner Object
-            this.dataSource.sortingDataAccessor = (item, property) => {
-              switch (property) {
-                case 'product.label':
-                  return item.product.label;
-                case 'receipts.branch.name':
-                  return item.receipts.branch.name;
-                case 'receipts.employee.name':
-                  return item.receipts.employee.name;
-                case 'receipts.receipt_number':
-                  return item.receipts.receipt_number;
-                default:
-                  return item[property];
-              }
-            };
-          });
-        // this.myModal.hide();
-      });
-  }
-
-  // Transfer Data Show
-  getData(row) {
-    console.log(row);
-    this.productTransferID = row.id;
-    this.transferName = row.branch.name;
-    this.transferCode = row.label;
-  }
-
-  // Invoice Action
-  routeToSale(row) {
-    console.log(row);
-    this.router.navigate(['/sales/make-new-sale'], {
+  /* ------------------------- Refund Action ---------------------------- */
+  routeToReturn(row) {
+    console.log('Item To Return: ', row);
+    this.router.navigate(['/sales/return'], {
       queryParams: { id: row.id },
       skipLocationChange: true
     });
