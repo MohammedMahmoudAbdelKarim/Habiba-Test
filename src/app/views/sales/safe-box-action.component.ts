@@ -12,15 +12,24 @@ export class SafeBoxActionComponent {
   // Modals
   @ViewChild('myModalPayment', { static: false })
   public myModalPayment: ModalDirective;
+  @ViewChild('myModalTransfer', { static: false })
+  public myModalTransfer: ModalDirective;
   // Arrays and Inital Variables
   safeBoxArray: any = [];
   modalError: any = [];
+  branchesList: any = [];
   branch_id: any = '';
+  branch_name: any = '';
   /* ----------------------------------- Form ------------------------ */
   // Add Payment Form
   paymentForm = new FormGroup({
     payment_amount: new FormControl(''),
     reason: new FormControl('')
+  });
+  // Transfer Money Form
+  transferMoney = new FormGroup({
+    branch_id: new FormControl(''),
+    money: new FormControl(''),
   });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
@@ -30,12 +39,17 @@ export class SafeBoxActionComponent {
     private toast: ToastrService
   ) {
     this.route.data.subscribe(data => {
+      // ------------- Get Safe Boxes
       this.safeBoxArray = data.safeBoxs.data.data;
+      console.log(data.safeBoxs.data.data);
+      // ------------- Get Branches
+      this.branchesList = data.branchList.data;
+      console.log(data.branchList.data);
     });
   }
   /* ----------------------------------- OnInit ------------------------ */
   // tslint:disable-next-line: use-lifecycle-interface
-  ngOnInit() {}
+  ngOnInit() { }
   /* ----------------------------------- Make Empty ------------------------ */
   getEmpty(row) {
     this.api
@@ -53,6 +67,12 @@ export class SafeBoxActionComponent {
     this.paymentForm.reset();
     this.modalError = [];
     this.branch_id = row.branches.id;
+  }
+  /* ----------------------- Get Transfer --------------------- */
+  makeTransfer(row) {
+    console.log(row);
+    this.branch_name = row.branches.name;
+    this.myModalTransfer.show();
   }
   /* --------------------------------- Make Payment ------------------------ */
   onSubmitPayment(form) {
@@ -78,6 +98,16 @@ export class SafeBoxActionComponent {
           this.modalError = error.error.message;
         }
       );
+  }
+
+  /* -------------------------- Get Money Transfer ---------------------- */
+  onSubmitTransfer(form) {
+    console.log(form.value);
+  }
+
+  /* ----------------------- Get Branch ID ------------------------ */
+  getSelectedListOptionId(event) {
+    console.log(event);
   }
   /*--------------------------------- Logout ------------------------------ */
   logout() {

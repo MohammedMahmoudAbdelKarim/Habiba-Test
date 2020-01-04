@@ -18,6 +18,8 @@ export class CategoriesComponent implements OnInit {
   // Modals
   @ViewChild('myModal', { static: false }) public myModal: ModalDirective;
   @ViewChild('myModal2', { static: false }) public myModal2: ModalDirective;
+  @ViewChild('deleteModal', { static: false })
+  public deleteModal: ModalDirective;
   // Tables Colums
   selection = new SelectionModel<any>(true, []);
   displayedColumns: string[] = ['select', 'id', 'name', 'code', 'details'];
@@ -78,7 +80,7 @@ export class CategoriesComponent implements OnInit {
     );
   }
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() {}
+  ngOnInit() { }
   /* ---------------------------- Filter Categories ------------------------ */
   private filtercategory(value) {
     // tslint:disable-next-line: triple-equals
@@ -146,7 +148,7 @@ export class CategoriesComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* -------------------------- Create New Categories ----------------------- */
   onSubmitcategory(form) {
@@ -220,34 +222,23 @@ export class CategoriesComponent implements OnInit {
     this.categoriesForm.controls.name.setValue(categoryData.name);
     this.categoriesForm.controls.code.setValue(categoryData.code);
   }
-  // Close Update Popup
-  closeUpdataPopup() {
-    this.showUpdataPopup = false;
-  }
   // Open Delete Popup
   opendeletePopup(row) {
+    console.log(row);
     this.deleteItem = row;
-    this.showDeletePopup = true;
-    this.DeletingHold = true;
-  }
-  // Close Delete Popup
-  closeDeletePopup() {
     this.deleteForm.controls.deleteInput.setValue('');
-    this.showDeletePopup = false;
+    this.deleteModal.show();
   }
   /* -------------------------- Delete Category ----------------------------- */
   deleteCategory() {
-    console.log('Delete Mode is ON');
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
     if (upperDeleteInputValue === 'DELETE') {
-      this.DeletingHold = true;
       this.api.delete('categories/' + this.deleteItem.id).subscribe(
         data => {
-          this.DeletingHold = false;
           console.log(data);
           // tslint:disable-next-line: triple-equals
           if (data['status'] == 'success') {
-            this.closeDeletePopup();
+            this.deleteModal.hide();
             this.toast.success(
               this.deleteItem.name + ' ' + 'has been Deleted',
               'Success!'
@@ -266,12 +257,10 @@ export class CategoriesComponent implements OnInit {
         },
         error => {
           this.api.fireAlert('error', error.error.message, '');
-          this.closeDeletePopup();
         }
       );
     } else {
-      console.log('Delete Mode is OFF');
-      this.api.fireAlert('error', 'Error in writing delete', '');
+      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
   // Reload Page

@@ -3,12 +3,35 @@
   <header class="bg-blue p-5">
     <div class="row align-items-end">
       <!-- left-hand-side-of-header -->
-      <div class="row align-items-baseline col-12 justify-content-between mb-5">
-        <!-- Titles -->
-        <h6 class="col-12 p-0 text-white">Categories | List</h6>
-        <h3 class="text-uppercase text-white">Categories List</h3>
+      <div class="row align-items-baseline no-gutters pl-0 col-12 justify-content-between">
+        <div class="col-8">
+          <!-- Titles -->
+          <h6 class="col-12 p-0">Categories | List</h6>
+          <h3 class="text-uppercase">
+            Categories List
+          </h3>
+        </div>
+        <div class="col-4 row justify-content-end">
+          <div class="dropdown">
+            <button
+              class="btn dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Welcome Habiba
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button class="dropdown-item" type="button" (click)="logout()">
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
         <!-- Filter -->
-        <p class="col-12 p-0 mt-4 text-white">
+        <p class="col-12 p-0 mt-0 text-white">
           Filter by :
         </p>
         <!-- Category -->
@@ -47,14 +70,24 @@
         <div class="col-3 row justify-content-end p-0">
           <button
             class="addBtn"
-            style="width:204px"
             data-toggle="modal"
             (click)="myModal2.show(categoriesForm.reset())"
             (click)="clearError()"
           >
-            <i class="icon-diamond mr-2 align-middle"></i>
+            <i class="icon-settings mr-2 align-middle"></i>
             Add New Category
           </button>
+        </div>
+        <div class="col-12 row justify-content-start pl-3 mt-2 mb-3">
+          <p class="text-white m-0" *ngIf="dataSource.data.length > 1">
+            Search Result {{ dataSource.data.length }} Items
+          </p>
+          <p class="text-white m-0" *ngIf="dataSource.data.length == 1">
+            Search Result {{ dataSource.data.length }} Item
+          </p>
+          <p *ngIf="!dataSource.data.length" class="text-white m-0">
+            No Data Available
+          </p>
         </div>
       </div>
     </div>
@@ -125,7 +158,7 @@
                   openUpdataPopup(row, index); itemStockDetailsData = row
                 "
               >
-                <img src="../../../assets/icon-dashboard/edit.png" alt="" />
+                <img src="../../../assets/icon/edit.svg" alt="" />
                 <span class="tooltiptext">Edit</span>
               </button>
               <button
@@ -134,48 +167,14 @@
                 class="basic_button"
                 type="button"
               >
-                <img src="../../../assets/icon-dashboard/delete.png" alt="" />
+                <img src="../../../assets/icon/delete.svg" alt="" />
                 <span class="tooltiptext">Delete</span>
               </button>
             </div>
           </ng-container>
           <button class="buttonListItems">
-            <img src="../../../assets/icon-dashboard/menu.svg" alt="" />
+            <img src="../../../assets/icon/menu.svg" alt="" />
           </button>
-          <div id="Deletepopup" *ngIf="showDeletePopup">
-            <div
-              class="popupStyle"
-              id="backDrop"
-              (click)="closeDeletePopup()"
-            ></div>
-            <div id="DeletepopupData">
-              <div class="headerClose">
-                <a (click)="closeDeletePopup()">
-                  close
-                </a>
-              </div>
-              <p>For Delete Items Please Type <span>DELETE</span></p>
-              <form class="form-inline" [formGroup]="deleteForm">
-                <div class="form-group">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="DELETE"
-                    formControlName="deleteInput"
-                    value=""
-                    autocomplete="off"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  class="btn btn-default"
-                  (click)="deleteCategory()"
-                >
-                  Delete
-                </button>
-              </form>
-            </div>
-          </div>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -202,6 +201,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
+          <i class="icon-settings mt-2 mr-2 align-middle"></i>
           <h4 class="modal-title">Create New Category</h4>
           <button
             type="button"
@@ -225,7 +225,7 @@
                     >Category Name <span class="text-red">*</span></label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="name"
                     autocomplete="off"
@@ -249,11 +249,11 @@
               </div>
               <div class="col-md-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail3"
+                  <label
                     >Category Code <span class="text-red">*</span></label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="code"
                     autocomplete="off"
@@ -276,9 +276,13 @@
                 >
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn-modal-submit">
-                Add category
+            <div class="modal-footer border-0 justify-content-start pl-0">
+              <button
+                type="submit"
+                class="submit-btn"
+              >
+              <i class="icon-settings mr-2 align-middle"></i>
+                Add Category
               </button>
             </div>
           </form>
@@ -299,6 +303,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
+          <i class="icon-settings mt-2 mr-2 align-middle"></i>
           <h4 class="modal-title">Update Category</h4>
           <button
             type="button"
@@ -322,7 +327,7 @@
                     >Category Name <span class="text-red">*</span></label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="name"
                     autocomplete="off"
@@ -346,11 +351,11 @@
               </div>
               <div class="col-md-12">
                 <div class="form-group">
-                  <label for="exampleInputEmail3"
+                  <label
                     >Category Code <span class="text-red">*</span></label
                   >
                   <input
-                    class="form-control input-modal"
+                    class="input-text w-100"
                     value=""
                     formControlName="code"
                     autocomplete="off"
@@ -373,8 +378,12 @@
                 >
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn-modal-submit">
+            <div class="modal-footer border-0 justify-content-start pl-0">
+              <button
+                type="submit"
+                class="submit-btn"
+              >
+              <i class="icon-settings mr-2 align-middle"></i>
                 Update Category
               </button>
             </div>
@@ -383,4 +392,57 @@
       </div>
     </div>
   </div>
+ <!-- Delete One Item -->
+<div
+        id="deleteModal"
+          bsModal
+          #deleteModal="bs-modal"
+          class="modal fade"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header d-flex align-items-baseline border-0">
+                <button
+                  type="button"
+                  class="close"
+                  (click)="deleteModal.hide()"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">Close</span>
+                </button>
+              </div>
+              <!-- Body -->
+              <div class="modal-body">
+                <h4 class="modal-title mb-4 text-center">
+                  <span>For delete item please type</span> DELETE
+                </h4>
+                <form
+                  [formGroup]="deleteForm"
+                  (ngSubmit)="deleteCategory()"
+                  #form="ngForm"
+                >
+                  <div class="row">
+                    <div class="col-md-8 row">
+                      <div class="form-group col-12 no-gutters">
+                        <input type="text" class="input-text w-100" formControlName="deleteInput" placeholder="DELETE">
+                      </div>
+                    </div>
+                    <div class="col-md-4 modal-footer border-0 p-0">
+                      <button
+                        type="submit"
+                        class="submit-btn"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+</div>
 </div>

@@ -58,7 +58,8 @@ const routes: Routes = [
           title: 'Safe Box List'
         },
         resolve: {
-          safeBox: safeboxIndexSolver
+          safeBox: safeboxIndexSolver,
+          branchList: branchListSolver,
         }
       },
       {
@@ -68,7 +69,8 @@ const routes: Routes = [
           title: 'Safe Box Action'
         },
         resolve: {
-          safeBoxs: safeBoxActionsSolver
+          safeBoxs: safeBoxActionsSolver,
+          branchList: branchListSolver,
         }
       },
       {

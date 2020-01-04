@@ -1,93 +1,114 @@
 <div class="animated fadeIn" id="branch-details">
   <!-- Start Header -->
-  <header class="bg-blue p-5">
+  <header class="bg-blue pt-5 px-5 pb-3">
     <div class="row align-items-end">
       <!-- left-hand-side-of-header -->
-      <div class="row align-items-baseline col-12 justify-content-between">
-        <!-- Titles -->
-        <h6 class="col-12 p-0 text-white">Branches | Manage Branch</h6>
-        <h3 class="text-uppercase text-white">
-          Manage Branch : {{ branchDetailsData.name }}
-        </h3>
-        <div class="col-3">
-          <button class="addBtn w-100" routerLink="/main-stock/add-new-item">
-            <i class="icon-diamond mr-2 align-middle"></i>
-            Update Branch
+      <div class="row align-items-end col-12 justify-content-between">
+        <div class="col-8">
+          <!-- Titles -->
+          <h6 class="col-12 p-0">Branches | Manage Branch</h6>
+          <h3 class="text-capitalize">
+            Manage Branch : {{ branchDetailsData.name }}
+          </h3>
+        </div>
+        <div class="col-4 row justify-content-end">
+          <div class="dropdown">
+            <button
+              class="btn dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Welcome Habiba
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button class="dropdown-item" type="button" (click)="logout()">
+                Logout
+              </button>
+            </div>
+          </div>
+          <button class="addBtn mt-3 w-100" routerLink="/settings/branches">
+            <i class="icon-settings mr-2 align-middle"></i>
+            Branches List
           </button>
         </div>
       </div>
     </div>
   </header>
   <!-- End Header -->
-  <div class="page_body_main" *ngIf="branchDetailsData">
+  <div class="p-5 branches-details" *ngIf="branchDetailsData">
     <h5 class="text-uppercase">{{ branchDetailsData.name }} Branch</h5>
     <div class="detailsBranch">
-      <div class="row">
+      <div class="row mt-3">
         <div class="col-lg-9 col-md-12">
-          <div class="row">
-            <!-- Branch Name  -->
-            <div
-              class="col-lg-3 row col-md-3 justify-content-center align-items-center"
-            >
-              <p class="col-12">
-                <img
-                  src="../../../../../assets/icon-branch/placeholder.png"
-                />Branch Name
-              </p>
-              <span>
-                {{
-                  branchDetailsData.name
-                    ? branchDetailsData.name
-                    : 'Branch Name'
-                }}
-              </span>
-            </div>
-            <!-- Client Address  -->
-            <div
-              class="col-lg-3 row col-md-3 justify-content-center align-items-center"
-            >
-              <p class="col-12">
-                <img
-                  src="../../../../../assets/icon-branch/planet-earth.png"
-                />Client Address
-              </p>
-              <span>{{
-                branchDetailsData.address
-                  ? branchDetailsData.address
-                  : 'Client Address'
-              }}</span>
-            </div>
-            <!-- Branch City  -->
-            <div
-              class="col-lg-3 row col-md-3 justify-content-center align-items-center"
-            >
-              <p class="col-12">
-                <img src="../../../../../assets/icon-branch/houses.png" />Branch
-                City
-              </p>
-              <span>{{
-                branchDetailsData.city.name
-                  ? branchDetailsData.city.name
-                  : 'Branch City'
-              }}</span>
-            </div>
-            <!-- Employess Number  -->
-            <div
-              class="col-lg-3 row col-md-3 justify-content-center align-items-center"
-            >
-              <p class="col-12">
-                <img
-                  src="../../../../../assets/icon-branch/user (2).png"
-                />Employess
-              </p>
-              <span>{{ branchEmployeesArray.length }}</span>
-            </div>
-          </div>
+          <table id="branch">
+            <thead>
+              <tr>
+                <th class="border-right">
+                  <img
+                    class="mr-2"
+                    src="../../../../../assets/icon/placeholder.svg"
+                  />
+                  Branch Name
+                </th>
+                <th class="border-right">
+                  <img
+                    class="mr-2"
+                    src="../../../../../assets/icon/planet-earth.svg"
+                  />
+                  Client Address
+                </th>
+                <th class="border-right">
+                  <img
+                    class="mr-2"
+                    src="../../../../../assets/icon/houses.svg"
+                  />
+                  Branch City
+                </th>
+                <th class="">
+                  <img class="mr-2" src="../../../../../assets/icon/user.svg" />
+                  Employess
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border-right">
+                  <span>
+                    {{
+                      branchDetailsData.name
+                        ? branchDetailsData.name
+                        : "Branch Name"
+                    }}
+                  </span>
+                </td>
+                <td class="border-right">
+                  <span>{{
+                    branchDetailsData.address
+                      ? branchDetailsData.address
+                      : "Client Address"
+                  }}</span>
+                </td>
+                <td class="border-right">
+                  <span>{{
+                    branchDetailsData.city.name
+                      ? branchDetailsData.city.name
+                      : "Branch City"
+                  }}</span>
+                </td>
+                <td>
+                  <span>{{ branchEmployeesArray.length }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
     <!-- Add Employees  -->
-    <div class="addEmployee">
+    <div class="add-employees mt-5">
       <h5>
         ADD EMPLOYEES
       </h5>
@@ -95,14 +116,14 @@
         (ngSubmit)="onSubmit()"
         #form="ngForm"
         [formGroup]="addBranchsEmloyeeForm"
-        class="row"
+        class="row mt-3 justify-content-between"
       >
-        <div class="col-lg-4 col-md-12 col-sm-12">
+        <div class="col-lg-4 col-md-12 col-sm-12 px-0">
           <div class="col-md-12">
             <div class="form-group">
-              <label>Employee Role <span>*</span></label>
+              <label>Employee Role <span class="text-red">*</span></label>
               <select
-                class="form-control"
+                class="input-text w-100"
                 formControlName="role_id"
                 (change)="
                   selectEmployee('role'); seletetEmployeeRoleOption(roleIndex)
@@ -121,7 +142,7 @@
                   [value]="roleIndex"
                   (click)="seletetEmployeeRoleOption(roleIndex)"
                   >{{
-                    employeeRole.name ? employeeRole.name : 'Employee Role'
+                    employeeRole.name ? employeeRole.name : "Employee Role"
                   }}</option
                 >
               </select>
@@ -129,10 +150,10 @@
           </div>
           <div class="col-md-12">
             <div class="form-group">
-              <label>Employee Name <span>*</span></label>
+              <label>Employee Name <span class="text-red">*</span></label>
               <select
                 *ngIf="!updateMode"
-                class="form-control"
+                class="input-text w-100"
                 formControlName="employee_id"
                 (change)="selectEmployee('emp')"
                 value="{{ selectedEmployeeIndex }}"
@@ -149,7 +170,7 @@
               </select>
               <select
                 *ngIf="updateMode"
-                class="form-control"
+                class="input-text w-100"
                 formControlName="employee_id"
                 (change)="selectEmployee('emp')"
                 value="{{ selectedEmployeeIndex }}"
@@ -162,35 +183,37 @@
               </select>
             </div>
           </div>
-          <button
-            class="btn"
-            [disabled]="
-              (!updateMode &&
-                addBranchsEmloyeeForm.dirty &&
-                !addBranchsEmloyeeForm.invalid &&
-                addBranchsEmloyeeForm.value.role_id !== '' &&
-                addBranchsEmloyeeForm.value.employee_id !== '') ||
-              (updateMode && addBranchsEmloyeeForm.value.role_id !== '')
-                ? false
-                : true
-            "
-          >
-            {{ updateMode ? 'Update' : 'Add' }}
-          </button>
+          <div class="col-md-12">
+            <button
+              class="submit-btn"
+              [disabled]="
+                (!updateMode &&
+                  addBranchsEmloyeeForm.dirty &&
+                  !addBranchsEmloyeeForm.invalid &&
+                  addBranchsEmloyeeForm.value.role_id !== '' &&
+                  addBranchsEmloyeeForm.value.employee_id !== '') ||
+                (updateMode && addBranchsEmloyeeForm.value.role_id !== '')
+                  ? false
+                  : true
+              "
+            >
+              {{ updateMode ? "Update" : "Add" }}
+            </button>
+          </div>
         </div>
         <div class="col-lg-1"></div>
         <div class="col-lg-6">
-          <div class="borderStonesTable">
-            <div class="stonesTable">
-              <table class="table">
+          <div class="">
+            <div class="role-table">
+              <table class="border-0">
                 <thead>
-                  <tr class="header-tr">
+                  <tr>
                     <th scope="col">EMPLOYEE NAME</th>
-                    <th class="styleBorderRight" scope="col">ROLE</th>
-                    <th class="styleBorderRight-Left" scope="col">
+                    <th class="" scope="col">ROLE</th>
+                    <th class="" scope="col">
                       MOBILE
                     </th>
-                    <th class="styleBorderRight-Left" scope="col"></th>
+                    <th class="" scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -199,24 +222,24 @@
                       {{
                         branchEmployeesArray.length > 0
                           ? branchEmployee.name
-                          : ''
+                          : ""
                       }}
                     </td>
-                    <td class="styleBorderRight">
+                    <td class="">
                       {{
                         branchEmployeesArray.length > 0
                           ? branchEmployee.role.name
-                          : ''
+                          : ""
                       }}
                     </td>
-                    <td class="styleBorderRight-Left">
+                    <td class="">
                       {{
                         branchEmployeesArray.length > 0
                           ? branchEmployee.mobile
-                          : ''
+                          : ""
                       }}
                     </td>
-                    <td class="styleBorderRight-Left">
+                    <td class="">
                       <div>
                         <button
                           id="editButton"
@@ -225,7 +248,7 @@
                           (click)="editBranchEmployee(branchEmployee.id)"
                         >
                           <img
-                            src="../../../../../assets/icon-branch/edit (2).png"
+                            src="../../../../../assets/icon/edit.svg"
                             alt=""
                           />
                         </button>
@@ -241,7 +264,7 @@
                           "
                         >
                           <img
-                            src="../../../../../assets/icon-branch/delete.png"
+                            src="../../../../../assets/icon/delete.svg"
                             alt=""
                           />
                         </button>

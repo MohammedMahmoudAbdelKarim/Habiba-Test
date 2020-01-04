@@ -889,13 +889,41 @@ header {
 
 /* ----------------------------- Dashboard --------------------------- */
 #dashboard {
+  h3 {
+    text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+
+  }
+
   .nav-card {
-    height: 60%;
+    height: 100%;
     width: 100%;
     border-radius: 7px;
     background: #fff;
+    box-shadow: 8px 9px 13px rgba(0, 0, 0, 0.16);
     border: 1px solid #707070;
-    padding: 15px 0;
+
+    a {
+      height: 100%;
+    }
+  }
+
+  p {
+    text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+    font-size: .9rem;
+    font-weight: 500;
+  }
+
+  .col {
+
+    &:hover {
+      transition: .3s all ease-in-out;
+
+      transform: scale(1.1);
+
+      p {
+        color: #20a8d8;
+      }
+    }
   }
 }
 
@@ -1255,5 +1283,256 @@ header {
       background: $white;
       padding: 8px;
     }
+  }
+}
+
+/* -------------------------- Categories --------------------- */
+#categories {
+  #showOrdercontrols {
+    right: 17%;
+  }
+
+  .modal {
+    h4 {
+      font-size: 1rem;
+    }
+
+    label {
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .input-text {
+      border: 1px solid $black;
+      background: $white;
+      padding: 8px;
+    }
+  }
+}
+
+/* -------------------------- Stones --------------------- */
+#stones {
+  #showOrdercontrols {
+    right: 10%;
+  }
+
+  .modal {
+    h4 {
+      font-size: 1rem;
+    }
+
+    label {
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .input-text {
+      border: 1px solid $black;
+      background: $white;
+      padding: 8px;
+    }
+  }
+}
+
+/* -------------------------- Branches --------------------- */
+#branches {
+  .modal {
+    h4 {
+      font-size: 1rem;
+    }
+
+    label {
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .input-text {
+      border: 1px solid $black;
+      background: $white;
+      padding: 8px;
+    }
+  }
+}
+
+/* --------------------------- branch-details ----------------------- */
+#branch-details {
+  .branches-details {
+    h5 {
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+    }
+  }
+
+  table#branch {
+    border-bottom: 1px dashed #333;
+
+    thead {
+      tr {
+        th {
+          padding: 0 30px;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          padding: 10px 0 20px 0;
+          text-align: center;
+          text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+
+        }
+      }
+    }
+  }
+
+  .add-employees {
+    label {
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+    }
+
+    .input-text {
+      border: 1px solid $black;
+      background: $white;
+      padding: 8px;
+    }
+  }
+
+  .role-table {
+    table {
+      tr {
+        border-bottom: 1px dotted #707070;
+
+        td,
+        th {
+          padding: 10px 0;
+        }
+
+        td {
+          button {
+            background: 0;
+            border: 0;
+            outline: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ----------------------------- Users ---------------------------- */
+#users {
+  .modal {
+    h4 {
+      font-size: 1rem;
+    }
+
+    label {
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .input-text {
+      border: 1px solid $black;
+      background: $white;
+      padding: 8px;
+    }
+  }
+
+  #showOrdercontrols {
+    right: 7%;
+
+    .basic_button {
+      width: 72px;
+
+      img {
+        margin: 10px auto;
+        display: block;
+      }
+    }
+  }
+
+  .active {
+    background: green;
+    text-transform: capitalize;
+  }
+
+  .inactive {
+    background: red;
+    text-transform: capitalize;
+  }
+}
+
+/* ------------------------------- Login ------------------------------ */
+#login {
+  background: $black;
+}
+
+/* ----------------------- safe-box-action -------------------------- */
+#safe-box-action {
+  .branch-options {
+    .title {
+      font-size: .9rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+    }
+
+    .input-text {
+      border: 1px solid $black;
+      background: $white;
+    }
+  }
+
+  table {
+    thead {
+      tr {
+        th {
+          text-transform: uppercase;
+          text-align: left;
+          padding: 0 13px;
+        }
+      }
+    }
+
+    .submit-btn {
+      font-size: 13px;
+    }
+  }
+
+  .modal {
+    h4 {
+      font-size: 1rem;
+    }
+
+    h5 {
+      font-size: .9rem;
+      text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
+
+      span {
+        font-size: .8rem;
+      }
+    }
+
+    label {
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .input-text {
+      border: 1px solid $black;
+      background: $white;
+      padding: 8px;
+    }
+  }
+}
+
+/* --------------------------- Safe Box List ---------------------------- */
+#safe-box-list {
+  .In {
+    background: green;
+  }
+
+  .Out {
+    background: red;
   }
 }

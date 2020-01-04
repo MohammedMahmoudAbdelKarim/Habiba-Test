@@ -3,9 +3,7 @@
   <header class="bg-blue px-5 py-3">
     <div class="row align-items-end">
       <!-- left-hand-side-of-header -->
-      <div
-        class="row align-items-start no-gutters w-100 justify-content-between"
-      >
+      <div class="row align-items-start w-100 justify-content-between">
         <div class="col-8">
           <!-- Titles -->
           <h6 class="col-12 p-0">Dashboard | Sales | Return</h6>
@@ -16,7 +14,7 @@
         <div class="col-4 row justify-content-end">
           <div class="dropdown">
             <button
-              class="btn btn-secondary dropdown-toggle"
+              class="btn dropdown-toggle"
               type="button"
               id="dropdownMenu2"
               data-toggle="dropdown"
@@ -33,9 +31,9 @@
           </div>
         </div>
         <div class="col-7"></div>
-        <div class="col-3 pr-4 row justify-content-end">
+        <div class="col-3 row justify-content-end">
           <button class="addBtn" routerLink="/sales/sales-list">
-            <i class="icon-diamond mr-2 align-middle"></i>
+            <i class="icon-basket-loaded mr-2 align-middle"></i>
             Sales List
           </button>
         </div>
@@ -43,386 +41,310 @@
     </div>
   </header>
   <!-- End Header -->
-  <div class="addNewSale">
-    <div class="page_main_blocks middle_page">
-      <div class="page_body_main row no-gutters justify-content-around">
-        <div class="page_card_prodect col-md-8 px-3">
-          <div class="row justify-content-center">
-            <div class="col-lg-offset-1 col-md-10 col-lg-10">
-              <form class="card-sm" [formGroup]="productSelectForm">
-                <div class="card-body relative row no-gutters align-items-end">
-                  <mat-form-field
-                    class="example-full-width col-8"
-                    appearance="outline"
-                  >
-                    <mat-label>Enter Item Code</mat-label>
-                    <input
-                      type="text"
-                      placeholder="Code"
-                      aria-label="Number"
-                      matInput
-                      [formControl]="filterCode"
-                      [matAutocomplete]="autoCode"
-                      [(ngModel)]="codeValue"
-                    />
-                    <mat-icon
-                      class="pointer"
-                      matSuffix
-                      aria-label="Clear"
-                      (click)="clearSearch()"
-                      *ngIf="codeValue"
-                      >close</mat-icon
-                    >
-                    <mat-autocomplete
-                      #autoCode="matAutocomplete"
-                      [displayWith]="displayCode"
-                    >
-                      <mat-option
-                        (onSelectionChange)="
-                          selectProduct($event.source.value, i)
-                        "
-                        *ngFor="
-                          let option of filterCodes | async;
-                          let i = index
-                        "
-                        [value]="option"
-                      >
-                        {{ option.label }}
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-form-field>
-                  <button
-                    class="btn addItemBtn"
-                    type="button"
-                    (click)="addItemTosellingProductListArray()"
-                    [disabled]="addDisAbledState"
-                  >
-                    RETURN ITEM
-                  </button>
-                </div>
-                <mat-hint
-                  class="alert alert-danger w-100 d-block"
-                  *ngIf="errMessage.items"
-                  >{{ errMessage.items }}</mat-hint
-                >
-                <mat-hint
-                  class="alert alert-danger w-100 d-block"
-                  *ngIf="emptyArr"
-                >
-                  No Product available in that branch
-                </mat-hint>
-              </form>
-            </div>
-          </div>
-          <div id="selectedProducts" *ngIf="sellingProductListArray.length">
-            <h5>Products Selected : {{ sellingProductListArray.length }}</h5>
-            <table class="table table-responsive-sm table-striped">
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Product Code</th>
-                  <th>Weight</th>
-                  <th>Stones</th>
-                  <th>Total in USD</th>
-                  <th>Total in EGP</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let product of sellingProductListArray; let i = index"
-                >
-                  <td>
-                    <img
-                      *ngIf="product.image"
-                      width="148px"
-                      src="http://jewelry.ixscope.com/backend/img/products/{{
-                        product.image
-                      }}"
-                      [alt]="product.label"
-                    />
-                  </td>
-                  <td *ngIf="product.label">
-                    {{ product.label }}
-                    <h5 class="mt-4" *ngIf="product.stones.length">
-                      Stones {{ product.stones.legnth }}
-                    </h5>
-                    <form
-                      [formGroup]="editProductStoneForm"
-                      *ngIf="product.stones.length"
-                    >
-                      <table class="table inside-table table-striped">
-                        <thead>
-                          <tr class="header-tr">
-                            <th scope="col">Stone Name</th>
-                            <th scope="col">Quantity</th>
-                            <th class="styleBorderRight" scope="col">
-                              Weight (cts)
-                            </th>
-                            <th class="styleBorderRight-Left" scope="col">
-                              Cost ($)
-                            </th>
-                            <th class="styleBorderRight-Left" scope="col">
-                              Setting
-                            </th>
-                            <th scope="col">Total ($)</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr
-                            class="text-center"
-                            *ngFor="
-                              let stone of product.stones;
-                              let stoneIndex = index
-                            "
-                          >
-                            <td class="pb-0" *ngIf="stone.name">
-                              {{ stone.name }}
-                            </td>
-                            <td class="pb-0" *ngIf="stone.quantity">
-                              {{ stone.quantity }}
-                            </td>
-                            <td class="styleBorderRight" *ngIf="stone.weight">
-                              {{ stone.weight }}
-                            </td>
-                            <td class="styleBorderRight-Left">
-                              <input
-                                class="stoneEditableValue text-center"
-                                id="productStonePrice"
-                                value="{{ stone.price }}"
-                                formControlName="productStonePrice"
-                                autocomplete="off"
-                                (keyup)="
-                                  calculateStoneTotal(
-                                    $event,
-                                    stoneIndex,
-                                    i,
-                                    'sP'
-                                  )
-                                "
-                                (keypress)="numberCheckValidation($event)"
-                                maxlength="9"
-                              />
-                            </td>
-                            <td class="styleBorderRight-Left">
-                              <input
-                                class="stoneEditableValue text-center"
-                                id="productStonesetting"
-                                value="{{ stone.setting }}"
-                                formControlName="productStoneSetting"
-                                autocomplete="off"
-                                (keyup)="
-                                  calculateStoneTotal(
-                                    $event,
-                                    stoneIndex,
-                                    i,
-                                    'sS'
-                                  )
-                                "
-                                (keypress)="numberCheckValidation($event)"
-                                maxlength="9"
-                              />
-                            </td>
-                            <td class="" *ngIf="stone.total">
-                              {{ stone.total.toLocaleString() }}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </form>
-                  </td>
-                  <td>{{ product.gold_weight }}</td>
-                  <td>{{ product.stones.length }}</td>
-                  <td>
-                    {{ product.item_total_after_profit.toLocaleString() }}
-                  </td>
-                  <td>
-                    {{
-                      (
-                        product.item_total_after_profit * dollarPrice
-                      ).toLocaleString()
-                    }}
-                  </td>
-                  <td>
-                    <mat-icon
-                      class="text-grey pointer"
-                      (click)="removeItem($event, stoneIndex, i, 'sP')"
-                      >delete</mat-icon
-                    >
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div id="add-sales-right-side" class="page_body_main-right col-md-3">
-          <form [formGroup]="invoiceDataform">
-            <!-- Start Form field -->
-            <!-- <div class="col-md-12">
-              <label
-                ><img src=".././../../assets/employee.svg" /> Client Name or
-                Mobile
-              </label>
-              <mat-form-field
-                class="example-full-width pb-0"
-                appearance="outline"
+  <div class="row no-gutters">
+    <div class="col-md-8 p-5">
+      <form [formGroup]="productSelectForm">
+        <div class="row no-gutters align-items-end justify-content-between">
+          <mat-form-field
+            class="example-full-width col-9 mr-3"
+            appearance="outline"
+          >
+            <mat-label>Enter Item Code</mat-label>
+            <input
+              type="text"
+              placeholder="Enter Item Code"
+              aria-label="Number"
+              matInput
+              [formControl]="filterCode"
+              [matAutocomplete]="autoCode"
+              [(ngModel)]="codeValue"
+            />
+            <mat-icon
+              class="pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="clearSearch()"
+              *ngIf="codeValue"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoCode="matAutocomplete"
+              [displayWith]="displayCode"
+            >
+              <mat-option
+                (onSelectionChange)="selectProduct($event.source.value, i)"
+                *ngFor="let option of filterCodes | async; let i = index"
+                [value]="option"
               >
-                <mat-label>Client Name or Mobile</mat-label>
-                <input
-                  type="text"
-                  placeholder="Client"
-                  aria-label="Number"
-                  matInput
-                  [formControl]="clientNameData"
-                  [matAutocomplete]="autoClient"
-                  [(ngModel)]="clientValue"
+                {{ option.label }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <button
+            class="submit-btn col-2"
+            type="button"
+            (click)="addItemTosellingProductListArray()"
+            [disabled]="addDisAbledState"
+            style="padding: 9px; font-weight: 700; font-size: 11px;"
+          >
+          <i class="icon-basket-loaded mr-2 align-middle"></i>
+          RETURN ITEM
+          </button>
+        </div>
+        <mat-hint
+          class="alert alert-danger mt-2 w-100 d-block"
+          *ngIf="errMessage.items"
+          >{{ errMessage.items }}</mat-hint
+        >
+        <mat-hint
+          class="alert alert-danger mt-2 w-100 d-block"
+          *ngIf="emptyArr"
+        >
+          No product available in that branch
+        </mat-hint>
+      </form>
+      <div
+        id="selected-products"
+        class="mt-3"
+        *ngIf="sellingProductListArray.length"
+      >
+        <h5>Products Selected : {{ sellingProductListArray.length }}</h5>
+        <table class="table table-responsive-sm table-striped">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product Code</th>
+              <th>Weight</th>
+              <th>Stones</th>
+              <th>Total in USD</th>
+              <th>Total in EGP</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of sellingProductListArray; let i = index">
+              <td>
+                <img
+                  *ngIf="product.image"
+                  width="100%"
+                  src="http://jewelry.ixscope.com/backend/img/products/{{
+                    product.image
+                  }}"
+                  [alt]="product.label"
                 />
-                <mat-icon
-                  class="pointer"
-                  matSuffix
-                  aria-label="Clear"
-                  (click)="clientValue = ''"
-                  *ngIf="clientValue"
-                  >close</mat-icon
-                >
-                <mat-autocomplete
-                  #autoClient="matAutocomplete"
-                  [displayWith]="displayClient"
-                >
-                  <mat-option
-                    (onSelectionChange)="getClientId($event.source.value)"
-                    *ngFor="let option of filteredClients | async"
-                    [value]="option"
-                  >
-                    {{ option.name }}
-                  </mat-option>
-                </mat-autocomplete>
-                <mat-hint
-                  class="pointer"
-                  (click)="myModalClient.show(clientsForm.reset())"
-                  align="end"
-                  style="color:#20a8d8; font-size: 15px;"
-                  >Add New Client</mat-hint
-                >
-              </mat-form-field>
+              </td>
+              <td *ngIf="product.label">
+                {{ product.label }}
 
-              <mat-hint
-                class="alert alert-danger w-100 d-block"
-                *ngIf="errMessage.client_id"
-                >{{ errMessage.client_id }}</mat-hint
-              >
-            </div> -->
-            <div class="col-md-12">
-              <div class="form-group">
-                <label>
-                  <img src="../.././../assets/calendar.svg" /> Date
-                </label>
-                <input
-                  matInput
-                  [matDatepicker]="picker"
-                  placeholder="Choose a Date"
-                  class="p-3 itemInput w-100 pointer"
-                  id="exampleInputEmail1"
-                  autocomplete="off"
-                  (click)="picker.open()"
-                  (dateInput)="entryDateChanged($event, 'from')"
-                  (keypress)="(false)"
-                  required
-                />
-                <mat-datepicker touchUi #picker> </mat-datepicker>
-              </div>
-              <mat-hint
-                class="alert alert-danger w-100 d-block"
-                *ngIf="errMessage.receipt_date"
-                >{{ errMessage.receipt_date }}</mat-hint
-              >
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label
-                  ><img src="../.././../assets/placeholder.svg" />Wherehouse
-                </label>
-                <select
-                  class="form-control"
-                  formControlName="branch"
-                  value=""
-                  (change)="getSelectedListOptionId($event.target)"
-                  required
-                  disabled
+                <h5 class="mt-4" *ngIf="product.stones.length">
+                  Stones {{ product.stones.legnth }}
+                </h5>
+
+                <form
+                  [formGroup]="editProductStoneForm"
+                  *ngIf="product.stones.length"
                 >
-                  <option
-                    value=""
-                    disabled
-                    selected
-                    hidden
-                    *ngIf="isInvoiced"
-                    >{{ branch_name }}</option
-                  >
-                  <option value="" disabled selected hidden>{{
-                    branchesList[0].name
-                  }}</option>
-                  <option
-                    *ngFor="let branch of branchesList"
-                    [value]="branch.id"
-                  >
-                    {{ branch.name }}
-                  </option>
-                </select>
-                <!-- <mat-hint
-                  style="color:#20a8d8;"
-                  class="mt-1 float-right pointer"
-                  align="end"
-                  (click)="myModalBranch.show(branchesForm.reset())"
-                  >Add New Warehouse</mat-hint
-                > -->
-              </div>
-            </div>
-          </form>
-        </div>
+                  <table class="table inside-table table-striped">
+                    <thead>
+                      <tr class="">
+                        <th scope="col" class="border-right">Stone Name</th>
+                        <th scope="col" class="border-right">Quantity</th>
+                        <th class="border-right" scope="col">
+                          Weight (cts)
+                        </th>
+                        <th class="border-right" scope="col">
+                          Cost ($)
+                        </th>
+                        <th class="border-right" scope="col">
+                          Setting
+                        </th>
+                        <th scope="col">Total ($)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        class="text-center"
+                        *ngFor="
+                          let stone of product.stones;
+                          let stoneIndex = index
+                        "
+                      >
+                        <td class="pb-0 border-right" *ngIf="stone.name">
+                          {{ stone.name }}
+                        </td>
+                        <td class="pb-0 border-right" *ngIf="stone.quantity">
+                          {{ stone.quantity }}
+                        </td>
+                        <td class="border-right" *ngIf="stone.weight">
+                          {{ stone.weight }}
+                        </td>
+                        <td class="border-right">
+                          <input
+                            class="stone-input text-center"
+                            value="{{ stone.price }}"
+                            formControlName="productStonePrice"
+                            autocomplete="off"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, i, 'sP')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                          />
+                        </td>
+                        <td class="border-right">
+                          <input
+                            class="stone-input text-center"
+                            value="{{ stone.setting }}"
+                            formControlName="productStoneSetting"
+                            autocomplete="off"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, i, 'sS')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                          />
+                        </td>
+                        <td class="" *ngIf="stone.total">
+                          {{ stone.total }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </form>
+              </td>
+              <td>{{ product.gold_weight }}</td>
+              <td>{{ product.stones.length }}</td>
+              <td>
+                {{ product.item_total_after_profit }}
+              </td>
+              <td>
+                {{
+                  (
+                    product.item_total_after_profit * dollarPrice
+                  )
+                }}
+              </td>
+              <td>
+                <img class="pointer" src="../../../assets/icon/delete.svg" (click)="removeItem($event, stoneIndex, i, 'sP')" alt="">
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  </div>
+    <div class="col-md-4 p-5" id="sale-details">
+      <form [formGroup]="invoiceDataform">
+        <!-- Start Form field -->
+       
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>
+              <img src="../.././../assets/icon/calendar.svg" /> 
+              <span class="ml-2">Date</span>             
+            </label>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              placeholder="Choose a Date"
+              class="input-text w-100 pointer"
+              autocomplete="off"
+              (click)="picker.open()"
+              (dateInput)="entryDateChanged($event, 'from')"
+              (keypress)="(false)"
+              required
+            />
+            <mat-datepicker touchUi #picker> </mat-datepicker>
+          </div>
+          <mat-hint
+            class="alert alert-danger w-100 d-block"
+            *ngIf="errMessage.receipt_date"
+            >{{ errMessage.receipt_date }}</mat-hint
+          >
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label
+              ><img src="../.././../assets/icon/placeholder.svg" />
+              <span class="ml-2">Warehouse</span>
+            </label>
+            <select
+              class="input-text w-100"
+              formControlName="branch"
+              value=""
+              (change)="getSelectedListOptionId($event.target)"
+              required
+              disabled
+            >
+              <option
+                value=""
+                disabled
+                selected
+                hidden
+                *ngIf="isInvoiced"
+                >{{ branch_name }}</option
+              >
+              <option value="" disabled selected hidden>{{
+                branchesList[0].name
+              }}</option>
+              <option
+                *ngFor="let branch of branchesList"
+                [value]="branch.id"
+              >
+                {{ branch.name }}
+              </option>
+            </select>
+            <!-- <mat-hint
+              style="color:#20a8d8;"
+              class="mt-1 float-right pointer"
+              align="end"
+              (click)="myModalBranch.show(branchesForm.reset())"
+              >Add New Warehouse</mat-hint
+            > -->
+          </div>
+        </div>
+      </form>
+    </div>
+    </div>
   <!-- Price Fixed -->
-  <div class="PriceFixed row">
+  <div class="price-fixed row no-gutters">
     <div class="col-lg-8 py-3">
       <form [formGroup]="paidAmountForm">
-        <table class="table table-borderless ">
+        <table class="table border-0">
           <thead>
             <tr class="header-tr">
-              <th scope="col" style="text-align: center;">Total USD</th>
+              <th scope="col" class="border-right text-center">Total USD</th>
               <th
-                class="styleBorderRight"
+              class="border-right text-center"
                 scope="col"
-                style="text-align: center;"
               >
                 Total EGP
               </th>
 
-              <th class="styleBorderRight" scope="col">Return Amount Paid</th>
+              <th class="border-right text-center" scope="col">Return Amount Paid</th>
               <th scope="col">Return Payment Method</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td
-                class=""
+                class="border-right text-center"
                 style="font-size: 19px;
                 font-weight: 600; text-align: center;"
               >
-                {{ invoiceTotal.toLocaleString() }}
+                {{ invoiceTotal }}
               </td>
               <td
-                class="styleBorderRight"
+                class="border-right text-center"
                 style="font-size: 19px;
               font-weight: 600; text-align: center;"
               >
                 {{
                   invoiceTotal !== 0
-                    ? (invoiceTotal * dollarPrice).toLocaleString()
+                    ? (invoiceTotal * dollarPrice)
                     : 0
                 }}
               </td>
-              <td class="styleBorderRight text-center text-red">
+              <td class="border-right text-center">
                 <input
                   class="px-3 py-2 itemInput w-75 text-center mr-1"
                   placeholder="Insert Return Paid Amount"
@@ -436,7 +358,7 @@
               <td class="text-center text-red">
                 <select
                   (change)="getPaymentType($event.target.value)"
-                  class="itemInput w-50 text-center"
+                  class="input-text w-100"
                   style="padding: 13px"
                 >
                   <option value="1" selected="selected">Cash</option>
@@ -450,263 +372,10 @@
       </form>
     </div>
     <div class="col-md-4 p-0">
-      <button class="btn" type="submit" (click)="onSubmit()">
-        Confirm & Return Item
+      <button class="submit-btn" type="submit" (click)="onSubmit()">
+        <i class="icon-basket-loaded mr-2 align-middle"></i>
+        Confirm & Generate Invoice
       </button>
-    </div>
-  </div>
-  <!-- Add New Branch Modal -->
-  <div
-    bsModal
-    #myModalBranch="bs-modal"
-    class="modal fade"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="myModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Create New Warehouse</h4>
-          <button
-            type="button"
-            class="close"
-            (click)="myModalBranch.hide()"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form
-            [formGroup]="branchesForm"
-            (ngSubmit)="onSubmitBranch(branchesForm)"
-            #form="ngForm"
-          >
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label for="exampleInputEmail2"
-                    >Warehouse Name <span class="text-red">*</span></label
-                  >
-                  <input
-                    class="form-control input-modal"
-                    value=""
-                    formControlName="name"
-                    autocomplete="off"
-                    placeholder="Warehouse Name"
-                  />
-                </div>
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="
-                    branchesForm.controls.name.errors?.required &&
-                    branchesForm.controls.name.touched &&
-                    !modalError.name
-                  "
-                  >This Field is Required</mat-hint
-                >
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="modalError.name"
-                  >{{ modalError.name }}</mat-hint
-                >
-              </div>
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label for="exampleInputEmail3"
-                    >Warehouse Address <span class="text-red">*</span></label
-                  >
-                  <input
-                    class="form-control input-modal"
-                    value=""
-                    formControlName="address"
-                    autocomplete="off"
-                    placeholder="Warehouse Address"
-                  />
-                </div>
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="
-                    branchesForm.controls.address.errors?.required &&
-                    branchesForm.controls.address.touched &&
-                    !modalError.address
-                  "
-                  >This Field is Required</mat-hint
-                >
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="modalError.address"
-                  >{{ modalError.address }}</mat-hint
-                >
-              </div>
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label>Warehouse City <span class="text-red">*</span></label>
-                  <select
-                    class="form-control input-modal"
-                    formControlName="city_id"
-                  >
-                    <option value="" selected="selected" disabled hidden
-                      >Please Select City</option
-                    >
-                    <option
-                      *ngFor="let city of citiesListArray; let i = index"
-                      [value]="city.id"
-                      >{{ city.name }}
-                    </option>
-                  </select>
-                </div>
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="
-                    branchesForm.controls.city_id.errors?.required &&
-                    branchesForm.controls.city_id.touched &&
-                    !modalError.city_id
-                  "
-                  >This Field is Required</mat-hint
-                >
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="modalError.city_id"
-                  >{{ modalError.city_id }}</mat-hint
-                >
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn-modal-submit">
-                Add Warehouse
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Add New Client Modal -->
-  <div
-    bsModal
-    #myModalClient="bs-modal"
-    class="modal fade"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="myModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Create New Client</h4>
-          <button
-            type="button"
-            class="close"
-            (click)="myModalClient.hide()"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form
-            [formGroup]="clientsForm"
-            (ngSubmit)="onSubmitClient(clientsForm)"
-            #form="ngForm"
-          >
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label for="exampleInputEmail2"
-                    >Client Name <span class="text-red">*</span></label
-                  >
-                  <input
-                    class="form-control input-modal"
-                    value=""
-                    formControlName="name"
-                    autocomplete="off"
-                    placeholder="Client Name"
-                  />
-                </div>
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="
-                    clientsForm.controls.name.errors?.required &&
-                    clientsForm.controls.name.touched &&
-                    !modalError.name
-                  "
-                  >This Field is Required</mat-hint
-                >
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="modalError.name"
-                  >{{ modalError.name }}</mat-hint
-                >
-              </div>
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label for="exampleInputEmail3"
-                    >Client Mobile <span class="text-red">*</span></label
-                  >
-                  <input
-                    class="form-control input-modal"
-                    value=""
-                    formControlName="mobile"
-                    autocomplete="off"
-                    placeholder="Client Mobile"
-                  />
-                </div>
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="
-                    clientsForm.controls.mobile.errors?.required &&
-                    clientsForm.controls.mobile.touched &&
-                    !modalError.mobile
-                  "
-                  >This Field is Required</mat-hint
-                >
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="modalError.mobile"
-                  >{{ modalError.mobile }}</mat-hint
-                >
-              </div>
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label for="exampleInputEmail3"
-                    >Client Email <span class="text-red">*</span></label
-                  >
-                  <input
-                    class="form-control input-modal"
-                    value=""
-                    formControlName="email"
-                    autocomplete="off"
-                    placeholder="Client Email"
-                  />
-                </div>
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="
-                    clientsForm.controls.email.errors?.required &&
-                    clientsForm.controls.email.touched &&
-                    !modalError.email
-                  "
-                  >This Field is Required</mat-hint
-                >
-                <mat-hint
-                  class="d-inline-block text-center w-100 alert alert-danger"
-                  *ngIf="modalError.email"
-                  >{{ modalError.email }}</mat-hint
-                >
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn-modal-submit">
-                Add Client
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
   </div>
 </div>

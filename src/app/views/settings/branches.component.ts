@@ -18,6 +18,8 @@ export class BranchesComponent implements OnInit {
   // Modals
   @ViewChild('myModal', { static: false }) public myModal: ModalDirective;
   @ViewChild('myModal2', { static: false }) public myModal2: ModalDirective;
+  @ViewChild('deleteModal', { static: false })
+  public deleteModal: ModalDirective;
   selection = new SelectionModel<any>(true, []);
   // Tables Colums
   displayedColumns: string[] = [
@@ -103,7 +105,7 @@ export class BranchesComponent implements OnInit {
     );
   }
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() {}
+  ngOnInit() { }
   /* ---------------------------- Filter Branches ------------------------ */
   private filterBranch(value) {
     // tslint:disable-next-line: triple-equals
@@ -204,7 +206,7 @@ export class BranchesComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* -------------------------- Create New Branch ----------------------- */
   onSubmitBranch(form) {
@@ -303,34 +305,22 @@ export class BranchesComponent implements OnInit {
     this.branchesForm.controls.city_id.setValue(branchData.city.id);
     this.cityName = branchData.city.name;
   }
-  // Close Update Popup
-  closeUpdataPopup() {
-    this.showUpdataPopup = false;
-  }
   // Open Delete Popup
   opendeletePopup(row) {
+    console.log(row);
     this.deleteItem = row;
-    this.showDeletePopup = true;
-    this.DeletingHold = true;
-  }
-  // Close Delete Popup
-  closeDeletePopup() {
     this.deleteForm.controls.deleteInput.setValue('');
-    this.showDeletePopup = false;
+    this.deleteModal.show();
   }
   /* -------------------------- Delete Branch ----------------------------- */
   deleteBranch() {
-    console.log('Delete Mode is ON');
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
-    console.log(upperDeleteInputValue);
     if (upperDeleteInputValue === 'DELETE') {
-      this.DeletingHold = true;
       this.api.delete('branches/' + this.deleteItem.id).subscribe(
         data => {
-          this.DeletingHold = false;
           // tslint:disable-next-line: triple-equals
           if (data['status'] == 'success') {
-            this.closeDeletePopup();
+            this.deleteModal.hide();
             this.toast.success(
               this.deleteItem.name + ' ' + 'has been Deleted',
               'Success!'
@@ -359,12 +349,10 @@ export class BranchesComponent implements OnInit {
         },
         error => {
           this.api.fireAlert('error', error.error.message, '');
-          this.closeDeletePopup();
         }
       );
     } else {
-      console.log('Delete Mode is OFF');
-      this.api.fireAlert('error', 'Error in writing delete', '');
+      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
   // Reload Page

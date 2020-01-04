@@ -19,6 +19,10 @@ export class UsersComponent implements OnInit {
   // Modals
   @ViewChild('myModal', { static: false }) public myModal: ModalDirective;
   @ViewChild('myModal2', { static: false }) public myModal2: ModalDirective;
+  @ViewChild('deleteModal', { static: false })
+  public deleteModal: ModalDirective;
+  @ViewChild('delete2Modal', { static: false })
+  public delete2Modal: ModalDirective;
   // Tables Colums
   displayedColumns: string[] = [
     'select',
@@ -104,7 +108,7 @@ export class UsersComponent implements OnInit {
     );
   }
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() {}
+  ngOnInit() { }
   /* ---------------------------- Filter Role ------------------------ */
   private filterRole(value) {
     // tslint:disable-next-line: triple-equals
@@ -195,7 +199,7 @@ export class UsersComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* ---------------------------- Remove Multi-Items ----------------------- */
   mutliplyAction(event) {
@@ -203,9 +207,7 @@ export class UsersComponent implements OnInit {
     this.checkedItems = this.selection.selected.length;
   }
   removeMultiply() {
-    this.showDeletePopup = true;
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
-    this.deleteFlage = true;
     if (upperDeleteInputValue === 'DELETE') {
       const ids = [];
       this.selection.selected.forEach(item => {
@@ -224,7 +226,9 @@ export class UsersComponent implements OnInit {
             this.dataSource.paginator = this.paginator;
           });
         });
-      this.showDeletePopup = false;
+    }
+    else {
+      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
   /* ------------------------------------ Popup ----------------------------- */
@@ -247,24 +251,18 @@ export class UsersComponent implements OnInit {
   opendeletePopup(row) {
     console.log(row);
     this.deleteItem = row;
-    this.showDeletePopup = true;
-    this.DeletingHold = true;
     this.deleteForm.controls.deleteInput.setValue('');
+    this.deleteModal.show();
   }
-  // Close Delete Popup
-  closeDeletePopup() {
+  // Open Multi Delete
+  deleteMultiply() {
     this.deleteForm.controls.deleteInput.setValue('');
-    this.showDeletePopup = false;
+    this.delete2Modal.show();
   }
   /* -------------------------- Delete Item ----------------------------- */
   deleteUser() {
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
     if (upperDeleteInputValue === 'DELETE') {
-      console.log('Deleted Mode is ON');
-    } else {
-      this.api.fireAlert('error', 'Error in writing delete', '');
-    }
-    if (!this.deleteFlage) {
       this.api.delete('employees/' + this.deleteItem.id).subscribe(value => {
         // tslint:disable-next-line: triple-equals
         if (value['status'] == 'success') {
@@ -272,6 +270,7 @@ export class UsersComponent implements OnInit {
             this.deleteItem.name + ' ' + 'has been Deleted',
             'Success!'
           );
+          this.deleteModal.hide();
           this.api
             .get('employees/index', {
               per_page: 50
@@ -288,16 +287,11 @@ export class UsersComponent implements OnInit {
               per_page: 50
             })
             // tslint:disable-next-line: no-shadowed-variable
-            .subscribe(value => {});
+            .subscribe(value => { });
         }
-        this.DeletingHold = false;
-        this.showDeletePopup = false;
       });
     } else {
-      this.showDeletePopup = true;
-      if (upperDeleteInputValue === 'DELETE') {
-        this.removeMultiply();
-      }
+      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
   // Reload Page

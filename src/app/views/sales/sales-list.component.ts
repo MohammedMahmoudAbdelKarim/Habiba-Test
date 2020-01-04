@@ -157,11 +157,6 @@ export class SalesListComponent {
       startWith(''),
       map(value => this.filterInvoice(value))
     );
-    // Filter Dates
-    this.filteredDates = this.myControlDate.valueChanges.pipe(
-      startWith(''),
-      map(value => this.fitlerDate(value))
-    );
     this.filteredMetals = this.myControlMetal.valueChanges.pipe(
       startWith(''),
       map(value => this.filterMetal(value))
