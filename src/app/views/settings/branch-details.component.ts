@@ -33,7 +33,11 @@ export class BranchDetailsComponent implements OnInit {
     employee_id: new FormControl('')
   });
   /* ----------------------------------- Constructor ------------------------ */
-  constructor(private api: MainServiceService, private route: ActivatedRoute) {
+  constructor(
+    private api: MainServiceService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
     this.route.queryParams.subscribe(params => {
       this.branch_id = params.id;
     });
@@ -164,5 +168,10 @@ export class BranchDetailsComponent implements OnInit {
           });
       }
     });
+  }
+  /*--------------------------------- Logout ------------------------------ */
+  logout() {
+    sessionStorage.removeItem('token');
+    this.router.navigate(['/']);
   }
 }

@@ -50,10 +50,8 @@
           class="p-2 input-text w-100"
           (change)="getSelectedListOptionId($event)"
         >
-          <option disabled selected="selected" value=""
-            >Please Select Branch</option
-          >
-          <option value="">All</option>
+          <option disabled value="">Please Select Branch</option>
+          <option selected value="">All</option>
           <option *ngFor="let branch of branchesList" [value]="branch.id">
             {{ branch.name }}</option
           >
@@ -96,9 +94,7 @@
           <td class="border-right text-center">
             {{ box.branches.managers[0].name }}
           </td>
-          <td class="border-right text-center">
-            {{ box.total }}
-          </td>
+          <td class="border-right text-center">{{ box.total }} EGP</td>
           <td class="text-center">
             {{ box.created }}
           </td>
@@ -212,13 +208,28 @@
                   />
                 </div>
               </div>
+              <div class="col-md-12 no-gutters row">
+                <div class="form-group col-12 no-gutters">
+                  <label class="title"
+                    >Payment Method <span class="text-red">*</span></label
+                  >
+                  <select
+                    (change)="getPaymentType($event.target.value)"
+                    class="input-text w-100"
+                  >
+                    <option value="1" selected>Cash</option>
+                    <option value="2">Visa</option>
+                    <option value="3">Bank Check</option>
+                  </select>
+                </div>
+              </div>
               <div class="modal-footer border-0 justify-content-start">
                 <button
                   type="submit"
                   class="submit-btn"
                   [disabled]="!paymentForm.controls.payment_amount.value"
                 >
-                <i class="mr-2 mt-2 fas fa-dollar-sign"></i>
+                  <i class="mr-2 mt-2 fas fa-dollar-sign"></i>
                   Pay
                 </button>
               </div>
@@ -288,8 +299,8 @@
                 <mat-hint
                   class="d-inline-block text-center w-100 alert alert-danger"
                   *ngIf="
-                  transferMoney.controls.branch_id.errors?.required &&
-                  transferMoney.controls.branch_id.touched &&
+                    transferMoney.controls.branch_id.errors?.required &&
+                    transferMoney.controls.branch_id.touched &&
                     !modalError
                   "
                   >This Field is Required</mat-hint
@@ -315,9 +326,12 @@
                 <button
                   type="submit"
                   class="submit-btn"
-                  [disabled]="!transferMoney.controls.money.value || !transferMoney.controls.branch_id.value"
+                  [disabled]="
+                    !transferMoney.controls.money.value ||
+                    !transferMoney.controls.branch_id.value
+                  "
                 >
-                <i class="mr-2 fas mt-2 fa-comments-dollar"></i>
+                  <i class="mr-2 fas mt-2 fa-comments-dollar"></i>
                   Transfer
                 </button>
               </div>

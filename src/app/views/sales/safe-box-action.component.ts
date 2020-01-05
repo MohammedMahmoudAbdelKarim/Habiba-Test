@@ -19,6 +19,7 @@ export class SafeBoxActionComponent {
   modalError: any = [];
   branchesList: any = [];
   branch_id: any = '';
+  payment_method: any = 1;
   branch_name: any = '';
   /* ----------------------------------- Form ------------------------ */
   // Add Payment Form
@@ -29,7 +30,7 @@ export class SafeBoxActionComponent {
   // Transfer Money Form
   transferMoney = new FormGroup({
     branch_id: new FormControl(''),
-    money: new FormControl(''),
+    money: new FormControl('')
   });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
@@ -49,7 +50,7 @@ export class SafeBoxActionComponent {
   }
   /* ----------------------------------- OnInit ------------------------ */
   // tslint:disable-next-line: use-lifecycle-interface
-  ngOnInit() { }
+  ngOnInit() {}
   /* ----------------------------------- Make Empty ------------------------ */
   getEmpty(row) {
     this.api
@@ -60,6 +61,11 @@ export class SafeBoxActionComponent {
         console.log(value);
         this.toast.success("The branch's safe box is empty Now!", '!Success');
       });
+  }
+  /* -------------------------- Get Payment Method ------------------------- */
+  getPaymentType(event) {
+    console.log(event);
+    this.payment_method = event;
   }
   /* --------------------------------- Get Branch ID ------------------------ */
   getBranch(row) {
@@ -80,6 +86,7 @@ export class SafeBoxActionComponent {
       .post('savebox/add', {
         payment_amount: form.value.payment_amount,
         reason: form.value.reason,
+        payment_method: this.payment_method,
         branch_id: this.branch_id
       })
       .subscribe(
@@ -107,7 +114,14 @@ export class SafeBoxActionComponent {
 
   /* ----------------------- Get Branch ID ------------------------ */
   getSelectedListOptionId(event) {
-    console.log(event);
+    console.log(event.target.value);
+    this.api
+      .get('savebox/index', {
+        branch_id: event.target.value
+      })
+      .subscribe(data => {
+        console.log(data);
+      });
   }
   /*--------------------------------- Logout ------------------------------ */
   logout() {

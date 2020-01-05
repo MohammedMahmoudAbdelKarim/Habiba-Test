@@ -10,13 +10,13 @@
           <!-- Titles -->
           <h6 class="col-12 p-0">Dashboard | Invoices | Invoices List</h6>
           <h3 class="text-uppercase">
-            INVOICES LIST
+            Invoices LIST
           </h3>
         </div>
         <div class="col-4 row justify-content-end">
           <div class="dropdown">
             <button
-              class="btn btn-secondary dropdown-toggle"
+              class="btn dropdown-toggle"
               type="button"
               id="dropdownMenu2"
               data-toggle="dropdown"
@@ -26,7 +26,9 @@
               Welcome Habiba ,
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-              <button class="dropdown-item" type="button">Logout</button>
+              <button class="dropdown-item" type="button" (click)="logout()">
+                Logout
+              </button>
             </div>
           </div>
         </div>
@@ -95,7 +97,7 @@
                 *ngFor="let option of filteredClients | async"
                 [value]="option"
               >
-                {{ option.client.name }}
+                {{ option.name }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -103,7 +105,7 @@
         <!-- From Date -->
         <div class="col p-0 mr-3">
           <input
-            style="padding: 11px;"
+            style="padding: 5px 8px;"
             [matDatepicker]="picker"
             placeholder="Date From"
             class="itemInput pointer w-100"
@@ -119,7 +121,7 @@
         <!-- To Date -->
         <div class="col p-0 mr-3">
           <input
-            style="padding: 11px;"
+            style="padding: 5px 8px;"
             [matDatepicker]="picker2"
             placeholder="Date To"
             class="itemInput pointer w-100"
@@ -252,68 +254,29 @@
                 (click)="myModalPayment.show(paymentForm.reset())"
                 (click)="openPayment(row)"
               >
-                <img src="../../../assets/icon-dashboard/barcode.png" alt="" />
+                <img src="../../../assets/icon/gear.svg" alt="" />
                 <span class="tooltiptext">Payment</span>
               </button>
-              <button class="basic_button" type="button">
+              <button
+                class="basic_button"
+                type="button"
+                (click)="openInvoice(row)"
+              >
                 <a target="blank">
-                  <img
-                    src="../../../assets/icon-dashboard/invoice (1).png"
-                    alt=""
-                  />
+                  <img src="../../../assets/icon/invoice.svg" alt="" />
                 </a>
                 <span class="tooltiptext">View Invoice</span>
               </button>
 
-              <button
-                id="editButton"
-                (click)="openDetailsPopup(row.id); itemStockDetailsData = row"
-                class="basic_button"
-                type="button"
-              >
-                <img src="../../../assets/icon-dashboard/invoice.png" alt="" />
+              <button id="editButton" class="basic_button" type="button">
+                <img src="../../../assets/icon/printer.svg" alt="" />
                 <span class="tooltiptext">Print</span>
               </button>
             </div>
           </ng-container>
           <button class="buttonListItems">
-            <img src="../../../assets/icon-dashboard/menu.svg" alt="" />
+            <img src="../../../assets/icon/menu.svg" alt="" />
           </button>
-          <div id="Deletepopup" *ngIf="showDeletePopup">
-            <div
-              class="popupStyle"
-              id="backDrop"
-              (click)="closeDeletePopup()"
-            ></div>
-            <div id="DeletepopupData">
-              <div class="headerClose">
-                <a (click)="closeDeletePopup()">
-                  close
-                </a>
-              </div>
-              <p>For Delete Items Please Type <span>DELETE</span></p>
-              <form class="form-inline" [formGroup]="deleteForm">
-                <div class="form-group">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="DELETE"
-                    formControlName="deleteInput"
-                    value=""
-                    autocomplete="off"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  class="btn btn-default"
-                  (click)="deleteStock()"
-                  (click)="removeMultiply()"
-                >
-                  Delete
-                </button>
-              </form>
-            </div>
-          </div>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -340,6 +303,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
+          <img class="mr-2" src="../../../assets/icon/gear.svg" alt="" />
           <h4 class="modal-title">Add New Payment</h4>
           <button
             type="button"
@@ -360,24 +324,23 @@
               <div class="col-md-12 row">
                 <div class="form-group col-12 no-gutters">
                   <label for="exampleInputName2" class="title"
-                    >Amount <span class="text-red">*</span></label
+                    >Amount (EGP) <span class="text-red">*</span></label
                   >
                   <input
                     id="exampleInputName2"
                     formControlName="paidAmount"
                     autocomplete="off"
-                    placeholder="EGP"
-                    class="p-3 itemInput w-100 text-center"
+                    placeholder="Amount (EGP)"
+                    class="input-text w-100"
                   />
                 </div>
                 <div class="form-group col-12 no-gutters">
                   <label for="exampleInputName2" class="title"
-                    >Payment Method<span class="text-red">*</span></label
+                    >Payment Method <span class="text-red">*</span></label
                   >
                   <select
                     (change)="getPaymentType($event.target.value)"
-                    class="itemInput p-3 w-100 text-center"
-                    style="padding: 13px"
+                    class="input-text w-100"
                   >
                     <option value="1" selected="selected">Cash</option>
                     <option value="2">Visa</option>
@@ -385,22 +348,185 @@
                   </select>
                 </div>
               </div>
-              <div class="modal-footer border-0">
+              <div class="modal-footer border-0 justify-content-start">
                 <button
                   type="submit"
-                  class="btn-modal-submit"
+                  class="submit-btn"
                   [disabled]="!paymentForm.controls.paidAmount.value"
-                  [ngClass]="
-                    !paymentForm.controls.paidAmount.value
-                      ? 'disabledSubmitButton'
-                      : 'enableSubmitButton'
-                  "
                 >
-                  PAY NOW
+                  <img
+                    class="mr-2"
+                    src="../../../assets/icon/gear.svg"
+                    alt=""
+                  />
+                  Pay Now
                 </button>
               </div>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Invoice Modal -->
+  <div
+    id="invoice-modal"
+    bsModal
+    #invoiceModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="text-center w-100">
+            <img src="../../../assets/logo-login.png" alt="" />
+          </div>
+          <button
+            type="button"
+            class="close"
+            (click)="invoiceModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-6 row no-gutters">
+              <h5 class="border-invoice col-4 border-right-0">Date</h5>
+              <h5 class="border-invoice col-8">
+                {{ invoiceData.receipt_date ? invoiceData.receipt_date : '-' }}
+              </h5>
+            </div>
+            <div class="col-6 row no-gutters">
+              <h5 class="border-invoice col-4 border-right-0">Branch</h5>
+              <h5 class="border-invoice col-8">
+                {{ inoviceBranch }}
+              </h5>
+            </div>
+            <div class="col-12 row no-gutters mt-3">
+              <h5 class="border-invoice col-4 border-right-0">Customer Name</h5>
+              <h5 class="border-invoice col-8">
+                {{ inoviceClient }}
+              </h5>
+            </div>
+            <!-- <div class="col-6 row no-gutters mt-3">
+              <table id="item-code" *ngIf="sellingProductListArray.length">
+                <tbody>
+                  <tr>
+                    <td>Item Code</td>
+                    <td>
+                      {{
+                        sellingProductListArray[0].label
+                          ? sellingProductListArray[0].label
+                          : '-'
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Category</td>
+                    <td>
+                      {{
+                        sellingProductListArray[0].category.name
+                          ? sellingProductListArray[0].category.name
+                          : '-'
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Gold Weight</td>
+                    <td>
+                      {{
+                        sellingProductListArray[0].gold_weight
+                          ? sellingProductListArray[0].gold_weight
+                          : '-'
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div
+                class="w-100"
+                *ngIf="
+                  sellingProductListArray.length &&
+                  sellingProductListArray[0].metal_type == 1
+                "
+              >
+                <p class="mb-0 text-center" style="border: 1px solid #333;">
+                  Diamond Details
+                </p>
+                <table id="diamond">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Item</th>
+                      <th>Qty</th>
+                      <th>Weight</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="
+                        let stone of sellingProductListArray[0].stones;
+                        let i = index
+                      "
+                    >
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ stone.code }}</td>
+                      <td>{{ stone.quantity }}</td>
+                      <td>{{ stone.weight }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col-6">
+              <img
+                *ngIf="sellingProductListArray.length"
+                class="w-100"
+                src="http://jewelry.ixscope.com/backend/img/products/{{
+                  sellingProductListArray[0].image
+                }}"
+                alt=""
+              />
+            </div>
+            <div class="col-6 row no-gutters mt-3">
+              <h5 class="border-invoice col-4">Price</h5>
+              <h5 class="border-invoice col-8">
+                {{
+                  paidAmountForm.controls.total_egp.value
+                    ? paidAmountForm.controls.total_egp.value
+                    : '-'
+                }}
+                EGP
+              </h5>
+            </div>
+            <div class="col-6 row no-gutters mt-3">
+              <h5 class="border-invoice col-6">Amount Paid</h5>
+              <h5 class="border-invoice col-6">
+                {{
+                  paidAmountForm.controls.paidAmount.value
+                    ? paidAmountForm.controls.paidAmount.value
+                    : '-'
+                }}
+                EGP
+              </h5>
+            </div>
+            <div class="col-12 row no-gutters mt-3">
+              <h5 class="border-invoice col-4">Seller Name</h5>
+              <h5 class="border-invoice col-8">
+                {{
+                  paidAmountForm.controls.total_egp.value
+                    ? paidAmountForm.controls.total_egp.value
+                    : '-'
+                }}
+              </h5>
+            </div> -->
+          </div>
         </div>
       </div>
     </div>

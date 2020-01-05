@@ -28,6 +28,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { salesAllSolver } from '../../resolvers/sales-index.solver';
 import { branchListSolver } from '../../resolvers/branch-list.solver';
+import { clientsListSolver } from '../../resolvers/clientsList.solver';
 
 @NgModule({
   imports: [
@@ -61,6 +62,6 @@ import { branchListSolver } from '../../resolvers/branch-list.solver';
     FontAwesomeComponent,
     SimpleLineIconsComponent
   ],
-  providers: [salesAllSolver, branchListSolver]
+  providers: [salesAllSolver, branchListSolver, clientsListSolver]
 })
 export class InvoicesModule {}

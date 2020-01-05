@@ -19,6 +19,8 @@ export class InvoicesComponent {
   @ViewChild('myModalPayment', { static: false })
   public myModalPayment: ModalDirective;
   @ViewChild('myModalImg', { static: false }) public myModalImg: ModalDirective;
+  @ViewChild('invoiceModal', { static: false })
+  public invoiceModal: ModalDirective;
   // Tables Colums
   selection = new SelectionModel<any>(true, []);
   displayedColumns: string[] = [
@@ -53,6 +55,7 @@ export class InvoicesComponent {
   pageNumbers: any = [];
   categoryList: any = [];
   productNumbersList: any = [];
+  clientList: any = [];
   codeList: any;
   deletedStockIndex: any;
   tem_category: any = '';
@@ -86,6 +89,10 @@ export class InvoicesComponent {
   payment_method: any = '1';
   checkedItems: any = 0;
   per_page: number = 50;
+  invoiceData: any = '';
+  inoviceEmployee: any = '';
+  inoviceClient: any = '';
+  inoviceBranch: any = '';
   // Form Controls
   myControlClient = new FormControl('');
   myControlInvoice = new FormControl('');
@@ -108,8 +115,10 @@ export class InvoicesComponent {
   ) {
     this.route.data.subscribe(data => {
       console.log(data);
-      // Get Sales
+      // Get Invoices
       this.products = data.sales.data.data;
+      // Get Clients
+      this.clientList = data.clients;
       this.data = Object.assign(data.sales.data.data);
       console.log(data.sales.data.data);
       this.dataSource = new MatTableDataSource(data.sales.data.data);
@@ -146,40 +155,38 @@ export class InvoicesComponent {
   private filterClient(value) {
     // tslint:disable-next-line: triple-equals
     if (value == '' || value == undefined) {
-      this.route.data.subscribe(data => {
-        this.client_name = '';
-        // Send Request
-        this.api
-          .get('receipts', {
-            client_name: this.client_name,
-            receipt_number: this.receipt_number,
-            date_from: this.fromDate,
-            date_to: this.toDate,
-            per_page: 50
-          })
-          // tslint:disable-next-line: no-shadowed-variable
-          .subscribe(value => {
-            setTimeout(() => {
-              this.dataSource = new MatTableDataSource(value.data.data);
-              this.dataSource.sort = this.sort;
-              this.dataSource.paginator = this.paginator;
-              // Sort item inside inner Object
-              this.dataSource.sortingDataAccessor = (item, property) => {
-                switch (property) {
-                  case 'client.name':
-                    return item.client.name;
-                  default:
-                    return item[property];
-                }
-              };
-            }, 300);
-          });
-      });
+      this.client_name = '';
+      // Send Request
+      this.api
+        .get('receipts', {
+          client_name: this.client_name,
+          receipt_number: this.receipt_number,
+          date_from: this.fromDate,
+          date_to: this.toDate,
+          per_page: 50
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'client.name':
+                  return item.client.name;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
     }
     // tslint:disable-next-line: triple-equals
     if (typeof value == 'object') {
-      const filterValue = value.client.name.toLowerCase();
-      this.client_name = value.client.name;
+      const filterValue = value.name.toLowerCase();
+      this.client_name = value.name;
       console.log(this.client_name);
       // Send Request
       this.api
@@ -207,8 +214,8 @@ export class InvoicesComponent {
             };
           }, 300);
         });
-      return this.products.filter(option =>
-        option.client.name.toLowerCase().includes(filterValue)
+      return this.clientList.filter(option =>
+        option.name.toLowerCase().includes(filterValue)
       );
       // tslint:disable-next-line: triple-equals
     } else if (typeof value == 'string') {
@@ -228,14 +235,14 @@ export class InvoicesComponent {
             return item[property];
         }
       };
-      return this.products.filter(option =>
-        option.client.name.toLowerCase().includes(filterValueName)
+      return this.clientList.filter(option =>
+        option.name.toLowerCase().includes(filterValueName)
       );
     }
   }
   /* ---------------------------- Display Clients ------------------------ */
   displayClient(client): string {
-    return client ? client.client.name : client;
+    return client ? client.name : client;
   }
   /* ---------------------------- Filter Invoices ------------------------ */
   private filterInvoice(value) {
@@ -526,6 +533,17 @@ export class InvoicesComponent {
   reloadPage() {
     console.log('Reload');
   }
+
+  /* ------------------------------ Open Inovice ----------------------- */
+  openInvoice(row) {
+    console.log(row);
+    this.invoiceModal.show();
+    this.invoiceData = row;
+    this.inoviceClient = row.client.name;
+    this.inoviceEmployee = row.employee.name;
+    this.inoviceBranch = row.branch.name;
+  }
+
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
     this.api
@@ -546,5 +564,10 @@ export class InvoicesComponent {
           }
         };
       });
+  }
+  /*--------------------------------- Logout ------------------------------ */
+  logout() {
+    sessionStorage.removeItem('token');
+    this.router.navigate(['/']);
   }
 }

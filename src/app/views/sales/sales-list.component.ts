@@ -160,7 +160,7 @@ export class SalesListComponent {
     this.filteredMetals = this.myControlMetal.valueChanges.pipe(
       startWith(''),
       map(value => this.filterMetal(value))
-    )
+    );
   }
 
   // Oninit
@@ -623,9 +623,7 @@ export class SalesListComponent {
             };
           }, 300);
         });
-      return this.metals.filter(option =>
-        option.name.includes(filterValue)
-      );
+      return this.metals.filter(option => option.name.includes(filterValue));
       // tslint:disable-next-line: triple-equals
     } else if (typeof value == 'string') {
       // value = this.tem_category;
@@ -695,7 +693,7 @@ export class SalesListComponent {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-      } row ${row.position + 1}`;
+    } row ${row.position + 1}`;
   }
 
   /* ------------------------------------ Popup ----------------------------- */
@@ -740,8 +738,13 @@ export class SalesListComponent {
   routeToReturn(row) {
     console.log('Item To Return: ', row);
     this.router.navigate(['/sales/return'], {
-      queryParams: { id: row.id },
+      queryParams: { id: row.product_id },
       skipLocationChange: true
     });
+  }
+  /*--------------------------------- Logout ------------------------------ */
+  logout() {
+    sessionStorage.removeItem('token');
+    this.router.navigate(['/']);
   }
 }

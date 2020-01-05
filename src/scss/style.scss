@@ -901,9 +901,12 @@ header {
     background: #fff;
     box-shadow: 8px 9px 13px rgba(0, 0, 0, 0.16);
     border: 1px solid #707070;
+    outline: 0;
 
     a {
       height: 100%;
+      outline: 0;
+
     }
   }
 
@@ -911,9 +914,12 @@ header {
     text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.16);
     font-size: .9rem;
     font-weight: 500;
+    outline: 0;
+
   }
 
   .col {
+    outline: 0;
 
     &:hover {
       transition: .3s all ease-in-out;
@@ -1268,6 +1274,85 @@ header {
 
 /* -------------------------- Clients ----------------------------- */
 #clients {
+  #showOrdercontrols {
+    right: 6%;
+  }
+
+  .modal {
+    h4 {
+      font-size: 1rem;
+    }
+
+    label {
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .input-text {
+      border: 1px solid $black;
+      background: $white;
+      padding: 8px;
+    }
+  }
+}
+
+/* ------------------------------ Invoice ---------------------------- */
+.border-right-0 {
+  border-right: 0;
+}
+
+#invoice-modal {
+  .border-invoice {
+    border: 1px solid $black;
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+
+  #item-code {
+
+    tr {
+      border: 1px solid $black;
+
+      td {
+        padding: 5px;
+      }
+    }
+  }
+
+  #diamond {
+    tr {
+      border: 1px solid $black;
+
+      th {
+        width: 25%;
+        border: 1px solid $black;
+        padding: 5px;
+        text-align: center;
+        font-size: 12px;
+      }
+    }
+
+    tbody {
+      td {
+        text-align: center;
+        border: 1px solid $black;
+      }
+    }
+  }
+}
+
+#invoice-list {
+  #showOrdercontrols {
+    .basic_button {
+      width: 85px;
+
+      img {
+        display: block;
+        margin: 0 auto 10px auto;
+      }
+    }
+  }
+
   .modal {
     h4 {
       font-size: 1rem;
@@ -1491,6 +1576,12 @@ header {
           text-align: left;
           padding: 0 13px;
         }
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px dotted #707070;
       }
     }
 

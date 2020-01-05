@@ -1,9 +1,6 @@
+import { clientsListSolver } from './../../resolvers/clientsList.solver';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
-import { FlagsComponent } from './flags.component';
-import { FontAwesomeComponent } from './font-awesome.component';
-import { SimpleLineIconsComponent } from './simple-line-icons.component';
 import { InvoicesComponent } from './invoices.component';
 import { salesAllSolver } from '../../resolvers/sales-index.solver';
 import { branchListSolver } from '../../resolvers/branch-list.solver';
@@ -27,7 +24,8 @@ const routes: Routes = [
         },
         resolve: {
           sales: salesAllSolver,
-          branchList: branchListSolver
+          branchList: branchListSolver,
+          clients: clientsListSolver
         }
       }
     ]

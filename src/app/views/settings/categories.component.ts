@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { MainServiceService } from '../../shared-services/main-service.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { startWith, map } from 'rxjs/operators';
 @Component({
@@ -63,7 +63,8 @@ export class CategoriesComponent implements OnInit {
   constructor(
     private api: MainServiceService,
     private route: ActivatedRoute,
-    private toast: ToastrService
+    private toast: ToastrService,
+    private router: Router
   ) {
     this.route.data.subscribe(data => {
       console.log(data);
@@ -80,7 +81,7 @@ export class CategoriesComponent implements OnInit {
     );
   }
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() { }
+  ngOnInit() {}
   /* ---------------------------- Filter Categories ------------------------ */
   private filtercategory(value) {
     // tslint:disable-next-line: triple-equals
@@ -148,7 +149,7 @@ export class CategoriesComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-      } row ${row.position + 1}`;
+    } row ${row.position + 1}`;
   }
   /* -------------------------- Create New Categories ----------------------- */
   onSubmitcategory(form) {
@@ -284,5 +285,10 @@ export class CategoriesComponent implements OnInit {
   /* ------------- Clear Error Message When Modal Opened ------------------ */
   clearError() {
     this.modalError = [];
+  }
+  /*--------------------------------- Logout ------------------------------ */
+  logout() {
+    sessionStorage.removeItem('token');
+    this.router.navigate(['/']);
   }
 }

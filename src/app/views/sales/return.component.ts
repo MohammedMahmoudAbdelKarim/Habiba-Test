@@ -100,6 +100,7 @@ export class ReturnComponent implements OnInit {
     private router: Router
   ) {
     this.route.queryParams.subscribe(value => {
+      console.log(value);
       this.api.get('products/' + value.id).subscribe(val => {
         if (val.data) {
           this.isInvoiced = true;
