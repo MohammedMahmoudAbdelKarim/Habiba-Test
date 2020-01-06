@@ -118,5 +118,26 @@ export const navItems: INavData[] = [
         icon: 'icon-settings'
       }
     ]
+  },
+  {
+    name: 'Reports',
+    icon: 'icon-doc',
+    children: [
+      {
+        name: 'Stock List',
+        url: '/main-stock/stock-list',
+        icon: 'icon-doc'
+      },
+      {
+        name: 'Sales List',
+        url: '/sales/sales-list',
+        icon: 'icon-doc'
+      },
+      {
+        name: 'Branches',
+        url: '/sales/safe-box-list',
+        icon: 'icon-doc'
+      }
+    ]
   }
 ];

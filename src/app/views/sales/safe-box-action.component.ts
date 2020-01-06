@@ -30,7 +30,7 @@ export class SafeBoxActionComponent {
   // Transfer Money Form
   transferMoney = new FormGroup({
     branch_id: new FormControl(''),
-    money: new FormControl('')
+    payment_amount: new FormControl('')
   });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
@@ -78,6 +78,7 @@ export class SafeBoxActionComponent {
   makeTransfer(row) {
     console.log(row);
     this.branch_name = row.branches.name;
+    this.branch_id = row.branches.id;
     this.myModalTransfer.show();
   }
   /* --------------------------------- Make Payment ------------------------ */
@@ -110,6 +111,25 @@ export class SafeBoxActionComponent {
   /* -------------------------- Get Money Transfer ---------------------- */
   onSubmitTransfer(form) {
     console.log(form.value);
+    this.api
+      .post('savebox/transfer', {
+        payment_amount: this.transferMoney.controls.payment_amount.value,
+        from_branch: this.branch_id,
+        to_branch: this.transferMoney.controls.branch_id.value,
+        reasone: '',
+        payment_method: this.payment_method
+      })
+      .subscribe(data => {
+        console.log(data);
+        this.myModalTransfer.hide();
+        this.api
+          .get('savebox/index', {
+            per_page: 50
+          })
+          .subscribe(data => {
+            this.safeBoxArray = data.data.data;
+          });
+      });
   }
 
   /* ----------------------- Get Branch ID ------------------------ */
@@ -121,6 +141,7 @@ export class SafeBoxActionComponent {
       })
       .subscribe(data => {
         console.log(data);
+        this.safeBoxArray = data.data.data;
       });
   }
   /*--------------------------------- Logout ------------------------------ */

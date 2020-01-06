@@ -32,7 +32,88 @@
             </div>
           </div>
         </div>
-        <div class="col-md-4"></div>
+        <!-- Filter -->
+        <p class="col-12 p-0 mt-4 text-white">
+          Filter by :
+        </p>
+        <!-- Status -->
+        <div class="col p-0 mr-3">
+          <select
+            class="w-100"
+            style="padding: 6px 8px; border: 1px solid #333;"
+            (change)="getStatus($event.target.value)"
+          >
+            <option selected disabled>Status</option>
+            <option value="">All</option>
+            <option value="In">In</option>
+            <option value="Out">Out</option>
+          </select>
+        </div>
+        <!-- Branch -->
+        <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Branch</mat-label>
+            <input
+              type="text"
+              placeholder="Branch"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlBranch"
+              [matAutocomplete]="autoBranch"
+              [(ngModel)]="branchValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="branchValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoBranch="matAutocomplete"
+              [displayWith]="displayBranch"
+            >
+              <mat-option
+                *ngFor="let option of filteredBranches | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- From Date -->
+        <div class="col p-0 mr-3">
+          <input
+            style="padding: 5px 8px;"
+            [matDatepicker]="picker"
+            placeholder="Date From"
+            class="itemInput pointer w-100"
+            id="exampleInputEmail1"
+            autocomplete="off"
+            (click)="picker.open()"
+            (dateInput)="entryDateFrom($event, 'from')"
+            (keypress)="(false)"
+            required
+          />
+          <mat-datepicker touchUi #picker></mat-datepicker>
+        </div>
+        <!-- To Date -->
+        <div class="col p-0 mr-3">
+          <input
+            style="padding: 5px;"
+            [matDatepicker]="picker2"
+            placeholder="Date To"
+            class="itemInput pointer w-100"
+            id="exampleInputEmail1"
+            autocomplete="off"
+            (click)="picker2.open()"
+            (dateInput)="entryDateTo($event, 'to')"
+            (keypress)="(false)"
+            required
+          />
+          <mat-datepicker touchUi #picker2></mat-datepicker>
+        </div>
         <div class="col-4 row justify-content-between">
           <div class="col-6"></div>
           <div class="col-6 row justify-content-end no-gutters">

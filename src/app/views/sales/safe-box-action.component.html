@@ -137,6 +137,11 @@
         </tr>
       </tbody>
     </table>
+    <div class="mt-5" *ngIf="!safeBoxArray.length">
+      <h4 class="alert alert-danger">
+        Data is not available
+      </h4>
+    </div>
   </div>
   <!-- Make Payment -->
   <div
@@ -282,7 +287,6 @@
                   >
                   <select
                     class="p-2 input-text w-100"
-                    (change)="getSelectedListOptionId($event)"
                     formControlName="branch_id"
                   >
                     <option disabled selected="selected" value=""
@@ -315,7 +319,7 @@
                     >Money (EGP) <span class="text-red">*</span></label
                   >
                   <input
-                    formControlName="money"
+                    formControlName="payment_amount"
                     autocomplete="off"
                     placeholder="Money (EGP)"
                     class="input-text w-100"
@@ -327,7 +331,7 @@
                   type="submit"
                   class="submit-btn"
                   [disabled]="
-                    !transferMoney.controls.money.value ||
+                    !transferMoney.controls.payment_amount.value ||
                     !transferMoney.controls.branch_id.value
                   "
                 >
