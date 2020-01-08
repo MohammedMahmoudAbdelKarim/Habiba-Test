@@ -90,9 +90,9 @@ export const routes: Routes = [
           import('./views/clients/clients.module').then(m => m.ClientsModule)
       },
       {
-        path: 'widgets',
+        path: 'options',
         loadChildren: () =>
-          import('./views/widgets/widgets.module').then(m => m.WidgetsModule)
+          import('./views/options/options.module').then(m => m.OptionsModule)
       }
     ]
   },

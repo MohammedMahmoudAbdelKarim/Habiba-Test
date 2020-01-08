@@ -139,5 +139,10 @@ export const navItems: INavData[] = [
         icon: 'icon-doc'
       }
     ]
+  },
+  {
+    name: 'Options',
+    url: '/options',
+    icon: 'icon-settings'
   }
 ];
