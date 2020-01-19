@@ -3,7 +3,9 @@
   <header class="bg-blue p-5">
     <div class="row align-items-end">
       <!-- left-hand-side-of-header -->
-      <div class="row align-items-baseline col-12 justify-content-between no-gutters pl-0">
+      <div
+        class="row align-items-baseline col-12 justify-content-between no-gutters pl-0"
+      >
         <div class="col-8">
           <!-- Titles -->
           <h6 class="col-12 p-0">Branches | List</h6>
@@ -310,11 +312,36 @@
               </div>
               <div class="col-md-12">
                 <div class="form-group">
-                  <label>Branch City <span class="text-red">*</span></label>
-                  <select
-                    class="input-text w-100"
-                    formControlName="city_id"
+                  <label for="exampleInputEmail3"
+                    >Branch Phone <span class="text-red">*</span></label
                   >
+                  <input
+                    class="input-text w-100"
+                    value=""
+                    formControlName="phone"
+                    autocomplete="off"
+                    placeholder="Branch Phone"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    branchesForm.controls.phone.errors?.required &&
+                    branchesForm.controls.phone.touched &&
+                    !modalError.phone
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.phone"
+                  >{{ modalError.phone }}</mat-hint
+                >
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Branch City <span class="text-red">*</span></label>
+                  <select class="input-text w-100" formControlName="city_id">
                     <option value="" disabled selected="selected"
                       >Please Select City</option
                     >
@@ -342,12 +369,10 @@
               </div>
             </div>
             <div class="modal-footer border-0 justify-content-start pl-0">
-              <button
-                type="submit"
-                class="submit-btn"
-              >
-              <i class="icon-settings mr-2 align-middle"></i>
-              Add Branch</button>
+              <button type="submit" class="submit-btn">
+                <i class="icon-settings mr-2 align-middle"></i>
+                Add Branch
+              </button>
             </div>
           </form>
         </div>
@@ -367,7 +392,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-            <i class="icon-settings mt-2 mr-2 align-middle"></i>
+          <i class="icon-settings mt-2 mr-2 align-middle"></i>
           <h4 class="modal-title">Update Branch</h4>
           <button
             type="button"
@@ -443,11 +468,36 @@
               </div>
               <div class="col-md-12">
                 <div class="form-group">
-                  <label>Branch City <span class="text-red">*</span></label>
-                  <select
-                    class="input-text w-100"
-                    formControlName="city_id"
+                  <label for="exampleInputEmail3"
+                    >Branch Phone <span class="text-red">*</span></label
                   >
+                  <input
+                    class="input-text w-100"
+                    value=""
+                    formControlName="phone"
+                    autocomplete="off"
+                    placeholder="Branch Phone"
+                  />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    branchesForm.controls.phone.errors?.required &&
+                    branchesForm.controls.phone.touched &&
+                    !modalError.phone
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.phone"
+                  >{{ modalError.phone }}</mat-hint
+                >
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Branch City <span class="text-red">*</span></label>
+                  <select class="input-text w-100" formControlName="city_id">
                     <option
                       *ngIf="cityName"
                       [value]="city_id"
@@ -486,11 +536,8 @@
               </div>
             </div>
             <div class="modal-footer border-0 justify-content-start pl-0">
-              <button
-                type="submit"
-                class="submit-btn"
-              >
-              <i class="icon-settings mr-2 align-middle"></i>
+              <button type="submit" class="submit-btn">
+                <i class="icon-settings mr-2 align-middle"></i>
                 Update Branch
               </button>
             </div>
@@ -499,57 +546,59 @@
       </div>
     </div>
   </div>
-     <!-- Delete One Item -->
-<div
-id="deleteModal"
-  bsModal
-  #deleteModal="bs-modal"
-  class="modal fade"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="myModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header d-flex align-items-baseline border-0">
-        <button
-          type="button"
-          class="close"
-          (click)="deleteModal.hide()"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">Close</span>
-        </button>
-      </div>
-      <!-- Body -->
-      <div class="modal-body">
-        <h4 class="modal-title mb-4 text-center">
-          <span>For delete item please type</span> DELETE
-        </h4>
-        <form
-          [formGroup]="deleteForm"
-          (ngSubmit)="deleteBranch()"
-          #form="ngForm"
-        >
-          <div class="row">
-            <div class="col-md-8 row">
-              <div class="form-group col-12 no-gutters">
-                <input type="text" class="input-text w-100" formControlName="deleteInput" placeholder="DELETE">
+  <!-- Delete One Item -->
+  <div
+    id="deleteModal"
+    bsModal
+    #deleteModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-baseline border-0">
+          <button
+            type="button"
+            class="close"
+            (click)="deleteModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">Close</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body">
+          <h4 class="modal-title mb-4 text-center">
+            <span>For delete item please type</span> DELETE
+          </h4>
+          <form
+            [formGroup]="deleteForm"
+            (ngSubmit)="deleteBranch()"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-8 row">
+                <div class="form-group col-12 no-gutters">
+                  <input
+                    type="text"
+                    class="input-text w-100"
+                    formControlName="deleteInput"
+                    placeholder="DELETE"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4 modal-footer border-0 p-0">
+                <button type="submit" class="submit-btn">
+                  Delete
+                </button>
               </div>
             </div>
-            <div class="col-md-4 modal-footer border-0 p-0">
-              <button
-                type="submit"
-                class="submit-btn"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>

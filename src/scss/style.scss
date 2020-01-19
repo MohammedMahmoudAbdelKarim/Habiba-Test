@@ -161,6 +161,8 @@ body {
 
   img {
     margin: 0 auto;
+    margin-top: 40px;
+    margin-bottom: 18px;
   }
 
   a {
@@ -169,6 +171,7 @@ body {
     color: #fff;
     text-transform: uppercase;
     font-weight: 600;
+    padding: 20px 9px;
   }
 
   i {
@@ -461,8 +464,20 @@ header {
   background: #155a1e;
 }
 
+.pending {
+  background: orange;
+}
+
 .sold {
   background: #FF0034;
+}
+
+/* --------------------------------- Reseller Index ----------------------- */
+
+.reseller_index {
+  #showOrdercontrols {
+    right: 5%;
+  }
 }
 
 /* --------------------------- Delete Modal ----------------------------- */
@@ -741,6 +756,30 @@ header {
           color: #039BE5;
         }
       }
+    }
+  }
+}
+
+#reseller-modal {
+  select {
+    border: 1px solid #707070;
+    padding: 10px;
+  }
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .title-4 {
+    @include typoStyle(.9rem, 400);
+  }
+
+  .transfer-title {
+    @include typoStyle(1rem, 900);
+
+    span {
+      @include typoStyle(.8rem, 500);
     }
   }
 }
@@ -1313,43 +1352,65 @@ header {
 }
 
 #invoice-modal {
+  @media (min-width: 576px) {
+    .modal-dialog {
+      max-width: 210mm;
+      margin: 1.75rem auto;
+    }
+  }
+
   .border-invoice {
     border: 1px solid $black;
     padding: 5px 10px;
     font-size: 14px;
   }
 
-  #item-code {
+  h5 {
+    font-size: 14px;
+  }
 
-    tr {
-      border: 1px solid $black;
+  .modal-footer {
+    position: relative;
+    top: 40%;
+  }
 
-      td {
-        padding: 5px;
-      }
+  .modal-content {
+    background: url(../assets/icon/RASHA-EL-SHERBINY-1.jpg);
+    background-size: contain;
+    background-position: 3px;
+    height: 279mm;
+
+    .modal-body {
+      padding: 1rem 3.2rem;
     }
   }
 
-  #diamond {
-    tr {
-      border: 1px solid $black;
+  #table-invoice {
+    border: 1px solid #333;
 
-      th {
-        width: 25%;
-        border: 1px solid $black;
-        padding: 5px;
-        text-align: center;
-        font-size: 12px;
+    thead {
+      tr {
+        th {
+          font-size: .75rem;
+          text-transform: uppercase;
+          border: 1px solid #333;
+        }
       }
     }
 
     tbody {
-      td {
-        text-align: center;
-        border: 1px solid $black;
+      tr {
+        td {
+          border: 1px solid #333;
+
+          .inner {}
+        }
       }
     }
   }
+
+
+
 }
 
 #invoice-list {
@@ -1432,6 +1493,10 @@ header {
 
 /* -------------------------- Branches --------------------- */
 #branches {
+  #showOrdercontrols {
+    right: 5%;
+  }
+
   .modal {
     h4 {
       font-size: 1rem;

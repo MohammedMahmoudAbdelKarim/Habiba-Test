@@ -31,6 +31,8 @@ export class StockListComponent implements OnInit {
   @ViewChild('delete2Modal', { static: false })
   public delete2Modal: ModalDirective;
   @ViewChild('myModalImg', { static: false }) public myModalImg: ModalDirective;
+  @ViewChild('resellerModal', { static: false })
+  public resellerModal: ModalDirective;
   // Tables Colums
   displayedColumns: string[] = [
     'select',
@@ -93,6 +95,7 @@ export class StockListComponent implements OnInit {
   modalError: any = [];
   newStoneArray: any = [];
   testStonesArray: any = [];
+  clients: any = [];
   label: any = '';
   stockData: any = {};
   labelData: any = {};
@@ -108,6 +111,8 @@ export class StockListComponent implements OnInit {
   status: string = '';
   category: string = '';
   branch: string = '';
+  reseller: any = '';
+  resellerBranch: any = '';
   imgUrl: string = 'img/products/';
   baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
   transferName: any = '';
@@ -162,6 +167,13 @@ export class StockListComponent implements OnInit {
     quantity: new FormControl('', Validators.required),
     total: new FormControl('')
   });
+  // Reseller Form
+  resellerForm = new FormGroup({
+    client_id: new FormControl('', Validators.required),
+    branch_id: new FormControl('', Validators.required),
+    product_id: new FormControl('', Validators.required),
+    note: new FormControl('')
+  });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -199,9 +211,12 @@ export class StockListComponent implements OnInit {
       };
       // -------------------------------------- Get Status
       this.statusList = data.statusList.data;
-      // -------------------------------------- Get Status
+      // -------------------------------------- Get Stones
       this.stoneList = data.stones.data.data;
       console.log(this.stoneList);
+      // -------------------------------------- Get Status
+      this.clients = data.clients;
+      console.log(this.clients);
     });
     // Filter Branches
     this.filteredBranches = this.myControlBranch.valueChanges.pipe(
@@ -681,7 +696,7 @@ export class StockListComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-      } row ${row.position + 1}`;
+    } row ${row.position + 1}`;
   }
   /* ---------------------------- Remove Multi-Items ----------------------- */
   mutliplyAction(event) {
@@ -722,8 +737,7 @@ export class StockListComponent implements OnInit {
             };
           });
         });
-    }
-    else {
+    } else {
       this.api.fireAlert('error', 'Error in writing "DELETE"', '');
     }
   }
@@ -770,7 +784,7 @@ export class StockListComponent implements OnInit {
     this.finalCost = Math.ceil(this.totalCost * stockData.profit_percent);
     this.showUpdataPopup = true;
     this.ItemDataCalculated = Object.assign({}, this.updatedItemData);
-    for (let i = 0; i < this.ItemDataCalculated.length; i++) { }
+    for (let i = 0; i < this.ItemDataCalculated.length; i++) {}
     const items = this.updatedItemData.stones;
     let sum = null;
     items.forEach((value, index, arry) => {
@@ -826,9 +840,9 @@ export class StockListComponent implements OnInit {
         }
         const stoneTotal =
           this.stonesArray[stoneIndex].quantity *
-          this.stonesArray[stoneIndex].setting +
+            this.stonesArray[stoneIndex].setting +
           this.stonesArray[stoneIndex].weight *
-          this.stonesArray[stoneIndex].price;
+            this.stonesArray[stoneIndex].price;
         // Set New Stone
         this.stonesArray[stoneIndex].total = stoneTotal;
       }
@@ -843,7 +857,7 @@ export class StockListComponent implements OnInit {
         this.ItemDataCalculated.gold_total + sum;
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+          this.ItemDataCalculated.profit_percent
       );
     } else {
       if (key === 'gW') {
@@ -866,7 +880,7 @@ export class StockListComponent implements OnInit {
       this.ItemDataCalculated.item_total_after_profit = Math.round(
         Math.ceil(
           this.ItemDataCalculated.item_total *
-          this.ItemDataCalculated.profit_percent
+            this.ItemDataCalculated.profit_percent
         )
       );
     }
@@ -904,7 +918,7 @@ export class StockListComponent implements OnInit {
       this.ItemDataCalculated.gold_total + sum;
     this.ItemDataCalculated.item_total_after_profit = Math.ceil(
       this.ItemDataCalculated.item_total *
-      this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
     );
   }
   /* ------------------------------ Create New Stone ------------------------ */
@@ -913,7 +927,7 @@ export class StockListComponent implements OnInit {
     form.value.id = this.stone_id;
     form.value.total = Math.ceil(
       form.value.quantity * form.value.price +
-      form.value.weight * form.value.setting
+        form.value.weight * form.value.setting
     );
     if (
       form.value.name &&
@@ -935,7 +949,7 @@ export class StockListComponent implements OnInit {
         this.ItemDataCalculated.gold_total + sum;
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+          this.ItemDataCalculated.profit_percent
       );
     } else {
       this.api.fireAlert('error', 'Please Fill in All Data', '');
@@ -1026,6 +1040,66 @@ export class StockListComponent implements OnInit {
   // Reload Page
   reloadPage() {
     console.log('Reload Popup');
+  }
+  /* --------------------------- Open Reseller Modal -------------------- */
+  openReseller(row) {
+    this.resellerModal.show();
+    console.log(row);
+    this.reseller = row;
+    this.resellerBranch = row.branch.name;
+  }
+  /* --------------------------------- Reseller ----------------------------- */
+  onSubmitReseller(form) {
+    console.log(this.reseller);
+    console.log(form);
+    this.api
+      .post('reseller/add', {
+        branch_id: this.reseller.branch.id,
+        product_id: this.reseller.id,
+        client_id: this.resellerForm.controls.client_id.value,
+        note: this.resellerForm.controls.note.value
+      })
+      .subscribe(
+        value => {
+          console.log(value);
+          this.toast.success(
+            this.reseller.label + ' has been pending',
+            '!Success'
+          );
+          this.api
+            .get('products', {
+              branch_id: this.branch_id,
+              category_id: this.category_id,
+              label: this.label,
+              status_id: this.status_id,
+              per_page: 50
+            })
+            // tslint:disable-next-line: no-shadowed-variable
+            .subscribe(value => {
+              this.dataSource = new MatTableDataSource(value.data.data);
+              this.dataSource.sort = this.sort;
+              this.dataSource.paginator = this.paginator;
+              // Sort item inside inner Object
+              this.dataSource.sortingDataAccessor = (item, property) => {
+                switch (property) {
+                  case 'category.name':
+                    return item.category.name;
+                  case 'branch.name':
+                    return item.branch.name;
+                  case 'status.name':
+                    return item.status.name;
+                  default:
+                    return item[property];
+                }
+              };
+            });
+          this.resellerModal.hide();
+        },
+        error => {
+          console.log(error.error.erorrs);
+          this.modalError = error.error.errors;
+        }
+      );
   }
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {

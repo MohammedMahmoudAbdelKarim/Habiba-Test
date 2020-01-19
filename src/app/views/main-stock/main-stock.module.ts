@@ -45,6 +45,7 @@ import { stockListEditComponent } from './stock-list-edit.component';
 import { StockListDetailsComponent } from './stock-list-details.component';
 import { AddNewItemComponent } from './add-new-item.component';
 import { TransferComponent } from './transfer.component';
+import { clientsListSolver } from '../../resolvers/clientsList.solver';
 @NgModule({
   imports: [
     CommonModule,
@@ -91,7 +92,8 @@ import { TransferComponent } from './transfer.component';
     citySolver,
     StonesAllSolver,
     transferAllSolver,
-    metalSolver
+    metalSolver,
+    clientsListSolver
   ]
 })
 export class MainStockModule {}

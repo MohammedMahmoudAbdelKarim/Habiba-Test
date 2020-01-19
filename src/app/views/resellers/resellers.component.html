@@ -1,0 +1,520 @@
+<div class="animated fadeIn reseller_index" id="sales-list">
+  <!-- Start Header -->
+  <header class="bg-blue px-5 py-3">
+    <div class="row align-items-end">
+      <!-- left-hand-side-of-header -->
+      <div
+        class="row align-items-start mb-5 justify-content-between no-gutters w-100"
+      >
+        <div class="col-8">
+          <!-- Titles -->
+          <h6 class="col-12 p-0">Dashboard | Sales | Sales List</h6>
+          <h3 class="text-uppercase">
+            SALES LIST
+          </h3>
+        </div>
+        <div class="col-4 row justify-content-end">
+          <div class="dropdown">
+            <button
+              class="btn dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Welcome Habiba ,
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button class="dropdown-item" type="button" (click)="logout()">
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Filter -->
+        <p class="col-12 p-0 mt-4 text-white">
+          Filter by :
+        </p>
+        <!-- Invoice Number -->
+        <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Product Code</mat-label>
+            <input
+              type="text"
+              placeholder="Product Code"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlLabel"
+              [matAutocomplete]="autoLabel"
+              [(ngModel)]="labelValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="invoiceValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoLabel="matAutocomplete"
+              [displayWith]="displayLabel"
+            >
+              <mat-option
+                *ngFor="let option of filteredLabels | async"
+                [value]="option"
+              >
+                {{ option.product.label }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- Branch -->
+        <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Branch</mat-label>
+            <input
+              type="text"
+              placeholder="Branch"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlBranch"
+              [matAutocomplete]="autoBranch"
+              [(ngModel)]="branchValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="branchValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoBranch="matAutocomplete"
+              [displayWith]="displayBranch"
+            >
+              <mat-option
+                *ngFor="let option of filteredBranches | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- Client -->
+        <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Client</mat-label>
+            <input
+              type="text"
+              placeholder="Client"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlClient"
+              [matAutocomplete]="autoClient"
+              [(ngModel)]="clientValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="clientValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoClient="matAutocomplete"
+              [displayWith]="displayClient"
+            >
+              <mat-option
+                *ngFor="let option of filteredClients | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- From Date -->
+        <div class="col p-0 mr-3">
+          <input
+            style="padding: 5px 8px;"
+            [matDatepicker]="picker"
+            placeholder="Date From"
+            class="itemInput pointer w-100"
+            id="exampleInputEmail1"
+            autocomplete="off"
+            (click)="picker.open()"
+            (dateInput)="entryDateFrom($event, 'from')"
+            (keypress)="(false)"
+            required
+          />
+          <mat-datepicker touchUi #picker></mat-datepicker>
+        </div>
+        <!-- To Date -->
+        <div class="col p-0 mr-3">
+          <input
+            style="padding: 5px;"
+            [matDatepicker]="picker2"
+            placeholder="Date To"
+            class="itemInput pointer w-100"
+            id="exampleInputEmail1"
+            autocomplete="off"
+            (click)="picker2.open()"
+            (dateInput)="entryDateTo($event, 'to')"
+            (keypress)="(false)"
+            required
+          />
+          <mat-datepicker touchUi #picker2></mat-datepicker>
+        </div>
+
+        <div class="col row justify-content-end no-gutters">
+          <button class="addBtn w-100" routerLink="/main-stock/stock-list">
+            <i class="icon-diamond mr-2 align-middle"></i>
+            Stock List
+          </button>
+        </div>
+
+        <div class="col-12 row justify-content-start pl-3 mt-2">
+          <p class="text-white m-0" *ngIf="dataSource.data.length > 1">
+            Search Result {{ dataSource.data.length }} Items
+          </p>
+          <p class="text-white m-0" *ngIf="dataSource.data.length == 1">
+            Search Result {{ dataSource.data.length }} Item
+          </p>
+          <p *ngIf="!dataSource.data.length" class="text-white m-0">
+            No Data Available
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+  <!-- Start Table -->
+  <div class="floated container-fluid relative">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()"
+          >
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="text-center">
+          <mat-checkbox
+            (change)="mutliplyAction($event)"
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          >
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell class="" *matCellDef="let row">
+          {{ row.id }}
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="product.label">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>PRODUCT CODE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.product.label }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="branch.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>BRANCH</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.branch.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>DATE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.created_at }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="product.item_total_after_profit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>SELLING PRICE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.product.item_total_after_profit }} EGP</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="client.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CLIENT</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.client.name }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Column -->
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef>
+          IMAGE
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <img
+            src="http://jewelry.ixscope.com/backend/img/products/{{
+              row.product.image
+            }}"
+            width="78px"
+            alt=""
+          />
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+        <td
+          mat-cell
+          *matCellDef="let row"
+          class="detailsmenu "
+          (mouseenter)="hideme[row.id] = !hideme[row.id] && (testArea = true)"
+          (mouseleave)="hideme[row.id] = !hideme[row.id] && (testArea = false)"
+        >
+          <ng-container>
+            <div id="showOrdercontrols" *ngIf="hideme[row.id]">
+              <button
+                id="editButton"
+                (click)="openDetailsPopup(row); itemStockDetailsData = row"
+                class="basic_button"
+                type="button"
+              >
+                <img src="../../../assets/icon/details.svg" alt="" />
+                <span class="tooltiptext">Details</span>
+              </button>
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="routeToReturn(row)"
+              >
+                <img src="../../../assets/icon/exchange.svg" alt="" />
+                <span class="tooltiptext">Return</span>
+              </button>
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="routeToSale(row)"
+              >
+                <img src="../../../assets/icon/gear.svg" alt="" />
+                <span class="tooltiptext">Sold</span>
+              </button>
+            </div>
+          </ng-container>
+          <button class="buttonListItems">
+            <img src="../../../assets/icon/menu.svg" alt="" />
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+      [pageSizeOptions]="[10, 20, 30, 40, 50]"
+      (page)="pageEvent = $event; onPaginateChange($event)"
+    ></mat-paginator>
+  </div>
+  <!-- End Table -->
+  <!-- Details -->
+  <div
+    id="details"
+    bsModal
+    #detailsModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header pb-0 border-bottom-0">
+          <button
+            type="button"
+            class="close"
+            (click)="detailsModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">Close</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body p-4" *ngIf="stockData">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="text-uppercase">
+              {{ stockData.product.category.name }}
+              {{ stockData.product.label }}
+            </h4>
+          </div>
+          <div class="row align-items-end no-gutters mt-3">
+            <div class="col-5" id="img">
+              <img
+                [src]="stockData.product.barcode"
+                class="w-100 mb-3"
+                alt=""
+              />
+              <img
+                class="w-100"
+                height="205px"
+                src="http://jewelry.ixscope.com/backend/img/products/{{
+                  stockData.product.image
+                }}"
+                [alt]="stockData.product.label"
+              />
+            </div>
+            <div class="col-7 pl-5 row no-gutters justify-content-center">
+              <table class="col-12" id="table-details">
+                <thead>
+                  <tr class="text-center">
+                    <th scope="col" class="head-title border-right">
+                      Category
+                    </th>
+                    <th scope="col" class="head-title border-right">Code</th>
+                    <th scope="col" class="head-title border-right">Branch</th>
+                    <th scope="col" class="head-title">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border-right">
+                      {{ stockData.product.category.name }}
+                    </td>
+                    <td class="border-right">{{ stockData.product.label }}</td>
+                    <td class="border-right">
+                      {{ stockData.branch.name }}
+                    </td>
+                    <td>{{ stockData.product.product_date }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="col-12 mt-5 row justify-content-between no-gutters">
+                <div class="col-4">
+                  <div class="gold-box">
+                    <h3 class="head-title">Gold Weight</h3>
+                    <p>(gm)</p>
+                    <p style="font-size: 1rem; font-weight: 500;">
+                      {{ stockData.product.gold_weight }}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-4 pl-1">
+                  <div class="gold-box">
+                    <h3 class="head-title">Gold Price</h3>
+                    <p>($)</p>
+                    <p style="font-size: 1rem; font-weight: 500;">
+                      {{ stockData.product.gold_price }}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-4 pl-2">
+                  <div class="gold-box">
+                    <h3 class="head-title">Total</h3>
+                    <p>($)</p>
+                    <p style="font-size: 1rem; font-weight: 900;">
+                      {{ stockData.product.gold_total }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 w-100" id="stones">
+            <h2
+              class="head-title text-left"
+              [ngClass]="stockData.product.stones.length == 0 ? 'text-red' : ''"
+            >
+              {{
+                stockData.product.stones.length > 0
+                  ? 'STONES'
+                  : 'No stone available to this product'
+              }}
+              <span class="ml-3" *ngIf="stockData.product.stones.length > 1"
+                >{{ stockData.product.stones.length }} Stones</span
+              >
+              <span class="ml-3" *ngIf="stockData.product.stones.length == 1"
+                >{{ stockData.product.stones.length }} Stone</span
+              >
+            </h2>
+            <div class="stone-border" *ngIf="stockData.product.stones.length">
+              <div
+                class="stone-table"
+                *ngFor="let stone of stockData.product.stones"
+              >
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col" class="border-right">Name</th>
+                      <th scope="col" class="border-right text-center">
+                        Quantity
+                      </th>
+                      <th scope="col" class="border-right text-center">
+                        Weight (cts)
+                      </th>
+                      <th scope="col" class="border-right text-center">
+                        Cost ($)
+                      </th>
+                      <th scope="col" class="border-right text-center">
+                        Setting
+                      </th>
+                      <th scope="col" class="text-center">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border-right">{{ stone.name }}</td>
+                      <td class="border-right text-center">
+                        {{ stone.quantity }}
+                      </td>
+                      <td class="border-right text-center">
+                        {{ stone.weight }}
+                      </td>
+                      <td class="border-right text-center">
+                        {{ stone.price }}
+                      </td>
+                      <td class="border-right text-center">
+                        {{ stone.setting }}
+                      </td>
+                      <td class="text-center">{{ stone.total }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div id="cost" class="mt-5 w-100">
+              <div class="row w-75 m-auto justify-content-between">
+                <div class="col-6 row justify-content-center">
+                  <h4 class="col-12 text-uppercase">Cost</h4>
+                  <div class="cost-box col-12">
+                    {{ stockData.product.item_total }}
+                  </div>
+                </div>
+                <div class="col-6 row justify-content-center">
+                  <h4 class="col-12 text-uppercase">
+                    Cost * {{ stockData.product.profit_percent }} in $
+                  </h4>
+                  <div class="cost-box col-12">
+                    {{ stockData.product.item_total_after_profit }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

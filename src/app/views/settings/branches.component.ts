@@ -69,7 +69,8 @@ export class BranchesComponent implements OnInit {
     id: new FormControl(''),
     name: new FormControl('', Validators.required),
     address: new FormControl('', Validators.required),
-    city_id: new FormControl('', Validators.required)
+    city_id: new FormControl('', Validators.required),
+    phone: new FormControl('', Validators.required)
   });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
@@ -304,6 +305,7 @@ export class BranchesComponent implements OnInit {
     this.branchesForm.controls.name.setValue(branchData.name);
     this.branchesForm.controls.address.setValue(branchData.address);
     this.branchesForm.controls.city_id.setValue(branchData.city.id);
+    this.branchesForm.controls.phone.setValue(branchData.phone);
     this.cityName = branchData.city.name;
   }
   // Open Delete Popup

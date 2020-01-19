@@ -25,6 +25,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   imports: [
@@ -35,6 +36,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatDatepickerModule,
     FormsModule,
     ReactiveFormsModule,
+    CommonModule,
     MatAutocompleteModule,
     MatFormFieldModule,
     MatInputModule,

@@ -161,7 +161,7 @@ export class ReturnComponent implements OnInit {
   getSettingsApiData() {
     this.api.get('settings', {}).subscribe(
       (settings: any) => {
-        this.dollarPrice = settings.dollar_price;
+        this.dollarPrice = Number(settings.data[0].dollar_price);
       },
       error => {
         console.log('Error In Getting Data');

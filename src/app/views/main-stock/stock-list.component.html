@@ -326,7 +326,7 @@
                 <span class="tooltiptext">Invoice</span>
               </button>
               <button
-                *ngIf="row.status.name != 'available'"
+                *ngIf="row.status.name != 'available' && row.status.name !='pending'"
                 class="basic_button"
                 type="button"
                 (click)="routeToReturn(row)"
@@ -346,6 +346,16 @@
               >
                 <img src="../../../assets/icon/transfer.svg" alt="" />
                 <span class="tooltiptext">Transfer</span>
+              </button>
+              <button
+                *ngIf="row.status.name == 'available'"
+                id="invicebutton"
+                class="basic_button"
+                type="button"
+                (click)="openReseller(row)"
+              >
+                <img src="../../../assets/icon/user-2.svg" alt="" />
+                <span class="tooltiptext">Reseller</span>
               </button>
               <button
                 id="editButton"
@@ -1029,8 +1039,8 @@
     aria-labelledby="myModalLabel"
     aria-hidden="true"
   >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content print-content" id="label-1">
+    <div class="modal-dialog" role="document" id="label-1">
+      <div class="modal-content print-content">
         <!-- Body -->
         <div class="modal-body">
           <div class="row no-gutters align-items-center">
@@ -1292,4 +1302,110 @@
       </div>
     </div>
   </div>
+    <!-- Make Reseller -->
+    <div
+    id="reseller-modal"
+      bsModal
+      #resellerModal="bs-modal"
+      class="modal fade"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header d-flex align-items-baseline">
+            <img class="mr-2" src="../../../assets/icon/user-2.svg" alt="">
+            <h4>Make New Reseller</h4>
+            <button
+              type="button"
+              class="close"
+              (click)="resellerModal.hide()"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <!-- Body -->
+          <div class="modal-body">
+            <h4 class="modal-title mb-4 row">
+            <div class="col-6 row no-gutters justify-content-start align-items-baseline transfer-title"><span class="mr-2">Current Branch: </span> {{resellerBranch}}</div>
+            <div class="col-6 row justify-content-end align-items-baseline transfer-title"><span class="mr-2">Code: </span>{{reseller.label}}</div>
+          </h4>
+            <form
+              [formGroup]="resellerForm"
+              (ngSubmit)="onSubmitReseller(resellerForm)"
+              #form="ngForm"
+            >
+              <div class="row">
+                <div class="col-md-12 row no-gutters">
+                  <div class="form-group col-12 no-gutters mb-0">
+                    <label class="title-4"
+                      >Select a Client: <span class="text-red">*</span></label
+                    >
+                    <select
+                      class="input-text w-100"
+                      formControlName="client_id"
+                    >
+                      <option disabled selected="selected" value=""
+                        >Please Select Client</option
+                      >
+                      <option
+                        *ngFor="let client of clients"
+                        [value]="client.id"
+                      >
+                        {{ client.name }}</option
+                      >
+                    </select>
+                    <mat-hint
+                      class="d-inline-block text-center w-100 mt-2 alert alert-danger"
+                      *ngIf="
+                      resellerForm.controls.client_id.errors?.required &&
+                      resellerForm.controls.client_id.touched &&
+                        !modalError.client_id
+                      "
+                      >This Field is Required</mat-hint
+                    >
+                    <mat-hint
+                      class="d-inline-block text-center w-100 alert alert-danger"
+                      *ngIf="modalError.client_id"
+                      >{{ modalError.client_id }}</mat-hint
+                    >
+                  </div>
+                </div>
+                <div class="col-md-12 row no-gutters mt-3">
+                  <div class="form-group col-12 no-gutters mb-0">
+                    <label class="title-4"
+                      >Notes:</label
+                    >
+                    <textarea style="height: 150px;" type="text" formControlName="note" class="input-text w-100 p-2"></textarea>
+                    <mat-hint
+                      class="d-inline-block text-center w-100 alert alert-danger"
+                      *ngIf="modalError.note"
+                      >{{ modalError.note }}</mat-hint
+                    >
+                  </div>
+                </div>
+                <div class="modal-footer border-0">
+                  <button
+                    type="submit"
+                    class="submit-btn"
+                    [disabled]="!resellerForm.controls.client_id.value"
+                    [ngClass]="
+                      !resellerForm.controls.client_id.value
+                        ? 'disabledSubmitButton'
+                        : 'enableSubmitButton'
+                    "
+                  >
+                  <img class="mr-2" src="../../../assets/icon/user-2.svg" alt="">
+                    Save
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>

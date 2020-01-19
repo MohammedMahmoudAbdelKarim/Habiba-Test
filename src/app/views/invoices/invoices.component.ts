@@ -93,6 +93,13 @@ export class InvoicesComponent {
   inoviceEmployee: any = '';
   inoviceClient: any = '';
   inoviceBranch: any = '';
+  inoviceProducts: any = [];
+  settings_phone: any = '';
+  settings_address: any = '';
+  settings_website: any = '';
+  inoviceCity: any = '';
+  inoviceAddress: any = '';
+  inovicePhone: any = '';
   // Form Controls
   myControlClient = new FormControl('');
   myControlInvoice = new FormControl('');
@@ -106,6 +113,7 @@ export class InvoicesComponent {
   paymentForm = new FormGroup({
     paidAmount: new FormControl('', Validators.required)
   });
+
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -538,10 +546,21 @@ export class InvoicesComponent {
   openInvoice(row) {
     console.log(row);
     this.invoiceModal.show();
+    this.api.get('settings', { per_page: 50 }).subscribe(data => {
+      console.log(data.data);
+      this.settings_address = data.data[0].address;
+      this.settings_phone = data.data[0].phone;
+      this.settings_website = data.data[0].website;
+    });
     this.invoiceData = row;
     this.inoviceClient = row.client.name;
     this.inoviceEmployee = row.employee.name;
     this.inoviceBranch = row.branch.name;
+    this.inoviceProducts = row.products;
+    this.inoviceCity = row.branch.city.name;
+    this.inoviceAddress = row.branch.address;
+    this.inovicePhone = row.branch.phone;
+    console.log(this.inoviceProducts);
   }
 
   /* ---------- Pagniation & Number of items showed in the page ------------- */

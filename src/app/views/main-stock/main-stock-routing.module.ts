@@ -1,3 +1,4 @@
+import { clientsListSolver } from './../../resolvers/clientsList.solver';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 // Solver
@@ -36,7 +37,8 @@ const routes: Routes = [
           categoryList: categoryListSolver,
           branchList: branchListSolver,
           statusList: statusListSolver,
-          stones: StonesAllSolver
+          stones: StonesAllSolver,
+          clients: clientsListSolver
         }
       },
       {

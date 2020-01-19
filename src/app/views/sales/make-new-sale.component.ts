@@ -146,7 +146,9 @@ export class MakeNewSaleComponent implements OnInit {
   getSettingsApiData() {
     this.api.get('settings', {}).subscribe(
       (settings: any) => {
-        this.dollarPrice = settings.dollar_price;
+        console.log(settings);
+        this.dollarPrice = Number(settings.data[0].dollar_price);
+        console.log(this.dollarPrice);
       },
       error => {
         console.log('Error in Getting Data');
@@ -316,12 +318,12 @@ export class MakeNewSaleComponent implements OnInit {
     this.sellingProductListArray[sellingProductIndex].stones[stoneIndex].total =
       this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
         .price *
-      this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
-        .weight +
+        this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
+          .weight +
       this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
         .setting *
-      this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
-        .quantity;
+        this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
+          .quantity;
     //  Display New Stone Total After Stone Values Changing
     this.sellingProductStonesTotalsArray[
       stoneIndex
@@ -333,11 +335,14 @@ export class MakeNewSaleComponent implements OnInit {
     itemStones.forEach(value => {
       stoneTotalsSum += value.total;
     });
-    this.sellingProductListArray[sellingProductIndex].item_total_after_profit = Math.ceil(
+    this.sellingProductListArray[
+      sellingProductIndex
+    ].item_total_after_profit = Math.ceil(
       (stoneTotalsSum +
         this.sellingProductListArray[sellingProductIndex].gold_price *
-        this.sellingProductListArray[sellingProductIndex].gold_weight) *
-      this.sellingProductListArray[sellingProductIndex].profit_percent);
+          this.sellingProductListArray[sellingProductIndex].gold_weight) *
+        this.sellingProductListArray[sellingProductIndex].profit_percent
+    );
     // Create Array To Stone Items // Place To Stone The Total Cost
     this.sellingProductListArray.forEach(value => {
       this.invoiceTotal += value.item_total_after_profit;
@@ -461,7 +466,9 @@ export class MakeNewSaleComponent implements OnInit {
   }
   /* ----------------- Calculate Remaining Amout -------------------- */
   calculateRemaining() {
-    this.remainingPrice = this.paidAmountForm.controls.total_egp.value - this.paidAmountForm.controls.paidAmount.value;
+    this.remainingPrice =
+      this.paidAmountForm.controls.total_egp.value -
+      this.paidAmountForm.controls.paidAmount.value;
     if (this.remainingPrice <= 0) {
       this.remainingPrice = 0;
     }

@@ -63,9 +63,11 @@ export const routes: Routes = [
           import('./views/sales/sales.module').then(m => m.SalesModule)
       },
       {
-        path: 'charts',
+        path: 'resellers',
         loadChildren: () =>
-          import('./views/chartjs/chartjs.module').then(m => m.ChartJSModule)
+          import('./views/resellers/resellers.module').then(
+            m => m.ResllersModule
+          )
       },
       {
         path: 'dashboard',

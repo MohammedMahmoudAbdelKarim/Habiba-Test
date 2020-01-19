@@ -144,5 +144,10 @@ export const navItems: INavData[] = [
     name: 'Options',
     url: '/options',
     icon: 'icon-settings'
+  },
+  {
+    name: 'Resellers',
+    url: '/resellers',
+    icon: 'icon-user'
   }
 ];
