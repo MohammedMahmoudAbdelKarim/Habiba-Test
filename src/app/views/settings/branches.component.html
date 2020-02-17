@@ -221,6 +221,21 @@
       [pageSizeOptions]="[10, 20, 30, 40, 50]"
       (page)="pageEvent = $event; onPaginateChange($event)"
     ></mat-paginator>
+    <div style="position: relative;">
+      <div class="paginator">
+        <span class="mr-2 text-white" style="font-size: 12px;"
+          >Number of Page</span
+        >
+        <select name="" id="" (change)="selectPage($event.target.value)">
+          <option
+            *ngFor="let num of numberOfPages; let i = index"
+            [value]="num"
+          >
+            {{ num }}
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
   <!-- End Table -->
   <!-- Add New Branch Modal -->

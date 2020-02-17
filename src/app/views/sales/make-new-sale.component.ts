@@ -55,6 +55,7 @@ export class MakeNewSaleComponent implements OnInit {
   invoiceTotal: any = 0;
   stoneTotalAfterChang: any = '';
   payment_method: any = 1;
+  productID: any = '';
   // ASYNC
   filteredClients: Observable<string[]>;
   filterCodes: Observable<string[]>;
@@ -75,7 +76,9 @@ export class MakeNewSaleComponent implements OnInit {
   // Edit Product Stone Form
   editProductStoneForm = new FormGroup({
     productStonePrice: new FormControl(''),
-    productStoneSetting: new FormControl('')
+    productStoneSetting: new FormControl(''),
+    productStoneQuantity: new FormControl(''),
+    productStoneWeight: new FormControl('')
   });
   // Paid Amount Form
   paidAmountForm = new FormGroup({
@@ -103,6 +106,8 @@ export class MakeNewSaleComponent implements OnInit {
   ) {
     this.route.queryParams.subscribe(value => {
       this.api.get('products/' + value.id).subscribe(val => {
+        console.log(val);
+
         if (val.data) {
           this.isInvoiced = true;
           this.branch_name = val.data.branch.name;
@@ -173,8 +178,11 @@ export class MakeNewSaleComponent implements OnInit {
       })
       //     // tslint:disable-next-line: no-shadowed-variable
       .subscribe(val => {
+        console.log(val);
+
         this.productArray = val.data;
         if (val.data.length) {
+          this.selectedProductData = [];
           this.selectedProductData = val.data;
           this.filterSerchingHold = false;
           this.addDisAbledState = false;
@@ -197,8 +205,11 @@ export class MakeNewSaleComponent implements OnInit {
         })
         //     // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
+          console.log(val);
+
           this.productArray = val.data;
           if (val.data.length) {
+            this.selectedProductData = [];
             this.selectedProductData = val.data;
             this.filterSerchingHold = false;
             this.addDisAbledState = true;
@@ -216,16 +227,22 @@ export class MakeNewSaleComponent implements OnInit {
     if (typeof value == 'object') {
       const filterValue = value.label.toLowerCase();
       this.label = value.label;
+      console.log(value);
+
       this.api
-        .get('products/active', {
-          label: this.label,
-          branch_id: this.sentFormBranchId
-        })
+        .get('products/' + value.id, {})
         //     // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
-          this.productArray = val.data;
-          if (val.data.length) {
-            this.selectedProductData = val.data;
+          console.log(val.data);
+          this.productArray = [];
+          this.selectedProductData = [];
+          this.productArray.push(val.data);
+          this.selectedProductData.push(val.data);
+          console.log(this.productArray);
+
+          if (val) {
+            this.selectedProductData = [];
+            this.selectedProductData.push(val.data);
             this.filterSerchingHold = false;
             this.addDisAbledState = false;
             this.emptyArr = false;
@@ -248,6 +265,8 @@ export class MakeNewSaleComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
+          console.log(val);
+
           this.productArray = val.data;
           if (val.data.length) {
             this.filterSerchingHold = false;
@@ -315,7 +334,23 @@ export class MakeNewSaleComponent implements OnInit {
         stoneIndex
       ].setting = this.editProductStoneForm.value.productStoneSetting;
     }
-    this.sellingProductListArray[sellingProductIndex].stones[stoneIndex].total =
+    if (key === 'sQ') {
+      console.log('Quantity');
+
+      this.sellingProductListArray[sellingProductIndex].stone[
+        stoneIndex
+      ].quantity = this.editProductStoneForm.value.productStoneQuantity;
+    }
+    if (key === 'sW') {
+      console.log(this.sellingProductListArray);
+
+      this.sellingProductListArray[sellingProductIndex].stones[
+        stoneIndex
+      ].weight = this.editProductStoneForm.value.productStoneWeight;
+    }
+    this.sellingProductListArray[sellingProductIndex].stones[
+      stoneIndex
+    ].total = +(
       this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
         .price *
         this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
@@ -323,7 +358,8 @@ export class MakeNewSaleComponent implements OnInit {
       this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
         .setting *
         this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
-          .quantity;
+          .quantity
+    ).toFixed(2);
     //  Display New Stone Total After Stone Values Changing
     this.sellingProductStonesTotalsArray[
       stoneIndex
@@ -419,6 +455,7 @@ export class MakeNewSaleComponent implements OnInit {
           })
           // tslint:disable-next-line: no-shadowed-variable
           .subscribe(value => {
+            this.productArray = [];
             this.productArray = value.data;
             if (value.data.length) {
               this.productArray = value.data;
@@ -454,6 +491,8 @@ export class MakeNewSaleComponent implements OnInit {
   /* ----------------- Push Item To Array -------------------- */
   addItemTosellingProductListArray() {
     this.sellingProductListArray.push(...this.selectedProductData);
+    console.log(this.selectedProductData);
+
     this.sumTotalOFSingleProduct(this.selectedProductData);
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {

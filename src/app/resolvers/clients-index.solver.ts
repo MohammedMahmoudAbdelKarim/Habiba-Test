@@ -14,7 +14,7 @@ export class clientsAllSolver implements Resolve<any> {
   resolve() {
     return this.mainService
       .get('clients', {
-        per_page: 50
+        per_page: 10
       })
       .pipe(
         catchError(error => {

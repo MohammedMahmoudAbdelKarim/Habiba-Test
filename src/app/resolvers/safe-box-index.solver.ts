@@ -14,7 +14,7 @@ export class safeboxIndexSolver implements Resolve<any> {
   resolve() {
     return this.mainService
       .get('savebox/actions', {
-        per_page: 50
+        per_page: 10
       })
       .pipe(
         catchError(error => {

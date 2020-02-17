@@ -87,8 +87,8 @@
             [disabled]="addDisAbledState"
             style="padding: 9px; font-weight: 700; font-size: 11px;"
           >
-          <i class="icon-basket-loaded mr-2 align-middle"></i>
-          RETURN ITEM
+            <i class="icon-basket-loaded mr-2 align-middle"></i>
+            RETURN ITEM
           </button>
         </div>
         <mat-hint
@@ -218,14 +218,15 @@
                 {{ product.item_total_after_profit }}
               </td>
               <td>
-                {{
-                  (
-                    product.item_total_after_profit * dollarPrice
-                  )
-                }}
+                {{ product.item_total_after_profit * dollarPrice }}
               </td>
               <td>
-                <img class="pointer" src="../../../assets/icon/delete.svg" (click)="removeItem($event, stoneIndex, i, 'sP')" alt="">
+                <img
+                  class="pointer"
+                  src="../../../assets/icon/delete.svg"
+                  (click)="removeItem($event, stoneIndex, i, 'sP')"
+                  alt=""
+                />
               </td>
             </tr>
           </tbody>
@@ -235,12 +236,12 @@
     <div class="col-md-4 p-5" id="sale-details">
       <form [formGroup]="invoiceDataform">
         <!-- Start Form field -->
-       
+
         <div class="col-md-12">
           <div class="form-group">
             <label>
-              <img src="../.././../assets/icon/calendar.svg" /> 
-              <span class="ml-2">Date</span>             
+              <img src="../.././../assets/icon/calendar.svg" />
+              <span class="ml-2">Date</span>
             </label>
             <input
               matInput
@@ -273,23 +274,34 @@
               value=""
               (change)="getSelectedListOptionId($event.target)"
               required
-              disabled
+              *ngIf="!isInvoiced"
             >
-              <option
-                value=""
-                disabled
-                selected
-                hidden
-                *ngIf="isInvoiced"
-                >{{ branch_name }}</option
-              >
-              <option value="" disabled selected hidden>{{
+              <option value="" disabled selected hidden *ngIf="isInvoiced">{{
+                branch_name
+              }}</option>
+              <option value="" selected hidden>{{
                 branchesList[0].name
               }}</option>
-              <option
-                *ngFor="let branch of branchesList"
-                [value]="branch.id"
-              >
+              <option *ngFor="let branch of branchesList" [value]="branch.id">
+                {{ branch.name }}
+              </option>
+            </select>
+            <select
+              class="input-text w-100"
+              formControlName="branch"
+              value=""
+              (change)="getSelectedListOptionId($event.target)"
+              required
+              disabled
+              *ngIf="isInvoiced"
+            >
+              <option value="" disabled selected hidden *ngIf="isInvoiced">{{
+                branch_name
+              }}</option>
+              <option value="" selected hidden>{{
+                branchesList[0].name
+              }}</option>
+              <option *ngFor="let branch of branchesList" [value]="branch.id">
                 {{ branch.name }}
               </option>
             </select>
@@ -304,7 +316,7 @@
         </div>
       </form>
     </div>
-    </div>
+  </div>
   <!-- Price Fixed -->
   <div class="price-fixed row no-gutters">
     <div class="col-lg-8 py-3">
@@ -313,14 +325,13 @@
           <thead>
             <tr class="header-tr">
               <th scope="col" class="border-right text-center">Total USD</th>
-              <th
-              class="border-right text-center"
-                scope="col"
-              >
+              <th class="border-right text-center" scope="col">
                 Total EGP
               </th>
 
-              <th class="border-right text-center" scope="col">Return Amount Paid</th>
+              <th class="border-right text-center" scope="col">
+                Return Amount Paid
+              </th>
               <th scope="col">Return Payment Method</th>
             </tr>
           </thead>
@@ -331,18 +342,14 @@
                 style="font-size: 19px;
                 font-weight: 600; text-align: center;"
               >
-                {{ invoiceTotal }}
+                {{ invoiceDollarTotal }}
               </td>
               <td
                 class="border-right text-center"
                 style="font-size: 19px;
               font-weight: 600; text-align: center;"
               >
-                {{
-                  invoiceTotal !== 0
-                    ? (invoiceTotal * dollarPrice)
-                    : 0
-                }}
+                {{ invoiceTotal }}
               </td>
               <td class="border-right text-center">
                 <input

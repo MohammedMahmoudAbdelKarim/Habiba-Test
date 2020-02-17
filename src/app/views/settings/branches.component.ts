@@ -57,6 +57,9 @@ export class BranchesComponent implements OnInit {
   pageEvent: any;
   pageSize: number = 50;
   per_page: number = 50;
+  pageIndex;
+  numberOfPages = [];
+  currentPage;
   // Form Controls
   myControlBranch = new FormControl('');
   /* ------------------------------------- Form ------------------------ */
@@ -84,6 +87,7 @@ export class BranchesComponent implements OnInit {
       // Get Branches
       this.branchList = data.branches.data.data;
       this.dataSource = new MatTableDataSource(data.branches.data.data);
+      this.pageIndex = data.branches.data.last_page;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       // Sort item inside inner Object
@@ -107,7 +111,16 @@ export class BranchesComponent implements OnInit {
     );
   }
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() {}
+  ngOnInit() {
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
+  }
   /* ---------------------------- Filter Branches ------------------------ */
   private filterBranch(value) {
     // tslint:disable-next-line: triple-equals
@@ -364,14 +377,53 @@ export class BranchesComponent implements OnInit {
   }
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
-    this.pageSize = event.pageSize;
+    console.log(event);
+    this.per_page = event.pageSize;
     this.api
       .get('branches', {
-        per_page: event.pageSize
+        per_page: event.pageSize,
+        page: 1
       })
-      .subscribe((value: any) => {
-        console.log(value.data.data);
-        this.dataSource = new MatTableDataSource(value.data.data);
+      .subscribe((productList: any) => {
+        console.log(productList);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'city.name':
+              return item.city.name;
+            default:
+              return item[property];
+          }
+        };
+        console.log(this.pageIndex);
+
+        this.numberOfPages = [];
+        for (let i = 1; i <= this.pageIndex; i++) {
+          console.log(i);
+          this.numberOfPages.push(i);
+          this.numberOfPages.sort(function(a, b) {
+            return a - b;
+          });
+        }
+        console.log(this.numberOfPages);
+      });
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('branches', {
+        per_page: this.per_page,
+        page: event
+      })
+      .subscribe((productList: any) => {
+        console.log(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sortingDataAccessor = (item, property) => {
@@ -384,6 +436,7 @@ export class BranchesComponent implements OnInit {
         };
       });
   }
+
   /* ------------- Clear Error Message When Modal Opened ------------------ */
   clearError() {
     this.modalError = [];

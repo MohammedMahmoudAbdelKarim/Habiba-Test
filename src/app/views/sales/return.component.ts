@@ -52,7 +52,9 @@ export class ReturnComponent implements OnInit {
   remainingPrice: any = '';
   branch_name: any = '';
   payment_method: any = 1;
-  invoiceTotal: any = 0;
+  invoiceTotal: any = '';
+  invoiceDollarTotal: any = '';
+  invoiceNumber: any = '';
   // ASYNC
   filteredClients: Observable<string[]>;
   filterCodes: Observable<string[]>;
@@ -102,16 +104,21 @@ export class ReturnComponent implements OnInit {
     this.route.queryParams.subscribe(value => {
       console.log(value);
       this.api.get('products/' + value.id).subscribe(val => {
+        console.log(val);
         if (val.data) {
           this.isInvoiced = true;
           this.branch_name = val.data.branch.name;
           this.sellingProductListArray.push(val.data);
           this.sentFormBranchId = val.data.branch.id;
           this.sellingProductListArray.forEach(value => {
-            this.invoiceTotal += value.item_total_after_profit;
+            this.invoiceTotal += Math.ceil(value.receipt.receipts.total_egp);
+            this.invoiceDollarTotal = Math.ceil(
+              value.receipt.receipts.total_dollar
+            );
           });
         } else {
           this.sellingProductListArray = [];
+          this.isInvoiced = false;
         }
       });
     });
@@ -324,15 +331,18 @@ export class ReturnComponent implements OnInit {
         stoneIndex
       ].setting = this.editProductStoneForm.value.productStoneSetting;
     }
-    this.sellingProductListArray[sellingProductIndex].stones[stoneIndex].total =
+    this.sellingProductListArray[sellingProductIndex].stones[
+      stoneIndex
+    ].total = Math.ceil(
       this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
         .price *
         this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
           .weight +
-      this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
-        .setting *
         this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
-          .quantity;
+          .setting *
+          this.sellingProductListArray[sellingProductIndex].stones[stoneIndex]
+            .quantity
+    );
     //  Display New Stone Total After Stone Values Changing
     this.sellingProductStonesTotalsArray[
       stoneIndex
@@ -344,15 +354,19 @@ export class ReturnComponent implements OnInit {
     itemStones.forEach(value => {
       stoneTotalsSum += value.total;
     });
-    this.sellingProductListArray[sellingProductIndex].item_total_after_profit =
+    this.sellingProductListArray[
+      sellingProductIndex
+    ].item_total_after_profit = Math.ceil(
       (stoneTotalsSum +
         this.sellingProductListArray[sellingProductIndex].gold_price *
           this.sellingProductListArray[sellingProductIndex].gold_weight) *
-      4.4;
+        this.sellingProductListArray[sellingProductIndex].profit_percent
+    );
     // Create Array To Stone Items // Place To Stone The Total Cost
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal += value.item_total_after_profit;
+      this.invoiceTotal += Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
   }
   /* ---------------------------- Number Validation ------------------------ */
@@ -458,7 +472,8 @@ export class ReturnComponent implements OnInit {
     this.sumTotalOFSingleProduct(this.selectedProductData);
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal += value.item_total_after_profit;
+      this.invoiceTotal += Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
     this.clearSearch();
   }
@@ -474,7 +489,8 @@ export class ReturnComponent implements OnInit {
     this.sellingProductListArray.splice(sellingProductIndex, 1);
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal -= value.item_total_after_profit;
+      this.invoiceTotal += Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
     this.invoiceTotal = Math.abs(this.invoiceTotal);
   }
@@ -485,7 +501,7 @@ export class ReturnComponent implements OnInit {
       this.paidAmountForm.value.paidAmount = 0;
     }
     this.api
-      .post('products/refund', {
+      .post('refund', {
         items: arr,
         product_id: arr[0].id,
         branch_id: this.sentFormBranchId,

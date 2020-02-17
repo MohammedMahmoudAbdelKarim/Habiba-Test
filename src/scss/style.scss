@@ -7,19 +7,31 @@
 // If you want to add something do it here
 @import "custom";
 
+* {
+  font-family: Arial;
+}
+
 /* --------------------------------- Print --------------------------------- */
 @media print {
   body * {
     visibility: hidden;
   }
 
-  #label-1 *,
-  #label-2 * {
+  #print-stock * {
     visibility: visible;
   }
 
-  #label-1,
-  #label-2 {
+  #print-stock {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  #print-reseller * {
+    visibility: visible;
+  }
+
+  #print-reseller {
     position: absolute;
     left: 0;
     top: 0;
@@ -98,6 +110,11 @@ body {
   cursor: no-drop;
 }
 
+.mat-footer-row {
+  background: #262f3d;
+  padding: 25px 0;
+}
+
 
 .maxFile p {
   direction: ltr;
@@ -171,7 +188,7 @@ body {
     color: #fff;
     text-transform: uppercase;
     font-weight: 600;
-    padding: 20px 9px;
+    padding: 20px 5px;
   }
 
   i {
@@ -517,6 +534,34 @@ header {
 
 /* ------------------------------------ Stock List ------------------------ */
 #stock-list {
+  #img {
+    .uploadImage button {
+      background: none;
+      border: none;
+    }
+
+    input {
+      cursor: pointer;
+      position: absolute;
+      width: 100%;
+      height: 13%;
+      left: 0%;
+      top: 87%;
+      opacity: 0;
+    }
+
+    .btn {
+      padding: 10px;
+      font-size: 14px;
+      background: #373737;
+      color: #fff;
+      text-transform: unset;
+      font-family: arial;
+      margin-top: 16px;
+      width: 100%;
+    }
+  }
+
   .stone-table {
     border-bottom: 1px solid #dddddd;
   }
@@ -547,6 +592,14 @@ header {
   }
 
   #labelModel {
+
+    h4,
+    span {
+      font-weight: 900;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
     table {
       width: 100%;
       margin: 20px auto;
@@ -556,8 +609,8 @@ header {
           margin: 5px 0;
 
           td {
-            font-size: 1.3125rem;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 900;
           }
         }
       }
@@ -945,7 +998,7 @@ header {
   }
 
   .nav-card {
-    height: 100%;
+    height: 175%;
     width: 100%;
     border-radius: 7px;
     background: #fff;
@@ -1320,6 +1373,10 @@ header {
       color: #000;
     }
   }
+
+  #showOrdercontrols {
+    right: 3%;
+  }
 }
 
 /* -------------------------- Clients ----------------------------- */
@@ -1446,7 +1503,7 @@ header {
 /* -------------------------- Categories --------------------- */
 #categories {
   #showOrdercontrols {
-    right: 17%;
+    right: 22%;
   }
 
   .modal {
@@ -1470,7 +1527,7 @@ header {
 /* -------------------------- Stones --------------------- */
 #stones {
   #showOrdercontrols {
-    right: 10%;
+    right: 15%;
   }
 
   .modal {
@@ -1600,7 +1657,7 @@ header {
   }
 
   #showOrdercontrols {
-    right: 7%;
+    right: 10%;
 
     .basic_button {
       width: 72px;
@@ -1702,4 +1759,25 @@ header {
   .Out {
     background: red;
   }
+}
+
+.mat-paginator-navigation-previous,
+// .mat-paginator-navigation-next {
+  //   display: none !important;
+  // }
+
+
+.paginator {
+  position: absolute;
+  top: -44px;
+  right: 320px;
+
+  select {
+    width: 100px;
+    padding: 5px;
+  }
+}
+
+.cdk-overlay-container {
+  z-index: 999999 !important;
 }

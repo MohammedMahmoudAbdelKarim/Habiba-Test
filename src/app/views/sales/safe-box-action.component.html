@@ -88,14 +88,31 @@
       </thead>
       <tbody>
         <tr *ngFor="let box of safeBoxArray; let i = index">
-          <td class="border-right text-center">
+          <td
+            class="border-right text-center"
+            *ngIf="box.branches.name ? box.branches.name : '-'"
+          >
             {{ box.branches.name }}
           </td>
-          <td class="border-right text-center">
+          <td
+            class="border-right text-center"
+            *ngIf="box.branches.managers.length"
+          >
             {{ box.branches.managers[0].name }}
           </td>
-          <td class="border-right text-center">{{ box.total }} EGP</td>
-          <td class="text-center">
+          <td
+            class="border-right text-center"
+            *ngIf="!box.branches.managers.length"
+          >
+            -
+          </td>
+          <td
+            class="border-right text-center"
+            *ngIf="box.total ? box.total : '-'"
+          >
+            {{ box.total }} EGP
+          </td>
+          <td class="text-center" *ngIf="box.created ? box.created : '-'">
             {{ box.created }}
           </td>
           <td class="text-center d-flex justify-content-end">

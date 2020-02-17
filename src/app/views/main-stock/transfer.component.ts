@@ -5,10 +5,11 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { ModalDirective } from 'ngx-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   templateUrl: 'transfer.component.html'
 })
@@ -17,6 +18,7 @@ export class TransferComponent implements OnInit {
   // Modals
   @ViewChild('myModal', { static: false }) public myModal: ModalDirective;
   @ViewChild('myModalImg', { static: false }) public myModalImg: ModalDirective;
+  @ViewChild('reqModel', { static: false }) public reqModel: ModalDirective;
   // Tables Colums
   selection = new SelectionModel<any>(true, []);
   displayedColumns: string[] = [
@@ -24,7 +26,7 @@ export class TransferComponent implements OnInit {
     'id',
     'product.label',
     'from_branch.name',
-    'product.gold_total',
+    'product.item_total_after_profit',
     'created',
     'employee.name',
     'img'
@@ -41,30 +43,51 @@ export class TransferComponent implements OnInit {
   // Arrays and Inital Variables
   hideme: any = [];
   products: any = [];
+  items: any = [];
   modalError: any = [];
+  branchList: any = [];
   branch_id: any = '';
   label: any = '';
   totalSearch: any = '';
   branchValue: any = '';
   imgSrc: any = '';
+  transferName: any = '';
   data: any;
   pageEvent: any;
   checkedItems: any = 0;
+  productTransferID = '';
   per_page: number = 50;
+  pageIndex: any;
+  numberOfPages: any = [];
+  currentPage: any = 1;
+  myControlCode = new FormControl('');
+  codeValue: any = '';
+  filteredCodes: Observable<string[]>;
+
   // Form Controls
   myControlBranch = new FormControl('');
+  // Transfer Form
+  transferForm = new FormGroup({
+    branch_id: new FormControl('', Validators.required)
+  });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toast: ToastrService
   ) {
     this.route.data.subscribe(data => {
       console.log(data);
+      // Get Branches
+      this.branchList = data.branchList.data;
+      // Get Products
+      this.items = data.productsData.data.data;
       // Get Transfers
       this.products = data.transfers.data.data;
       this.data = Object.assign(data.transfers.data.data);
       this.totalSearch = data.transfers.data.total;
+      this.pageIndex = data.transfers.data.last_page;
       this.dataSource = new MatTableDataSource(data.transfers.data.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -75,8 +98,8 @@ export class TransferComponent implements OnInit {
             return item.product.label;
           case 'from_branch.name':
             return item.from_branch.name;
-          case 'product.gold_total':
-            return item.product.gold_total;
+          case 'product.item_total_after_profit':
+            return item.product.item_total_after_profit;
           case 'employee.name':
             return item.employee.name;
           default:
@@ -89,11 +112,26 @@ export class TransferComponent implements OnInit {
       startWith(''),
       map(value => this.filterBranch(value))
     );
+    // Filter Codes
+    this.filteredCodes = this.myControlCode.valueChanges.pipe(
+      startWith(''),
+      map(value => this.fitlerCode(value))
+    );
   }
   /* ----------------------------------- OnInit ------------------------ */
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    console.log(this.pageIndex);
+
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
   }
   /* ---------------------------- Filter Branches ------------------------ */
   private filterBranch(value) {
@@ -118,8 +156,8 @@ export class TransferComponent implements OnInit {
                   return item.product.label;
                 case 'from_branch.name':
                   return item.from_branch.name;
-                case 'product.gold_total':
-                  return item.product.gold_total;
+                case 'product.item_total_after_profit':
+                  return item.product.item_total_after_profit;
                 case 'employee.name':
                   return item.employee.name;
                 default:
@@ -151,8 +189,8 @@ export class TransferComponent implements OnInit {
                   return item.product.label;
                 case 'from_branch.name':
                   return item.from_branch.name;
-                case 'product.gold_total':
-                  return item.product.gold_total;
+                case 'product.item_total_after_profit':
+                  return item.product.item_total_after_profit;
                 case 'employee.name':
                   return item.employee.name;
                 default:
@@ -185,8 +223,8 @@ export class TransferComponent implements OnInit {
             return item.product.label;
           case 'from_branch.name':
             return item.from_branch.name;
-          case 'product.gold_total':
-            return item.product.gold_total;
+          case 'product.item_total_after_profit':
+            return item.product.item_total_after_profit;
           case 'employee.name':
             return item.employee.name;
           default:
@@ -201,6 +239,63 @@ export class TransferComponent implements OnInit {
   /* ---------------------------- Display Branches ------------------------ */
   displayBranch(branch): string {
     return branch ? branch.product.label : branch;
+  }
+  /* ---------------------------- Filter Codes ------------------------ */
+  private fitlerCode(value) {
+    // tslint:disable-next-line: triple-equals
+    if (value == '' || value == undefined) {
+      this.label = '';
+      // Send Request
+      this.api
+        .get('products')
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value);
+          setTimeout(() => {}, 300);
+        });
+    }
+    // tslint:disable-next-line: triple-equals
+    if (typeof value == 'object') {
+      const filterValue = value.label.toLowerCase();
+      this.label = value.label;
+      // Send Request
+      this.api
+        .get('products', {
+          label: this.label
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value.data.data[0]);
+          this.transferName = value.data.data[0].branch.name;
+          this.productTransferID = value.data.data[0].id;
+          setTimeout(() => {}, 300);
+        });
+      return this.items.filter(option =>
+        option.label.toLowerCase().includes(filterValue)
+      );
+      // tslint:disable-next-line: triple-equals
+    } else if (typeof value == 'string') {
+      this.api
+        .get('products', {
+          label: value
+        })
+        .subscribe(value => {
+          console.log(value);
+        });
+      // value = this.tem_category;
+      const filterValueName = value.toLowerCase();
+      const info = this.items.filter(option =>
+        option.label.toLowerCase().includes(filterValueName)
+      );
+      // Sort item inside inner Object
+      return this.items.filter(option =>
+        option.label.toLowerCase().includes(filterValueName)
+      );
+    }
+  }
+  displayCode(code): string {
+    console.log(code);
+    return code ? code.label : code;
   }
   /* -------------------------------- Checkbox---------------------------- */
   /** Whether the number of selected elements matches the total number of rows. */
@@ -232,18 +327,29 @@ export class TransferComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-      } row ${row.position + 1}`;
+    } row ${row.position + 1}`;
   }
-  /* -------------------------- Open Image Modal ---------------------------- */
-  openImage(event) {
-    this.myModalImg.show();
-    this.imgSrc = event.src;
+  /* ---------------------------- Open Request ------------------------------ */
+  openReq(modal) {
+    console.log(modal);
+    this.reqModel.show();
   }
-  /* ---------- Pagniation & Number of items showed in the page ------------- */
-  onPaginateChange(event) {
+  /* -------------------------- Transfer Action ---------------------------- */
+  onSubmitTransfer(form) {
+    this.api
+      .put('branches/' + form.value.branch_id + '/transfer', {
+        product_id: this.productTransferID
+      })
+      .subscribe(val => {
+        this.toast.success(
+          'The product has been successfully transfered',
+          '!Success'
+        );
+      });
+    this.reqModel.hide();
     this.api
       .get('transfer', {
-        per_page: event.pageSize
+        per_page: 50
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
@@ -258,8 +364,8 @@ export class TransferComponent implements OnInit {
                 return item.product.label;
               case 'from_branch.name':
                 return item.from_branch.name;
-              case 'product.gold_total':
-                return item.product.gold_total;
+              case 'product.item_total_after_profit':
+                return item.product.item_total_after_profit;
               case 'employee.name':
                 return item.employee.name;
               default:
@@ -267,6 +373,83 @@ export class TransferComponent implements OnInit {
             }
           };
         }, 300);
+      });
+  }
+
+  /* -------------------------- Open Image Modal ---------------------------- */
+  openImage(event) {
+    this.myModalImg.show();
+    this.imgSrc = event.src;
+  }
+  /* ---------- Pagniation & Number of items showed in the page ------------- */
+  onPaginateChange(event) {
+    console.log(event);
+    this.api
+      .get('transfer', {
+        per_page: event.pageSize,
+        page: 1
+      })
+      .subscribe((productList: any) => {
+        console.log(productList);
+        this.products = productList.data.data;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'product.label':
+              return item.product.label;
+            case 'from_branch.name':
+              return item.from_branch.name;
+            case 'product.item_total_after_profit':
+              return item.product.item_total_after_profit;
+            case 'employee.name':
+              return item.employee.name;
+            default:
+              return item[property];
+          }
+        };
+      });
+    console.log(this.pageIndex);
+
+    this.numberOfPages = [];
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('transfer', {
+        per_page: 10,
+        page: this.currentPage
+      })
+      .subscribe((productList: any) => {
+        console.log(productList.data.data);
+        this.products = productList.data.data;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'category.name':
+              return item.category.name;
+            case 'branch.name':
+              return item.branch.name;
+            case 'status.name':
+              return item.status.name;
+            default:
+              return item[property];
+          }
+        };
       });
   }
   /*--------------------------------- Logout -------------------------------- */

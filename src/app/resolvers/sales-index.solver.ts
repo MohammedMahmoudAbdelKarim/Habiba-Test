@@ -14,7 +14,7 @@ export class salesAllSolver implements Resolve<any> {
   resolve() {
     return this.mainService
       .get('receipts', {
-        per_page: 50
+        per_page: 10
       })
       .pipe(
         catchError(error => {

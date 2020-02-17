@@ -98,7 +98,9 @@ export class SalesListComponent {
   entryDate: any = '';
   fromDate: any = '';
   toDate: any = '';
-
+  pageIndex: any = '';
+  numberOfPages: any = [];
+  currentPage: any = '';
   // ---------------------------------------------- Form
   deleteForm = new FormGroup({
     deleteInput: new FormControl('')
@@ -109,6 +111,11 @@ export class SalesListComponent {
   paymentForm = new FormGroup({
     paidAmount: new FormControl('', Validators.required)
   });
+  goldWeight: number;
+  goldPrice: number;
+  goldTotal: number;
+  item_total_after_profit: number;
+  item_total: number;
   // Constructor
   constructor(
     private api: MainServiceService,
@@ -125,7 +132,9 @@ export class SalesListComponent {
       // --------------------------------------- Get Sales
       this.products = data.receipts.data.data;
       this.data = Object.assign(data.receipts.data.data);
+      this.pageIndex = data.receipts.data.last_page;
       console.log(data.receipts.data.data);
+      console.log(data.receipts.data.last_page);
       this.dataSource = new MatTableDataSource(data.receipts.data.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -168,6 +177,16 @@ export class SalesListComponent {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    console.log(this.pageIndex);
+
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
   }
 
   // ----------------------------------------- Filter Branches
@@ -701,18 +720,33 @@ export class SalesListComponent {
     this.detailsModal.show();
     this.stockData = row;
     console.log(this.stockData);
+    this.goldWeight = +(+row.product.gold_weight).toFixed(2);
+    this.goldPrice = +(+row.product.gold_price).toFixed(2);
+    this.goldTotal = +(+row.product.gold_total).toFixed(2);
+    const items = row.stones;
+    let sum = null;
+    items.forEach(value => {
+      sum += value.total;
+    });
+    this.item_total = +(row.product.gold_total + sum).toFixed(2);
+
+    this.item_total_after_profit = Math.ceil(
+      this.item_total * row.product.profit_percent
+    );
   }
-  // --------------------------- Pagniation & Number of items showed in the page
+  /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
-    console.log(event.pageSize);
+    console.log(event);
     this.api
       .get('sales', {
-        per_page: event.pageSize
+        per_page: event.pageSize,
+        page: 1
       })
       .subscribe((productList: any) => {
-        console.log(productList.data.data);
+        console.log(productList);
         this.products = productList.data.data;
         this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sortingDataAccessor = (item, property) => {
@@ -732,8 +766,46 @@ export class SalesListComponent {
           }
         };
       });
-  }
+    console.log(this.pageIndex);
 
+    this.numberOfPages = [];
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('sales', {
+        per_page: 10,
+        page: this.currentPage
+      })
+      .subscribe((productList: any) => {
+        console.log(productList.data.data);
+        this.products = productList.data.data;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'category.name':
+              return item.category.name;
+            case 'branch.name':
+              return item.branch.name;
+            case 'status.name':
+              return item.status.name;
+            default:
+              return item[property];
+          }
+        };
+      });
+  }
   /* ------------------------- Refund Action ---------------------------- */
   routeToReturn(row) {
     console.log('Item To Return: ', row);

@@ -87,7 +87,7 @@
             [disabled]="addDisAbledState"
             style="padding: 7px; font-weight: 700"
           >
-          <i class="icon-basket-loaded mr-2 align-middle"></i>
+            <i class="icon-basket-loaded mr-2 align-middle"></i>
             ADD ITEM
           </button>
         </div>
@@ -173,10 +173,28 @@
                           {{ stone.name }}
                         </td>
                         <td class="pb-0 border-right" *ngIf="stone.quantity">
-                          {{ stone.quantity }}
+                          <input
+                            class="stone-input text-center"
+                            value="{{ stone.quantity }}"
+                            formControlName="productStoneQuantity"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex,i, 'sW')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                          />
                         </td>
                         <td class="border-right" *ngIf="stone.weight">
-                          {{ stone.weight }}
+                          <input
+                            class="stone-input text-center"
+                            value="{{ stone.weight }}"
+                            formControlName="productStoneWeight"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex,i, 'sW')
+                            "
+                            (keypress)="numberCheckValidation($event)"
+                            maxlength="9"
+                          />
                         </td>
                         <td class="border-right">
                           <input
@@ -218,14 +236,15 @@
                 {{ product.item_total_after_profit }}
               </td>
               <td>
-                {{
-                  (
-                    product.item_total_after_profit * dollarPrice
-                  )
-                }}
+                {{ product.item_total_after_profit * dollarPrice }}
               </td>
               <td>
-                <img class="pointer" src="../../../assets/icon/delete.svg" (click)="removeItem($event, stoneIndex, i, 'sP')" alt="">
+                <img
+                  class="pointer"
+                  src="../../../assets/icon/delete.svg"
+                  (click)="removeItem($event, stoneIndex, i, 'sP')"
+                  alt=""
+                />
               </td>
             </tr>
           </tbody>
@@ -237,13 +256,10 @@
         <!-- Start Form field -->
         <div class="col-md-12">
           <label
-            ><img src=".././../../assets/icon/employee-2.svg" /> 
+            ><img src=".././../../assets/icon/employee-2.svg" />
             <span class="ml-2">Client Name or Mobile</span>
           </label>
-          <mat-form-field
-            class="example-full-width pb-0"
-            appearance="outline"
-          >
+          <mat-form-field class="example-full-width pb-0" appearance="outline">
             <mat-label>Client Name or Mobile</mat-label>
             <input
               type="text"
@@ -292,8 +308,8 @@
         <div class="col-md-12 mt-3">
           <div class="form-group">
             <label>
-              <img src="../.././../assets/icon/calendar.svg" /> 
-              <span class="ml-2">Date</span>             
+              <img src="../.././../assets/icon/calendar.svg" />
+              <span class="ml-2">Date</span>
             </label>
             <input
               matInput
@@ -328,21 +344,13 @@
               (change)="getSelectedListOptionId($event.target)"
               required
             >
-            <option
-                    value=""
-                    disabled
-                    selected
-                    hidden
-                    *ngIf="isInvoiced"
-                    >{{ branch_name }}</option
-                  >
+              <option value="" disabled selected hidden *ngIf="isInvoiced">{{
+                branch_name
+              }}</option>
               <option value="" disabled selected hidden>{{
                 branchesList[0].name
               }}</option>
-              <option
-                *ngFor="let branch of branchesList"
-                [value]="branch.id"
-              >
+              <option *ngFor="let branch of branchesList" [value]="branch.id">
                 {{ branch.name }}
               </option>
             </select>
@@ -368,10 +376,7 @@
           <thead>
             <tr class="border-0">
               <th scope="col" class="border-right text-center">Total USD</th>
-              <th
-                class="border-right text-center"
-                scope="col"
-              >
+              <th class="border-right text-center" scope="col">
                 Total EGP
               </th>
               <th class="border-right text-center" scope="col">Amount Paid</th>
@@ -414,9 +419,9 @@
                   class="text-white bg-transparent d-block mt-3"
                   >Remaining Amount</span
                 >
-                <span style="font-size: 12px" *ngIf="remainingPrice">{{
-                  remainingPrice
-                }} EGP</span>
+                <span style="font-size: 12px" *ngIf="remainingPrice"
+                  >{{ remainingPrice }} EGP</span
+                >
               </td>
               <td class="text-center text-red">
                 <select
@@ -473,9 +478,7 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label
-                    >Warehouse Name <span class="text-red">*</span></label
-                  >
+                  <label>Warehouse Name <span class="text-red">*</span></label>
                   <input
                     class="input-text w-100"
                     value=""
@@ -530,10 +533,7 @@
               <div class="col-lg-12">
                 <div class="form-group">
                   <label>Warehouse City <span class="text-red">*</span></label>
-                  <select
-                    class="input-text w-100"
-                    formControlName="city_id"
-                  >
+                  <select class="input-text w-100" formControlName="city_id">
                     <option value="" selected disabled
                       >Please Select City</option
                     >
@@ -561,11 +561,8 @@
               </div>
             </div>
             <div class="modal-footer border-0 justify-content-start px-0">
-              <button
-                type="submit"
-                class="submit-btn"
-              >
-              <i class="icon-settings mt-2 mr-2 align-middle"></i>
+              <button type="submit" class="submit-btn">
+                <i class="icon-settings mt-2 mr-2 align-middle"></i>
                 Add Warehouse
               </button>
             </div>
@@ -607,9 +604,7 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label
-                    >Client Name <span class="text-red">*</span></label
-                  >
+                  <label>Client Name <span class="text-red">*</span></label>
                   <input
                     class="input-text w-100"
                     value=""
@@ -635,9 +630,7 @@
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label
-                    >Client Mobile <span class="text-red">*</span></label
-                  >
+                  <label>Client Mobile <span class="text-red">*</span></label>
                   <input
                     class="input-text w-100"
                     value=""
@@ -663,9 +656,7 @@
               </div>
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label
-                    >Client Email</label
-                  >
+                  <label>Client Email</label>
                   <input
                     class="input-text w-100"
                     value=""
@@ -682,11 +673,8 @@
               </div>
             </div>
             <div class="modal-footer border-0 justify-content-start px-0">
-              <button
-                type="submit"
-                class="submit-btn"
-              >
-              <i class="icon-people mt-2 mr-2 align-middle"></i>
+              <button type="submit" class="submit-btn">
+                <i class="icon-people mt-2 mr-2 align-middle"></i>
                 Add Client
               </button>
             </div>

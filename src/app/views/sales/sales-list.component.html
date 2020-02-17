@@ -330,10 +330,27 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
 
+    <!-- Pagination -->
     <mat-paginator
       [pageSizeOptions]="[10, 20, 30, 40, 50]"
+      [length]="100"
       (page)="pageEvent = $event; onPaginateChange($event)"
     ></mat-paginator>
+    <div style="position: relative;">
+      <div class="paginator">
+        <span class="mr-2 text-white" style="font-size: 12px;"
+          >Number of Page</span
+        >
+        <select name="" id="" (change)="selectPage($event.target.value)">
+          <option
+            *ngFor="let num of numberOfPages; let i = index"
+            [value]="num"
+          >
+            {{ num }}
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
   <!-- End Table -->
   <!-- Details -->
@@ -422,7 +439,7 @@
                     <h3 class="head-title">Gold Weight</h3>
                     <p>(gm)</p>
                     <p style="font-size: 1rem; font-weight: 500;">
-                      {{ stockData.product.gold_weight }}
+                      {{ goldWeight }}
                     </p>
                   </div>
                 </div>
@@ -431,7 +448,7 @@
                     <h3 class="head-title">Gold Price</h3>
                     <p>($)</p>
                     <p style="font-size: 1rem; font-weight: 500;">
-                      {{ stockData.product.gold_price }}
+                      {{ goldPrice }}
                     </p>
                   </div>
                 </div>
@@ -440,7 +457,7 @@
                     <h3 class="head-title">Total</h3>
                     <p>($)</p>
                     <p style="font-size: 1rem; font-weight: 900;">
-                      {{ stockData.product.gold_total }}
+                      {{ goldTotal }}
                     </p>
                   </div>
                 </div>
@@ -511,7 +528,7 @@
                 <div class="col-6 row justify-content-center">
                   <h4 class="col-12 text-uppercase">Cost</h4>
                   <div class="cost-box col-12">
-                    {{ stockData.product.item_total }}
+                    {{ item_total }}
                   </div>
                 </div>
                 <div class="col-6 row justify-content-center">
@@ -519,7 +536,7 @@
                     Cost * {{ stockData.product.profit_percent }} in $
                   </h4>
                   <div class="cost-box col-12">
-                    {{ stockData.product.item_total_after_profit }}
+                    {{ item_total_after_profit }}
                   </div>
                 </div>
               </div>

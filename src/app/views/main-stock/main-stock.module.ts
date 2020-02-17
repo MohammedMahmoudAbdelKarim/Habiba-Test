@@ -13,6 +13,7 @@ import { PopoverModule } from 'ngx-bootstrap/popover';
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { MatSelectModule } from '@angular/material/select';
 // Base Routing
 import { BaseRoutingModule } from './main-stock-routing.module';
 // Angualr Material
@@ -66,6 +67,7 @@ import { clientsListSolver } from '../../resolvers/clientsList.solver';
     DropdownModule,
     BaseRoutingModule,
     MatIconModule,
+    MatSelectModule,
     BsDropdownModule.forRoot(),
     TabsModule,
     CarouselModule.forRoot(),

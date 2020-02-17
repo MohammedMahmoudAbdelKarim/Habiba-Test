@@ -70,6 +70,7 @@ export class InvoicesComponent {
   branchValue: string = '';
   categoryValue: string = '';
   codeValue: string = '';
+  currentPage;
   statusValue: string = '';
   imgUrl: string = 'img/products/';
   baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
@@ -100,6 +101,8 @@ export class InvoicesComponent {
   inoviceCity: any = '';
   inoviceAddress: any = '';
   inovicePhone: any = '';
+  pageIndex;
+  numberOfPages = [];
   // Form Controls
   myControlClient = new FormControl('');
   myControlInvoice = new FormControl('');
@@ -130,6 +133,7 @@ export class InvoicesComponent {
       this.data = Object.assign(data.sales.data.data);
       console.log(data.sales.data.data);
       this.dataSource = new MatTableDataSource(data.sales.data.data);
+      this.pageIndex = data.sales.data.last_page;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       // Sort item inside inner Object
@@ -158,6 +162,16 @@ export class InvoicesComponent {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    console.log(this.pageIndex);
+
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
   }
   /* ---------------------------- Filter Clients ------------------------ */
   private filterClient(value) {
@@ -565,13 +579,55 @@ export class InvoicesComponent {
 
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
+    console.log(event);
+    this.per_page = event.pageSize;
     this.api
       .get('receipts', {
-        per_page: event.pageSize
+        per_page: event.pageSize,
+        page: 1
       })
-      .subscribe((value: any) => {
-        this.products = value.data.data;
-        this.dataSource = new MatTableDataSource(value.data.data);
+      .subscribe((productList: any) => {
+        console.log(productList);
+        this.products = productList.data.data;
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'client.name':
+              return item.client.name;
+            default:
+              return item[property];
+          }
+        };
+        console.log(this.pageIndex);
+
+        this.numberOfPages = [];
+        for (let i = 1; i <= this.pageIndex; i++) {
+          console.log(i);
+          this.numberOfPages.push(i);
+          this.numberOfPages.sort(function(a, b) {
+            return a - b;
+          });
+        }
+        console.log(this.numberOfPages);
+      });
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('receipts', {
+        per_page: this.per_page,
+        page: event
+      })
+      .subscribe((productList: any) => {
+        console.log(productList.data.data);
+        this.products = productList.data.data;
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sortingDataAccessor = (item, property) => {
@@ -588,5 +644,12 @@ export class InvoicesComponent {
   logout() {
     sessionStorage.removeItem('token');
     this.router.navigate(['/']);
+  }
+  /* ----------------------------- Print ------------------------ */
+  print() {
+    this.invoiceModal.show();
+    setTimeout(() => {
+      window.print();
+    }, 200);
   }
 }

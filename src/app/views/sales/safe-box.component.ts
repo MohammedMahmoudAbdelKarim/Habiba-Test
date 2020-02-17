@@ -34,7 +34,7 @@ export class SafeBoxComponent {
   pageEvent: any;
   totalSearch: any = '';
   productTransferID: any;
-  per_page: number = 50;
+  per_page: number = 10;
   myControlStatus = new FormControl('');
   myControlBranch = new FormControl('');
   filteredStatus: Observable<string[]>;
@@ -47,6 +47,9 @@ export class SafeBoxComponent {
   entryDate: any = [];
   branchList: any = [];
   branchValue: any = '';
+  pageIndex: any;
+  numberOfPages: any = [];
+  currentPage: 1;
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -59,6 +62,7 @@ export class SafeBoxComponent {
       // Get Safe Box
       this.safebox = data.safeBox.data.data;
       this.data = Object.assign(data.safeBox.data.data);
+      this.pageIndex = data.safeBox.data.last_page;
       // Get Branch
       this.branchList = data.branchList.data;
       this.totalSearch = data.safeBox.data.total;
@@ -86,6 +90,14 @@ export class SafeBoxComponent {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
   }
   /* -------------------------------- Checkbox---------------------------- */
   /** Whether the number of selected elements matches the total number of rows. */
@@ -124,7 +136,7 @@ export class SafeBoxComponent {
         status: this.status,
         from_date: this.fromDate,
         to_date: this.toDate,
-        per_page: 50
+        per_page: 10
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
@@ -153,7 +165,7 @@ export class SafeBoxComponent {
         .get('savebox/actions', {
           branch_id: this.branch_id,
           status: this.status,
-          per_page: 50
+          per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
@@ -186,7 +198,7 @@ export class SafeBoxComponent {
         status: this.status,
         from_date: this.fromDate,
         to_date: this.toDate,
-        per_page: 50
+        per_page: 10
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
@@ -215,7 +227,7 @@ export class SafeBoxComponent {
           status: this.status,
           from_date: this.fromDate,
           to_date: this.toDate,
-          per_page: 50
+          per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
@@ -247,7 +259,7 @@ export class SafeBoxComponent {
         status: this.status,
         from_date: this.fromDate,
         to_date: this.toDate,
-        per_page: 50
+        per_page: 10
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
@@ -280,7 +292,7 @@ export class SafeBoxComponent {
           status: this.status,
           from_date: this.fromDate,
           to_date: this.toDate,
-          per_page: 50
+          per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
@@ -321,7 +333,7 @@ export class SafeBoxComponent {
           status: this.status,
           from_date: this.fromDate,
           to_date: this.toDate,
-          per_page: 50
+          per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
@@ -392,12 +404,53 @@ export class SafeBoxComponent {
 
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
+    console.log(event);
+    this.per_page = event.pageSize;
     this.api
       .get('savebox/actions', {
-        per_page: event.pageSize
+        per_page: event.pageSize,
+        page: 1
       })
-      .subscribe((data: any) => {
-        this.dataSource = new MatTableDataSource(data.data.data);
+      .subscribe((productList: any) => {
+        console.log(productList);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'branches.name':
+              return item.branches.name;
+            default:
+              return item[property];
+          }
+        };
+        console.log(this.pageIndex);
+
+        this.numberOfPages = [];
+        for (let i = 1; i <= this.pageIndex; i++) {
+          console.log(i);
+          this.numberOfPages.push(i);
+          this.numberOfPages.sort(function(a, b) {
+            return a - b;
+          });
+        }
+        console.log(this.numberOfPages);
+      });
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('savebox/actions', {
+        per_page: this.per_page,
+        page: event
+      })
+      .subscribe((productList: any) => {
+        console.log(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sortingDataAccessor = (item, property) => {

@@ -207,7 +207,7 @@
   <!-- End Header -->
   <!-- Start Table -->
   <div class="floated container-fluid relative">
-    <table mat-table [dataSource]="dataSource" matSort>
+    <table mat-table [dataSource]="dataSource" matSort id="print-stock">
       <!-- Column -->
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
@@ -229,13 +229,16 @@
           >
           </mat-checkbox>
         </td>
+        <td mat-footer-cell *matFooterCellDef class="" style="font-size: 16px;">
+          No. of Items
+        </td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="img">
         <th mat-header-cell *matHeaderCellDef>IMAGE</th>
         <td mat-cell class="pointer" *matCellDef="let row">
           <img
-          *ngIf="row.image"
+            *ngIf="row.image"
             width="75px"
             height="70px"
             class="img-fluid"
@@ -250,12 +253,23 @@
           />
           <span *ngIf="!row.image">No Image</span>
         </td>
+        <td
+          mat-footer-cell
+          *matFooterCellDef
+          class=""
+          style="font-size: 16px; font-weight: 800;"
+        >
+          {{ countProducts }}
+        </td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="category.name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>CATEGORY</th>
         <td mat-cell *matCellDef="let row">
           <span>{{ row.category.name }}</span>
+        </td>
+        <td mat-footer-cell *matFooterCellDef class="" style="font-size: 16px;">
+          Total EGP
         </td>
       </ng-container>
       <!-- Column -->
@@ -264,6 +278,14 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.label }}</span>
         </td>
+        <td
+          mat-footer-cell
+          *matFooterCellDef
+          class=""
+          style="font-size: 16px; font-weight: 800;"
+        >
+          {{ totalProducts }}
+        </td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="branch.name">
@@ -271,6 +293,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.branch.name }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="gold_weight">
@@ -278,6 +301,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.gold_weight }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="item_total_after_profit">
@@ -285,6 +309,7 @@
         <td mat-cell *matCellDef="let row">
           <span>$ {{ row.item_total_after_profit }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="created_at">
@@ -292,6 +317,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.product_date }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="status.name">
@@ -301,6 +327,7 @@
             {{ row.status.name }}
           </span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="actions">
@@ -326,7 +353,9 @@
                 <span class="tooltiptext">Invoice</span>
               </button>
               <button
-                *ngIf="row.status.name != 'available' && row.status.name !='pending'"
+                *ngIf="
+                  row.status.name != 'available' && row.status.name != 'pending'
+                "
                 class="basic_button"
                 type="button"
                 (click)="routeToReturn(row)"
@@ -370,14 +399,17 @@
                 id="editButton"
                 class="basic_button"
                 type="button"
-                (click)="
-                  openUpdataPopup(row)
-                "
+                (click)="openUpdataPopup(row)"
               >
                 <img src="../../../assets/icon/edit.svg" alt="" />
                 <span class="tooltiptext">Edit</span>
               </button>
-              <button id="editButton" class="basic_button" type="button" (click)="openLabel(row)">
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="openLabel(row)"
+              >
                 <img src="../../../assets/icon/barcode.svg" alt="" />
                 <span class="tooltiptext">Label</span>
               </button>
@@ -396,15 +428,34 @@
             <img src="../../../assets/icon/menu.svg" alt="" />
           </button>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
     </table>
+
     <!-- Pagination -->
     <mat-paginator
-      [pageSizeOptions]="[10, 20, 30, 40, 50]"
+      [pageSizeOptions]="[10, 20, 30, 40, 50, 100]"
+      [length]="100"
       (page)="pageEvent = $event; onPaginateChange($event)"
     ></mat-paginator>
+    <div style="position: relative;">
+      <div class="paginator">
+        <span class="mr-2 text-white" style="font-size: 12px;"
+          >Number of Page</span
+        >
+        <select name="" id="" (change)="selectPage($event.target.value)">
+          <option
+            *ngFor="let num of numberOfPages; let i = index"
+            [value]="num"
+          >
+            {{ num }}
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
   <!-- End Table -->
   <!-- Details -->
@@ -440,7 +491,7 @@
           </div>
           <div class="row align-items-end no-gutters mt-3">
             <div class="col-5" id="img">
-              <img [src]="stockData.barcode" class="w-100 mb-3" alt="">
+              <img [src]="stockData.barcode" class="w-100 mb-3" alt="" />
               <img
                 class="w-100"
                 height="205px"
@@ -474,98 +525,130 @@
               <div class="col-12 mt-5 row justify-content-between no-gutters">
                 <div class="col-4">
                   <div class="gold-box">
-                  <h3 class="head-title">Gold Weight</h3>
-                  <p>(gm)</p>
-                  <p style="font-size: 1rem; font-weight: 500;">{{stockData.gold_weight}}</p>
-                </div>
+                    <h3 class="head-title">Gold Weight</h3>
+                    <p>(gm)</p>
+                    <p style="font-size: 1rem; font-weight: 500;">
+                      {{ goldWeight }}
+                    </p>
+                  </div>
                 </div>
                 <div class="col-4 pl-1">
                   <div class="gold-box">
                     <h3 class="head-title">Gold Price</h3>
                     <p>($)</p>
-                    <p style="font-size: 1rem; font-weight: 500;">{{stockData.gold_price}}</p>
+                    <p style="font-size: 1rem; font-weight: 500;">
+                      {{ goldPrice }}
+                    </p>
                   </div>
                 </div>
                 <div class="col-4 pl-2">
                   <div class="gold-box">
                     <h3 class="head-title">Total</h3>
                     <p>($)</p>
-                    <p style="font-size: 1rem; font-weight: 900;">{{stockData.gold_total}}</p>
+                    <p style="font-size: 1rem; font-weight: 900;">
+                      {{ goldTotal }}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-            <div class="mt-5 w-100" id="stones">
-              <h2
-          class="head-title text-left"
-          [ngClass]="stones.length == 0 ? 'text-red' : ''"
-        >
-          {{
-            stones.length > 0
-              ? 'STONES'
-              : 'No stone available to this product'
-          }}
-          <span
-            class="ml-3"
-            *ngIf="stones.length > 1"
-            >{{ stones.length }} Stones</span
-          >
-          <span
-            class="ml-3"
-            *ngIf="stones.length == 1"
-            >{{ stones.length }} Stone</span
-          >
-        </h2>
-        <div class="stone-border" *ngIf="stones.length">
-          <div class="stone-table" *ngFor="let stone of stones">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col" class="border-right">Name</th>
-                  <th scope="col" class="border-right text-center">Quantity</th>
-                  <th scope="col" class="border-right text-center">Weight (cts)</th>
-                  <th scope="col" class="border-right text-center">Cost ($)</th>
-                  <th scope="col" class="border-right text-center">Setting</th>
-                  <th scope="col" class="text-center">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="border-right">{{stone.name}}</td>
-                  <td class="border-right text-center">{{stone.quantity}}</td>
-                  <td class="border-right text-center">{{stone.weight}}</td>
-                  <td class="border-right text-center">{{stone.price}}</td>
-                  <td class="border-right text-center">{{stone.setting}}</td>
-                  <td class="text-center">{{stone.total}}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+          <div class="mt-5 w-100" id="stones">
+            <h2
+              class="head-title text-left"
+              [ngClass]="stones.length == 0 ? 'text-red' : ''"
+            >
+              {{
+                stones.length > 0
+                  ? 'STONES'
+                  : 'No stone available to this product'
+              }}
+              <span class="ml-3" *ngIf="stones.length > 1"
+                >{{ stones.length }} Stones</span
+              >
+              <span class="ml-3" *ngIf="stones.length == 1"
+                >{{ stones.length }} Stone</span
+              >
+            </h2>
+            <div class="stone-border" *ngIf="stones.length">
+              <div class="stone-table" *ngFor="let stone of stones">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col" class="border-right">Name</th>
+                      <th scope="col" class="border-right text-center">
+                        Quantity
+                      </th>
+                      <th scope="col" class="border-right text-center">
+                        Weight (cts)
+                      </th>
+                      <th scope="col" class="border-right text-center">
+                        Cost ($)
+                      </th>
+                      <th scope="col" class="border-right text-center">
+                        Setting
+                      </th>
+                      <th scope="col" class="text-center">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border-right">{{ stone.name }}</td>
+                      <td class="border-right text-center">
+                        {{ stone.quantity }}
+                      </td>
+                      <td class="border-right text-center">
+                        {{ stone.weight }}
+                      </td>
+                      <td class="border-right text-center">
+                        {{ stone.price }}
+                      </td>
+                      <td class="border-right text-center">
+                        {{ stone.setting }}
+                      </td>
+                      <td class="text-center">{{ stone.total }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
             <div id="cost" class="mt-5 w-100">
-<div class="row w-75 m-auto justify-content-between">
-  <div class="col-6 row justify-content-center">
-    <h4 class="col-12 text-uppercase">Cost</h4>
-    <div class="cost-box col-12">{{totalCost}}</div>
-  </div>
-  <div class="col-6 row justify-content-center">
-    <h4 class="col-12 text-uppercase">Cost * {{stockData.profit_percent}} in $</h4>
-    <div class="cost-box col-12">{{finalCost}}</div>
-  </div>
-</div>
+              <div class="row w-75 m-auto justify-content-between">
+                <div class="col-6 row justify-content-center">
+                  <h4 class="col-12 text-uppercase">Cost</h4>
+                  <div class="cost-box col-12">{{ totalCost }}</div>
+                </div>
+                <div class="col-6 row justify-content-center">
+                  <h4 class="col-12 text-uppercase">
+                    Cost * {{ stockData.profit_percent }} in $
+                  </h4>
+                  <div class="cost-box col-12">{{ finalCost }}</div>
+                </div>
+              </div>
             </div>
             <footer class="row mt-5 justify-content-center w-100">
               <div class=" col-md-10 col-md-offset-1">
                 <div class="row justify-content-center">
-                  <div class="col-md-6 row justify-content-center align-items-center pointer" (click)="print()">
-                    
-                      <img src="../../../assets/icon/printer.svg" alt="" class="mr-2"/>
-                      <span>Print Label</span>
+                  <div
+                    class="col-md-6 row justify-content-center align-items-center pointer"
+                  >
+                    <img
+                      src="../../../assets/icon/printer.svg"
+                      alt=""
+                      class="mr-2"
+                    />
+                    <span>Print Label</span>
                   </div>
-                  <div class="col-md-6 row justify-content-center align-items-center pointer" (click)="labelModal.show()">
-                      <img src="../../../assets/icon/label.svg" alt="" class="mr-2"/>
-                      <span>View Label</span> 
+                  <div
+                    class="col-md-6 row justify-content-center align-items-center pointer"
+                    (click)="labelModal.show()"
+                  >
+                    <img
+                      src="../../../assets/icon/label.svg"
+                      alt=""
+                      class="mr-2"
+                    />
+                    <span>View Label</span>
                   </div>
                 </div>
               </div>
@@ -577,165 +660,212 @@
   </div>
   <!-- Edit -->
   <div
-  id="details"
-  bsModal
-  #editModal="bs-modal"
-  class="modal fade"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="myModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header pb-0 border-bottom-0">
-        <button
-          type="button"
-          class="close"
-          (click)="editModal.hide()"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">Close</span>
-        </button>
-      </div>
-      <!-- Body -->
-      <form (ngSubmit)="onSubmit(stockUpdatForm.value)"
-        #form="ngForm"
-        [formGroup]="stockUpdatForm">
-      <div class="modal-body p-4" *ngIf="stockData">
-        <div class="d-flex justify-content-between align-items-end">
-          <h4 class="text-uppercase">{{ category }} {{ stockData.label }}</h4>
-          <div class="status text-center text-uppercase" [ngClass]="status">
-            <p>{{ status }}</p>
-          </div>
+    id="details"
+    bsModal
+    #editModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header pb-0 border-bottom-0">
+          <button
+            type="button"
+            class="close"
+            (click)="editModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">Close</span>
+          </button>
         </div>
-        <div class="row align-items-end no-gutters mt-3">
-          <div class="col-5" id="img">
-            <img [src]="stockData.barcode" class="w-100 mb-3" alt="">
-            <img
-              class="w-100"
-              height="205px"
-              src="http://jewelry.ixscope.com/backend/img/products/{{
-                stockData.image
-              }}"
-              [alt]="stockData.label"
-            />
-          </div>
-          <div class="col-7 pl-5 row no-gutters justify-content-end">
-            <table class="col-12" id="table-details">
-              <thead>
-                <tr class="text-center">
-                  <th scope="col" class="head-title border-right">
-                    Category
-                  </th>
-                  <th scope="col" class="head-title border-right">Code</th>
-                  <th scope="col" class="head-title border-right">Branch</th>
-                  <th scope="col" class="head-title">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="border-right">{{ category }}</td>
-                  <td class="border-right">{{ stockData.label }}</td>
-                  <td class="border-right">{{ branch }}</td>
-                  <td>{{ stockData.product_date }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="col-12 mt-5 row justify-content-between no-gutters">
-              <div class="col-4">
-                <div class="gold-box">
-                <h3 class="head-title">Gold Weight</h3>
-                <p>(gm)</p>
+        <!-- Body -->
+        <form
+          (ngSubmit)="onSubmit(stockUpdatForm.value)"
+          #form="ngForm"
+          [formGroup]="stockUpdatForm"
+        >
+          <div class="modal-body p-4" *ngIf="stockData">
+            <div class="d-flex justify-content-between align-items-end">
+              <h4 class="text-uppercase">
+                {{ category }} {{ stockData.label }}
+              </h4>
+              <div class="status text-center text-uppercase" [ngClass]="status">
+                <p>{{ status }}</p>
+              </div>
+            </div>
+            <div class="row align-items-end no-gutters mt-3">
+              <div class="col-5" id="img">
+                <img [src]="stockData.barcode" class="w-100 mb-3" alt="" />
+                <img
+                  class="w-100"
+                  height="205px"
+                  src="http://jewelry.ixscope.com/backend/img/products/{{
+                    stockData.image
+                  }}"
+                  [alt]="stockData.label"
+                  *ngIf="!imageArray.length"
+                />
+                <img class="w-100" height="205px" [src]="imageArray" alt="" />
+                <button class="btn" type="button">Upload Image</button>
                 <input
-                          class="input-text"
-                          formControlName="updateGoldWeight"
-                          value=""
-                          (keyup)="calculateStoneTotal($event, 0, 'gW')"
-                          (keypress)="numberCheckValidation($event)"
-                          maxlength="9"
-                          autocomplete="off"
-                        />
+                  id="uploadImage"
+                  type="file"
+                  alife-file-to-base64
+                  (change)="onUploadChange($event)"
+                  accept="image/x-png,image/jpeg,image/jpg"
+                  class="file-upload"
+                  data-max-file-size="2M"
+                  value=""
+                  autocomplete="off"
+                />
               </div>
-              </div>
-              <div class="col-4 pl-1">
-                <div class="gold-box">
-                  <h3 class="head-title">Gold Price</h3>
-                  <p>($)</p>
-                  <input
-                          class="input-text"
-                          formControlName="updateGoldPrice"
-                          value=""
-                          (keyup)="calculateStoneTotal($event, 0, 'gP')"
-                          (keypress)="numberCheckValidation($event)"
-                          maxlength="9"
-                          autocomplete="off"
-                        />
-                </div>
-              </div>
-              <div class="col-4 pl-2">
-                <div class="gold-box">
-                  <h3 class="head-title">Total</h3>
-                  <p>($)</p>
-                  <input
-                          disabled="true"
-                          class="input-text"
-                          formControlName="goldTotalPrice"
-                          value="{{
-                            !checkItemDataCalculatedIsDefiend
-                              ? updatedItemData.gold_total
-                              : ItemDataCalculated.gold_total
-                          }}"
-                          autocomplete="off"
-                        />
+              <div class="col-7 pl-5 row no-gutters justify-content-end">
+                <table class="col-12" id="table-details">
+                  <thead>
+                    <tr class="text-center">
+                      <th scope="col" class="head-title border-right">
+                        Category
+                      </th>
+                      <th scope="col" class="head-title border-right">Code</th>
+                      <th scope="col" class="head-title border-right">
+                        Branch
+                      </th>
+                      <th scope="col" class="head-title">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border-right">{{ category }}</td>
+                      <td class="border-right">{{ stockData.label }}</td>
+                      <td class="border-right">{{ branch }}</td>
+                      <td>{{ stockData.product_date }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="col-12 mt-5 row justify-content-between no-gutters">
+                  <div class="col-4">
+                    <div class="gold-box">
+                      <h3 class="head-title">Gold Weight</h3>
+                      <p>(gm)</p>
+                      <input
+                        class="input-text"
+                        formControlName="updateGoldWeight"
+                        value=""
+                        (keyup)="calculateStoneTotal($event, 0, 'gW')"
+                        (keypress)="numberCheckValidation($event)"
+                        maxlength="9"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-4 pl-1">
+                    <div class="gold-box">
+                      <h3 class="head-title">Gold Price</h3>
+                      <p>($)</p>
+                      <input
+                        class="input-text"
+                        formControlName="updateGoldPrice"
+                        value=""
+                        (keyup)="calculateStoneTotal($event, 0, 'gP')"
+                        (keypress)="numberCheckValidation($event)"
+                        maxlength="9"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-4 pl-2">
+                    <div class="gold-box">
+                      <h3 class="head-title">Total</h3>
+                      <p>($)</p>
+                      <input
+                        disabled="true"
+                        class="input-text"
+                        formControlName="goldTotalPrice"
+                        value="{{
+                          !checkItemDataCalculatedIsDefiend
+                            ? total_price
+                            : ItemDataCalculated.gold_total
+                        }}"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-          <div class="mt-5 w-100" id="stones">
-            <h2
-        class="head-title text-left"
-        [ngClass]="stones.length == 0 ? 'text-red' : ''"
-      >
-        {{
-          stones.length > 0
-            ? 'STONES'
-            : 'No stone available to this product'
-        }}
-        <span
-          class="ml-3"
-          *ngIf="stones.length > 1"
-          >{{ stones.length }} Stones</span
-        >
-        <span
-          class="ml-3"
-          *ngIf="stones.length == 1"
-          >{{ stones.length }} Stone</span
-        >
-      </h2>
-      <i class="fas fa-plus-circle col-2 row pr-5 pointer justify-content-end col-1 font-2xl"
+            <div class="mt-5 w-100" id="stones">
+              <h2
+                class="head-title text-left"
+                [ngClass]="stones.length == 0 ? 'text-red' : ''"
+              >
+                {{
+                  stones.length > 0
+                    ? 'STONES'
+                    : 'No stone available to this product'
+                }}
+                <span class="ml-3" *ngIf="stones.length > 1"
+                  >{{ stones.length }} Stones</span
+                >
+                <span class="ml-3" *ngIf="stones.length == 1"
+                  >{{ stones.length }} Stone</span
+                >
+              </h2>
+              <i
+                class="fas fa-plus-circle col-2 row pr-5 pointer justify-content-end col-1 font-2xl"
                 (click)="stoneModal.show(stonesForm.reset())"
               ></i>
-      <div class="stone-border" *ngIf="stones.length">
-        <div class="stone-table" *ngFor="let stone of stones; let stoneIndex = index">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col" class="border-right">Name</th>
-                <th scope="col" class="border-right text-center">Quantity</th>
-                <th scope="col" class="border-right text-center">Weight (cts)</th>
-                <th scope="col" class="border-right text-center">Cost ($)</th>
-                <th scope="col" class="border-right text-center">Setting</th>
-                <th scope="col" class="border-right text-center">Total</th>
-                <th scope="col" class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="border-right">{{stone.name}}</td>
-                <td class="border-right text-center">
-                  <input
+              <div class="stone-border" *ngIf="stones.length">
+                <div
+                  class="stone-table"
+                  *ngFor="let stone of stones; let stoneIndex = index"
+                >
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col" class="border-right">Name</th>
+                        <th scope="col" class="border-right text-center">
+                          Quantity
+                        </th>
+                        <th scope="col" class="border-right text-center">
+                          Weight (cts)
+                        </th>
+                        <th scope="col" class="border-right text-center">
+                          Cost ($)
+                        </th>
+                        <th scope="col" class="border-right text-center">
+                          Setting
+                        </th>
+                        <th scope="col" class="border-right text-center">
+                          Total
+                        </th>
+                        <th scope="col" class="text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="border-right">
+                          <select
+                            class="px-1 py-2"
+                            name=""
+                            id=""
+                            formControlName="upadateStonesName"
+                          >
+                            <option value="" selected hidden>{{
+                              stone.name
+                            }}</option>
+                            <option
+                              *ngFor="let stone of stoneList"
+                              [value]="stone.id"
+                            >
+                              {{ stone.name }}
+                            </option>
+                          </select>
+                        </td>
+                        <td class="border-right text-center">
+                          <input
                             class="input-s"
                             value="{{ +stone.quantity }}"
                             formControlName="updateStonesQuantity"
@@ -746,9 +876,9 @@
                             maxlength="9"
                             autocomplete="off"
                           />
-                </td>
-                <td class="border-right text-center">
-                  <input
+                        </td>
+                        <td class="border-right text-center">
+                          <input
                             class="input-s"
                             value="{{ +stone.weight }}"
                             formControlName="updateStonesWeight"
@@ -759,9 +889,9 @@
                             maxlength="9"
                             autocomplete="off"
                           />
-                </td>
-                <td class="border-right text-center">
-                  <input
+                        </td>
+                        <td class="border-right text-center">
+                          <input
                             class="input-s"
                             value="{{ +stone.price }}"
                             formControlName="updateStonesPrice"
@@ -772,9 +902,9 @@
                             maxlength="9"
                             autocomplete="off"
                           />
-                </td>
-                <td class="border-right text-center">
-                  <input
+                        </td>
+                        <td class="border-right text-center">
+                          <input
                             class="input-s"
                             value="{{ +stone.setting }}"
                             formControlName="updateSettingsSetting"
@@ -785,53 +915,76 @@
                             maxlength="9"
                             autocomplete="off"
                           />
-                </td>
-                <td class="border-right text-center">{{stone.total}}</td>
-                <td class="text-center"><i
-                  class="fas fa-trash-alt text-red pointer font-1xl"
-                  (click)="removeStone(stoneIndex)"
-                ></i></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-          <div id="cost" class="mt-5 w-100">
-<div class="row w-75 m-auto justify-content-between">
-<div class="col-6 row justify-content-center">
-  <h4 class="col-12 text-uppercase">Cost</h4>
-  <div class="cost-box col-12">{{ItemDataCalculated.item_total}}</div>
-</div>
-<div class="col-6 row justify-content-center">
-  <h4 class="col-12 text-uppercase">Cost * {{ItemDataCalculated.profit_percent}} in $</h4>
-  <div class="cost-box col-12">{{ ItemDataCalculated.item_total_after_profit}}</div>
-</div>
-</div>
+                        </td>
+                        <td class="border-right text-center">
+                          {{ stone.total }}
+                        </td>
+                        <td class="text-center">
+                          <i
+                            class="fas fa-trash-alt text-red pointer font-1xl"
+                            (click)="removeStone(stoneIndex)"
+                          ></i>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div id="cost" class="mt-5 w-100">
+                <div class="row w-75 m-auto justify-content-between">
+                  <div class="col-6 row justify-content-center">
+                    <h4 class="col-12 text-uppercase">Cost</h4>
+                    <div class="cost-box col-12">
+                      {{ ItemDataCalculated.item_total }}
+                    </div>
+                  </div>
+                  <div class="col-6 row justify-content-center">
+                    <h4 class="col-12 text-uppercase">
+                      Cost *
+                      <input
+                        (input)="openButton()"
+                        type="text"
+                        class="w-25 px-2 text-center"
+                        formControlName="profit_percent"
+                        value="{{ ItemDataCalculated.profit_percent }}"
+                      />
+                      in $
+                    </h4>
+                    <div class="cost-box col-12">
+                      {{ ItemDataCalculated.item_total_after_profit }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <footer class="row mt-5 justify-content-center w-100">
+                <div
+                  class="w-50"
+                  [ngClass]="
+                    !checkItemDataCalculatedIsDefiend
+                      ? 'disabledUpdate'
+                      : 'updataButton'
+                  "
+                >
+                  <button
+                    class="submit-btn w-100"
+                    [disabled]="
+                      !checkItemDataCalculatedIsDefiend ? true : false
+                    "
+                  >
+                    Update
+                  </button>
+                </div>
+              </footer>
+            </div>
           </div>
-          
-          <footer class="row mt-5 justify-content-center w-100">
-            <div
-            class="w-50"
-          [ngClass]="
-            !checkItemDataCalculatedIsDefiend
-              ? 'disabledUpdate'
-              : 'updataButton'
-          "
-        >
-          <button class="submit-btn w-100" [disabled]="!checkItemDataCalculatedIsDefiend ? true : false">
-            Update
-          </button>
-        </div>
-          </footer>
-        </div>
+        </form>
       </div>
-      </form>
     </div>
   </div>
-</div>
   <!-- Add New Stone Model -->
   <div
-  id="stoneModel"
+    id="stoneModel"
     bsModal
     #stoneModal="bs-modal"
     class="modal fade"
@@ -870,11 +1023,12 @@
                     class="p-2 itemInput w-100"
                     formControlName="name"
                     (change)="getSelectedListOptionId()"
+                    (change)="getStoneDetails($event.target.value)"
                   >
                     <option disabled selected="selected" value=""
                       >Please Select Type</option
                     >
-                    <option *ngFor="let stone of stoneList">
+                    <option *ngFor="let stone of stoneList" [value]="stone.id">
                       {{ stone.name }}</option
                     >
                   </select>
@@ -1018,7 +1172,7 @@
                     !stonesForm.controls.setting.value
                   "
                 >
-                <i class="icon-diamond mr-2 align-middle"></i>
+                  <i class="icon-diamond mr-2 align-middle"></i>
                   Add Stone
                 </button>
               </div>
@@ -1028,47 +1182,55 @@
       </div>
     </div>
   </div>
-    <!-- Label -->
-    <div
-    id="labelModel"
+  <!-- Label display -->
+  <div
     bsModal
+    id="labelModel"
     #labelModal="bs-modal"
-    class="modal fade"
+    class="modal fade w-100"
     tabindex="-1"
     role="dialog"
     aria-labelledby="myModalLabel"
     aria-hidden="true"
   >
-    <div class="modal-dialog" role="document" id="label-1">
+    <div class="modal-dialog" role="document">
       <div class="modal-content print-content">
         <!-- Body -->
         <div class="modal-body">
           <div class="row no-gutters align-items-center">
             <div class="col-6">
-            <div class="col-12 text-center">
-              <h4>{{labelData.label}}</h4>
+              <div class="col-12 text-center">
+                <h4>{{ labelData.label }}</h4>
+              </div>
+              <div class="col-12 mt-2">
+                <img [src]="labelData.barcode" class="w-100" alt="" />
+              </div>
+              <div class="col-12 mt-2 text-center">
+                <h4 class="text-center">
+                  {{ labelData.item_total_after_profit }}
+                </h4>
+              </div>
+              <div class="col-12 mt-2 text-center">
+                <h4 class="text-center">
+                  Gold
+                  <span class="ml-3">{{ labelData.gold_weight }}</span>
+                </h4>
+              </div>
             </div>
-            <div class="col-12 mt-2">
-              <img [src]="labelData.barcode" class="w-100" alt="">
+            <div class="col-6">
+              <table>
+                <tbody>
+                  <tr
+                    class="text-center"
+                    *ngFor="let stone of labelData.stones"
+                  >
+                    <td>{{ stone.quantity }}</td>
+                    <td>{{ stone.code }}</td>
+                    <td>{{ stone.weight }}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <div class="col-12 mt-2 text-center">
-              <h4 class="text-center">
-                Gold
-                <span class="ml-3">{{ labelData.gold_weight }}</span>
-              </h4>
-            </div>
-          </div>
-          <div class="col-6">
-            <table>
-              <tbody>
-                <tr class="text-center" *ngFor="let stone of labelData.stones">
-                  <td>{{ stone.quantity }}</td>
-                  <td>{{ stone.code }}</td>
-                  <td>{{ stone.setting }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
           </div>
         </div>
       </div>
@@ -1076,7 +1238,7 @@
   </div>
   <!-- Make Transfer -->
   <div
-  id="transfer"
+    id="transfer"
     bsModal
     #myModal="bs-modal"
     class="modal fade"
@@ -1088,7 +1250,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header d-flex align-items-baseline">
-          <img class="mr-2" src="../../../assets/icon/transfer.svg" alt="">
+          <img class="mr-2" src="../../../assets/icon/transfer.svg" alt="" />
           <h4>Make New Transfer</h4>
           <button
             type="button"
@@ -1102,8 +1264,16 @@
         <!-- Body -->
         <div class="modal-body">
           <h4 class="modal-title mb-4 row">
-            <div class="col-6 row no-gutters justify-content-start align-items-baseline transfer-title"><span class="mr-2">Current Branch: </span> {{transferName}}</div>
-            <div class="col-6 row justify-content-end align-items-baseline transfer-title"><span class="mr-2">Code: </span>{{transferCode}}</div>
+            <div
+              class="col-6 row no-gutters justify-content-start align-items-baseline transfer-title"
+            >
+              <span class="mr-2">Current Branch: </span> {{ transferName }}
+            </div>
+            <div
+              class="col-6 row justify-content-end align-items-baseline transfer-title"
+            >
+              <span class="mr-2">Code: </span>{{ transferCode }}
+            </div>
           </h4>
           <form
             [formGroup]="transferForm"
@@ -1116,10 +1286,7 @@
                   <label class="title-4"
                     >Transfer To: <span class="text-red">*</span></label
                   >
-                  <select
-                    class="input-text w-100"
-                    formControlName="branch_id"
-                  >
+                  <select class="input-text w-100" formControlName="branch_id">
                     <option disabled selected="selected" value=""
                       >Please Select Branch</option
                     >
@@ -1157,7 +1324,11 @@
                       : 'enableSubmitButton'
                   "
                 >
-                <img class="mr-2" src="../../../assets/icon/transfer.svg" alt="">
+                  <img
+                    class="mr-2"
+                    src="../../../assets/icon/transfer.svg"
+                    alt=""
+                  />
                   Transfer
                 </button>
               </div>
@@ -1167,112 +1338,116 @@
       </div>
     </div>
   </div>
-    <!-- Delete One Item -->
-    <div
+  <!-- Delete One Item -->
+  <div
     id="deleteModal"
-      bsModal
-      #deleteModal="bs-modal"
-      class="modal fade"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header d-flex align-items-baseline border-0">
-            <button
-              type="button"
-              class="close"
-              (click)="deleteModal.hide()"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">Close</span>
-            </button>
-          </div>
-          <!-- Body -->
-          <div class="modal-body">
-            <h4 class="modal-title mb-4 text-center">
-              <span>For delete item please type</span> DELETE
-            </h4>
-            <form
-              [formGroup]="deleteForm"
-              (ngSubmit)="deleteStock()"
-              #form="ngForm"
-            >
-              <div class="row">
-                <div class="col-md-8 row">
-                  <div class="form-group col-12 no-gutters">
-                    <input type="text" class="input-text w-100" formControlName="deleteInput" placeholder="DELETE">
-                  </div>
-                </div>
-                <div class="col-md-4 modal-footer border-0 p-0">
-                  <button
-                    type="submit"
-                    class="submit-btn"
-                  >
-                    Delete
-                  </button>
+    bsModal
+    #deleteModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-baseline border-0">
+          <button
+            type="button"
+            class="close"
+            (click)="deleteModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">Close</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body">
+          <h4 class="modal-title mb-4 text-center">
+            <span>For delete item please type</span> DELETE
+          </h4>
+          <form
+            [formGroup]="deleteForm"
+            (ngSubmit)="deleteStock()"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-8 row">
+                <div class="form-group col-12 no-gutters">
+                  <input
+                    type="text"
+                    class="input-text w-100"
+                    formControlName="deleteInput"
+                    placeholder="DELETE"
+                  />
                 </div>
               </div>
-            </form>
-          </div>
+              <div class="col-md-4 modal-footer border-0 p-0">
+                <button type="submit" class="submit-btn">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-      <!-- Delete Two Item -->
-      <div
-      id="deleteModal"
-        bsModal
-        #delete2Modal="bs-modal"
-        class="modal fade"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="myModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header d-flex align-items-baseline border-0">
-              <button
-                type="button"
-                class="close"
-                (click)="delete2Modal.hide()"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">Close</span>
-              </button>
-            </div>
-            <!-- Body -->
-            <div class="modal-body">
-              <h4 class="modal-title mb-4 text-center">
-                <span>For delete items please type</span> DELETE
-              </h4>
-              <form
-                [formGroup]="deleteForm"
-                (ngSubmit)="removeMultiply()"
-                #form="ngForm"
-              >
-                <div class="row">
-                  <div class="col-md-8 row">
-                    <div class="form-group col-12 no-gutters">
-                      <input type="text" class="input-text w-100" formControlName="deleteInput" placeholder="DELETE">
-                    </div>
-                  </div>
-                  <div class="col-md-4 modal-footer border-0 p-0">
-                    <button
-                      type="submit"
-                      class="submit-btn"
-                    >
-                      Delete
-                    </button>
-                  </div>
+  </div>
+  <!-- Delete Two Item -->
+  <div
+    id="deleteModal"
+    bsModal
+    #delete2Modal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-baseline border-0">
+          <button
+            type="button"
+            class="close"
+            (click)="delete2Modal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">Close</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body">
+          <h4 class="modal-title mb-4 text-center">
+            <span>For delete items please type</span> DELETE
+          </h4>
+          <form
+            [formGroup]="deleteForm"
+            (ngSubmit)="removeMultiply()"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-8 row">
+                <div class="form-group col-12 no-gutters">
+                  <input
+                    type="text"
+                    class="input-text w-100"
+                    formControlName="deleteInput"
+                    placeholder="DELETE"
+                  />
                 </div>
-              </form>
+              </div>
+              <div class="col-md-4 modal-footer border-0 p-0">
+                <button type="submit" class="submit-btn">
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
+    </div>
+  </div>
   <!-- Image Modal -->
   <div
     bsModal
@@ -1302,110 +1477,119 @@
       </div>
     </div>
   </div>
-    <!-- Make Reseller -->
-    <div
+  <!-- Make Reseller -->
+  <div
     id="reseller-modal"
-      bsModal
-      #resellerModal="bs-modal"
-      class="modal fade"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header d-flex align-items-baseline">
-            <img class="mr-2" src="../../../assets/icon/user-2.svg" alt="">
-            <h4>Make New Reseller</h4>
-            <button
-              type="button"
-              class="close"
-              (click)="resellerModal.hide()"
-              aria-label="Close"
+    bsModal
+    #resellerModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-baseline">
+          <img class="mr-2" src="../../../assets/icon/user-2.svg" alt="" />
+          <h4>Make New Reseller</h4>
+          <button
+            type="button"
+            class="close"
+            (click)="resellerModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body">
+          <h4 class="modal-title mb-4 row">
+            <div
+              class="col-6 row no-gutters justify-content-start align-items-baseline transfer-title"
             >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <!-- Body -->
-          <div class="modal-body">
-            <h4 class="modal-title mb-4 row">
-            <div class="col-6 row no-gutters justify-content-start align-items-baseline transfer-title"><span class="mr-2">Current Branch: </span> {{resellerBranch}}</div>
-            <div class="col-6 row justify-content-end align-items-baseline transfer-title"><span class="mr-2">Code: </span>{{reseller.label}}</div>
+              <span class="mr-2">Current Branch: </span> {{ resellerBranch }}
+            </div>
+            <div
+              class="col-6 row justify-content-end align-items-baseline transfer-title"
+            >
+              <span class="mr-2">Code: </span>{{ reseller.label }}
+            </div>
           </h4>
-            <form
-              [formGroup]="resellerForm"
-              (ngSubmit)="onSubmitReseller(resellerForm)"
-              #form="ngForm"
-            >
-              <div class="row">
-                <div class="col-md-12 row no-gutters">
-                  <div class="form-group col-12 no-gutters mb-0">
-                    <label class="title-4"
-                      >Select a Client: <span class="text-red">*</span></label
+          <form
+            [formGroup]="resellerForm"
+            (ngSubmit)="onSubmitReseller(resellerForm)"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-12 row no-gutters">
+                <div class="form-group col-12 no-gutters mb-0">
+                  <label class="title-4"
+                    >Select a Client: <span class="text-red">*</span></label
+                  >
+                  <select class="input-text w-100" formControlName="client_id">
+                    <option disabled selected="selected" value=""
+                      >Please Select Client</option
                     >
-                    <select
-                      class="input-text w-100"
-                      formControlName="client_id"
+                    <option *ngFor="let client of clients" [value]="client.id">
+                      {{ client.name }}</option
                     >
-                      <option disabled selected="selected" value=""
-                        >Please Select Client</option
-                      >
-                      <option
-                        *ngFor="let client of clients"
-                        [value]="client.id"
-                      >
-                        {{ client.name }}</option
-                      >
-                    </select>
-                    <mat-hint
-                      class="d-inline-block text-center w-100 mt-2 alert alert-danger"
-                      *ngIf="
+                  </select>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 mt-2 alert alert-danger"
+                    *ngIf="
                       resellerForm.controls.client_id.errors?.required &&
                       resellerForm.controls.client_id.touched &&
-                        !modalError.client_id
-                      "
-                      >This Field is Required</mat-hint
-                    >
-                    <mat-hint
-                      class="d-inline-block text-center w-100 alert alert-danger"
-                      *ngIf="modalError.client_id"
-                      >{{ modalError.client_id }}</mat-hint
-                    >
-                  </div>
-                </div>
-                <div class="col-md-12 row no-gutters mt-3">
-                  <div class="form-group col-12 no-gutters mb-0">
-                    <label class="title-4"
-                      >Notes:</label
-                    >
-                    <textarea style="height: 150px;" type="text" formControlName="note" class="input-text w-100 p-2"></textarea>
-                    <mat-hint
-                      class="d-inline-block text-center w-100 alert alert-danger"
-                      *ngIf="modalError.note"
-                      >{{ modalError.note }}</mat-hint
-                    >
-                  </div>
-                </div>
-                <div class="modal-footer border-0">
-                  <button
-                    type="submit"
-                    class="submit-btn"
-                    [disabled]="!resellerForm.controls.client_id.value"
-                    [ngClass]="
-                      !resellerForm.controls.client_id.value
-                        ? 'disabledSubmitButton'
-                        : 'enableSubmitButton'
+                      !modalError.client_id
                     "
+                    >This Field is Required</mat-hint
                   >
-                  <img class="mr-2" src="../../../assets/icon/user-2.svg" alt="">
-                    Save
-                  </button>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.client_id"
+                    >{{ modalError.client_id }}</mat-hint
+                  >
                 </div>
               </div>
-            </form>
-          </div>
+              <div class="col-md-12 row no-gutters mt-3">
+                <div class="form-group col-12 no-gutters mb-0">
+                  <label class="title-4">Notes:</label>
+                  <textarea
+                    style="height: 150px;"
+                    type="text"
+                    formControlName="note"
+                    class="input-text w-100 p-2"
+                  ></textarea>
+                  <mat-hint
+                    class="d-inline-block text-center w-100 alert alert-danger"
+                    *ngIf="modalError.note"
+                    >{{ modalError.note }}</mat-hint
+                  >
+                </div>
+              </div>
+              <div class="modal-footer border-0">
+                <button
+                  type="submit"
+                  class="submit-btn"
+                  [disabled]="!resellerForm.controls.client_id.value"
+                  [ngClass]="
+                    !resellerForm.controls.client_id.value
+                      ? 'disabledSubmitButton'
+                      : 'enableSubmitButton'
+                  "
+                >
+                  <img
+                    class="mr-2"
+                    src="../../../assets/icon/user-2.svg"
+                    alt=""
+                  />
+                  Save
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
+  </div>
 </div>

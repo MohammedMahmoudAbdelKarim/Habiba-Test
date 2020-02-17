@@ -14,7 +14,7 @@ export class transferAllSolver implements Resolve<any> {
   resolve() {
     return this.mainService
       .get('transfer', {
-        per_page: 50
+        per_page: 10
       })
       .pipe(
         catchError(error => {

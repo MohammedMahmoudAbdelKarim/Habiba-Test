@@ -15,7 +15,7 @@ export class StonesAllSolver implements Resolve<any> {
     return this.mainService
       .get('stones', {
         page: 1,
-        per_page: 50
+        per_page: 10
       })
       .pipe(
         catchError(error => {

@@ -52,8 +52,11 @@ export class StonesComponent implements OnInit {
   stoneValue: string = '';
   deleteItem: any;
   pageEvent: any;
-  pageSize: number = 50;
-  per_page: number = 50;
+  pageSize: number = 10;
+  per_page: number = 10;
+  pageIndex;
+  numberOfPages = [];
+  currentPage;
   // Form Controls
   myControlstone = new FormControl('');
   /* ------------------------------------- Form ------------------------ */
@@ -81,6 +84,7 @@ export class StonesComponent implements OnInit {
       // Get Stones
       this.stoneList = data.stones.data.data;
       this.dataSource = new MatTableDataSource(data.stones.data.data);
+      this.pageIndex = data.stones.data.last_page;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
@@ -91,12 +95,23 @@ export class StonesComponent implements OnInit {
     );
   }
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() {}
+  ngOnInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
+  }
   /* ---------------------------- Filter Stones ------------------------ */
   private filterstone(value) {
     // tslint:disable-next-line: triple-equals
     if (value == '' || value == undefined) {
-      this.api.get('stones', { per_page: 50 }).subscribe(data => {
+      this.api.get('stones', { per_page: 10 }).subscribe(data => {
         // Get Stones
         this.dataSource = new MatTableDataSource(data.data.data);
         this.dataSource.paginator = this.paginator;
@@ -110,7 +125,7 @@ export class StonesComponent implements OnInit {
       this.api
         .get('stones', {
           name: value.name,
-          per_page: 50
+          per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
@@ -176,7 +191,7 @@ export class StonesComponent implements OnInit {
         this.myModal2.hide();
         this.api
           .get('stones', {
-            per_page: 50
+            per_page: 10
           })
           .subscribe(data => {
             // Get Stones
@@ -208,7 +223,7 @@ export class StonesComponent implements OnInit {
         this.myModal.hide();
         this.api
           .get('stones', {
-            per_page: 50
+            per_page: 10
           })
           .subscribe(data => {
             // Get Stones
@@ -261,7 +276,7 @@ export class StonesComponent implements OnInit {
             );
             // tslint:disable-next-line: no-shadowed-variable
             this.api
-              .get('stones', { page: 1, per_page: 50 })
+              .get('stones', { page: 1, per_page: 10 })
               // tslint:disable-next-line: no-shadowed-variable
               .subscribe(data => {
                 this.stoneList = data.data.data;
@@ -286,15 +301,47 @@ export class StonesComponent implements OnInit {
     console.log('Reload Popup');
   }
   /* ---------- Pagniation & Number of items showed in the page ------------- */
+
   onPaginateChange(event) {
-    this.pageSize = event.pageSize;
+    console.log(event);
+    this.per_page = event.pageSize;
     this.api
       .get('stones', {
-        per_page: event.pageSize
+        per_page: event.pageSize,
+        page: 1
       })
-      .subscribe((value: any) => {
-        console.log(value.data.data);
-        this.dataSource = new MatTableDataSource(value.data.data);
+      .subscribe((productList: any) => {
+        console.log(productList);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        console.log(this.pageIndex);
+
+        this.numberOfPages = [];
+        for (let i = 1; i <= this.pageIndex; i++) {
+          console.log(i);
+          this.numberOfPages.push(i);
+          this.numberOfPages.sort(function(a, b) {
+            return a - b;
+          });
+        }
+        console.log(this.numberOfPages);
+      });
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('stones', {
+        per_page: this.per_page,
+        page: event
+      })
+      .subscribe((productList: any) => {
+        console.log(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
       });

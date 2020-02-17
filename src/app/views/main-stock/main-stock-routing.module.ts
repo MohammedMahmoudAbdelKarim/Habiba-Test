@@ -37,7 +37,7 @@ const routes: Routes = [
           categoryList: categoryListSolver,
           branchList: branchListSolver,
           statusList: statusListSolver,
-          stones: StonesAllSolver,
+          stones: stoneListSolver,
           clients: clientsListSolver
         }
       },
@@ -62,6 +62,7 @@ const routes: Routes = [
           title: 'Transfer List'
         },
         resolve: {
+          productsData: productsAllSolver,
           transfers: transferAllSolver,
           categoryList: categoryListSolver,
           branchList: branchListSolver,

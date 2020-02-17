@@ -114,7 +114,7 @@ export class AddNewItemComponent {
   }
   /* ----------------------------------- OnInit ------------------------ */
   // tslint:disable-next-line: use-lifecycle-interface
-  ngOnInit() { }
+  ngOnInit() {}
   /* ----------------------------------- Open Modal ------------------------ */
   openModel(template: TemplateRef<any>) {
     this.categoriesForm.reset();
@@ -197,18 +197,21 @@ export class AddNewItemComponent {
     if (key === 'gW') {
       this.GoldWeightValue = e.target.value;
       this.addStockForm.value.gold_weight = this.GoldWeightValue;
-      this.goldTotalPice =
-        this.GoldWeightValue * this.addStockForm.value.gold_price;
+      this.goldTotalPice = +(
+        this.GoldWeightValue * this.addStockForm.value.gold_price
+      ).toFixed(2);
     }
     if (key === 'gP') {
       this.GoldPriceValue = e.target.value;
       this.addStockForm.value.gold_price = this.GoldPriceValue;
-      this.goldTotalPice =
-        this.GoldPriceValue * this.addStockForm.value.gold_weight;
+      this.goldTotalPice = +(
+        this.GoldPriceValue * this.addStockForm.value.gold_weight
+      ).toFixed(2);
     }
-    this.totalCostWithOutProfit = this.goldTotalPice + +this.stonesTotalPrice;
+    this.totalCostWithOutProfit = +(this.goldTotalPice + +this.stonesTotalPrice).toFixed(2);
     this.totalCostWithProfit = Math.ceil(
-      this.totalCostWithOutProfit * this.factorForm.controls.factor.value);
+      this.totalCostWithOutProfit * this.factorForm.controls.factor.value
+    );
   }
   /* ----------------------- Number Validation ---------------------- */
   numberCheckValidation(e) {
@@ -281,10 +284,10 @@ export class AddNewItemComponent {
         this.editstoneIndex
       ].type_name = this.addStockStoneForm.value.stone;
       this.sentStonesArray[this.editstoneIndex].total =
-        this.addStockStoneForm.value.stone_cost *
-        this.addStockStoneForm.value.stone_weight +
+        +(this.addStockStoneForm.value.stone_cost *
+          this.addStockStoneForm.value.stone_weight +
         this.addStockStoneForm.value.stone_quantity *
-        this.addStockStoneForm.value.stone_setting;
+          this.addStockStoneForm.value.stone_setting).toFixed(2);
       this.editStoneMode = false;
     } else {
       this.sentStonesArray.push({
@@ -295,10 +298,10 @@ export class AddNewItemComponent {
         quantity: this.addStockStoneForm.value.stone_quantity,
         type_name: this.addStockStoneForm.value.stone,
         total:
-          this.addStockStoneForm.value.stone_cost *
-          this.addStockStoneForm.value.stone_weight +
+          +(this.addStockStoneForm.value.stone_cost *
+            this.addStockStoneForm.value.stone_weight +
           this.addStockStoneForm.value.stone_quantity *
-          this.addStockStoneForm.value.stone_setting
+            this.addStockStoneForm.value.stone_setting).toFixed(2)
       });
     }
     this.addStockStoneForm.patchValue({
@@ -315,7 +318,7 @@ export class AddNewItemComponent {
       sum += value.total;
     });
     this.stonesTotalPrice = +sum;
-    this.totalCostWithOutProfit = this.goldTotalPice + +this.stonesTotalPrice;
+    this.totalCostWithOutProfit = +(this.goldTotalPice + +this.stonesTotalPrice).toFixed(2);
     // End Sum Stones
   }
   /* ----------------------- Image Convet to Base64 ---------------------- */
@@ -380,7 +383,8 @@ export class AddNewItemComponent {
         this.totalCostWithOutProfit -
         this.sentStonesArray[deletedStoneIndex].total;
       this.totalCostWithProfit = Math.ceil(
-        this.totalCostWithOutProfit * this.factorForm.controls.factor.value);
+        this.totalCostWithOutProfit * this.factorForm.controls.factor.value
+      );
       this.sentStonesArray.splice(deletedStoneIndex, 1);
       this.editStoneMode = false;
       this.addStockStoneForm.patchValue({
@@ -410,6 +414,7 @@ export class AddNewItemComponent {
       delete stone.type_name;
       delete stone.total;
     }
+
     this.imageEncodedCharachter = this.addStockForm.value.image;
     if (this.imageEncodedCharachter.startsWith('/')) {
       this.sentImage =

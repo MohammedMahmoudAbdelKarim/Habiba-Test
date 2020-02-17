@@ -15,7 +15,7 @@ export class categoriesAllSolver implements Resolve<any> {
     return this.mainService
       .get('categories', {
         page: 1,
-        per_page: 50
+        per_page: 10
       })
       .pipe(
         catchError(error => {

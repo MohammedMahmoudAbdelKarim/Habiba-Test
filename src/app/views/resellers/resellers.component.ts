@@ -18,6 +18,8 @@ export class ResllersComponent implements OnInit {
   // Variables
   @ViewChild('detailsModal', { static: false })
   public detailsModal: ModalDirective;
+  @ViewChild('sellerModal', { static: false })
+  public sellerModal: ModalDirective;
   selection = new SelectionModel<any>(true, []);
   //  --------------------------------------   Tables Colums
   displayedColumns: string[] = [
@@ -100,6 +102,12 @@ export class ResllersComponent implements OnInit {
   clients: any = [];
   labelValue = '';
   clientValue = '';
+  pageIndex;
+  numberOfPages = [];
+  currentPage;
+  labels = [];
+  totalProducts: any;
+  countProducts: any;
   // ---------------------------------------------- Form
   deleteForm = new FormGroup({
     deleteInput: new FormControl('')
@@ -110,6 +118,17 @@ export class ResllersComponent implements OnInit {
   paymentForm = new FormGroup({
     paidAmount: new FormControl('', Validators.required)
   });
+  resellerForm = new FormGroup({
+    client_id: new FormControl(''),
+    branch_id: new FormControl(''),
+    notes: new FormControl(''),
+    product_id: new FormControl('')
+  });
+  goldWeight: number;
+  goldPrice: number;
+  goldTotal: number;
+  item_total: number;
+  item_total_after_profit: number;
   // Constructor
   constructor(
     private api: MainServiceService,
@@ -123,12 +142,24 @@ export class ResllersComponent implements OnInit {
       this.branchList = data.branches.data;
       // --------------------------------------- Get Sales
       this.products = data.resellers.data.data;
+      this.totalProducts = data.resellers.total;
+      this.countProducts = data.resellers.count;
       // ---------------------------------------- Get Clients
       this.clients = data.clients;
       console.log(this.clients);
-
+      // -------------------------------------- Get Labels
+      this.api
+        .get('products', {
+          status: 'AVAILABLE',
+          per_page: 100
+        })
+        .subscribe(val => {
+          console.log(val);
+          this.labels = val.data.data;
+        });
       this.data = Object.assign(data.resellers.data.data);
       this.dataSource = new MatTableDataSource(data.resellers.data.data);
+      this.pageIndex = data.resellers.data.last_page;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       // Sort item inside inner Object
@@ -168,6 +199,14 @@ export class ResllersComponent implements OnInit {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
   }
 
   // ----------------------------------------- Filter Branches
@@ -194,6 +233,8 @@ export class ResllersComponent implements OnInit {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -234,6 +275,8 @@ export class ResllersComponent implements OnInit {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -578,6 +621,8 @@ export class ResllersComponent implements OnInit {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -617,6 +662,8 @@ export class ResllersComponent implements OnInit {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -711,17 +758,122 @@ export class ResllersComponent implements OnInit {
     this.detailsModal.show();
     this.stockData = row;
     console.log(this.stockData);
+    this.goldWeight = +(+row.product.gold_weight).toFixed(2);
+    this.goldPrice = +(+row.product.gold_price).toFixed(2);
+    this.goldTotal = +(+row.product.gold_total).toFixed(2);
+    const items = row.product.stones;
+    let sum = null;
+    items.forEach(value => {
+      sum += value.total;
+    });
+    this.item_total = +(row.product.gold_total + sum).toFixed(2);
+
+    this.item_total_after_profit = Math.ceil(
+      this.item_total * row.product.profit_percent
+    );
   }
-  // --------------------------- Pagniation & Number of items showed in the page
-  onPaginateChange(event) {
-    console.log(event.pageSize);
+
+  /* ---------------------- Open Reseller ---------------------- */
+  openReseller() {
+    this.sellerModal.show();
+  }
+
+  onSubmitReseller(form) {
+    console.log(form);
+    this.api.post('reseller/add', form).subscribe(
+      value => {
+        console.log(value);
+        this.toast.success('Reseller has been pending', '!Success');
+        this.sellerModal.hide();
+      },
+      error => {
+        console.log(error.error);
+        this.modalError = error.error.errors;
+      }
+    );
     this.api
       .get('reseller', {
-        per_page: event.pageSize
+        per_page: 100
+      })
+      .subscribe(value => {
+        console.log(value.data.data);
+        this.dataSource = new MatTableDataSource(value.data.data);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        // Sort item inside inner Object
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'product.label':
+              return item.product.label;
+            case 'branch.name':
+              return item.branch.name;
+            case 'client.name':
+              return item.client.name;
+            case 'created_at':
+              return item.created_at;
+            default:
+              return item[property];
+          }
+        };
+      });
+  }
+  // --------------------------- Pagniation & Number of items showed in the page
+
+  onPaginateChange(event) {
+    console.log(event);
+    this.per_page = event.pageSize;
+    this.api
+      .get('reseller', {
+        per_page: event.pageSize,
+        page: 1
+      })
+      .subscribe((productList: any) => {
+        console.log(productList);
+        this.products = productList.data.data;
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'product.label':
+              return item.product.label;
+            case 'branch.name':
+              return item.branch.name;
+            case 'client.name':
+              return item.client.name;
+            case 'created_at':
+              return item.created_at;
+            default:
+              return item[property];
+          }
+        };
+        console.log(this.pageIndex);
+
+        this.numberOfPages = [];
+        for (let i = 1; i <= this.pageIndex; i++) {
+          console.log(i);
+          this.numberOfPages.push(i);
+          this.numberOfPages.sort(function(a, b) {
+            return a - b;
+          });
+        }
+        console.log(this.numberOfPages);
+      });
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('reseller', {
+        per_page: this.per_page,
+        page: event
       })
       .subscribe((productList: any) => {
         console.log(productList.data.data);
         this.products = productList.data.data;
+        this.pageIndex = productList.data.last_page;
         this.dataSource = new MatTableDataSource(productList.data.data);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
@@ -741,7 +893,6 @@ export class ResllersComponent implements OnInit {
         };
       });
   }
-
   /* ------------------------- Refund Action ---------------------------- */
   routeToSale(row) {
     console.log('Item To Sale: ', row);

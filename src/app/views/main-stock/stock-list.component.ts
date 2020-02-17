@@ -10,6 +10,9 @@ import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { ModalDirective } from 'ngx-bootstrap';
+import htmlToImage from 'html-to-image';
+import html2canvas from 'html2canvas';
+import $ from 'jquery';
 
 @Component({
   templateUrl: 'stock-list.component.html'
@@ -22,6 +25,8 @@ export class StockListComponent implements OnInit {
   public detailsModal: ModalDirective;
   @ViewChild('labelModal', { static: false })
   public labelModal: ModalDirective;
+  @ViewChild('labelModal2', { static: false })
+  public labelModal2: ModalDirective;
   @ViewChild('editModal', { static: false })
   public editModal: ModalDirective;
   @ViewChild('stoneModal', { static: false })
@@ -33,6 +38,7 @@ export class StockListComponent implements OnInit {
   @ViewChild('myModalImg', { static: false }) public myModalImg: ModalDirective;
   @ViewChild('resellerModal', { static: false })
   public resellerModal: ModalDirective;
+
   // Tables Colums
   displayedColumns: string[] = [
     'select',
@@ -61,7 +67,9 @@ export class StockListComponent implements OnInit {
   checkItemDataCalculatedIsDefiend: boolean = false;
   testValueBoolean: boolean = true;
   stoneFlage: boolean = false;
+  imageUploadedOnInput: boolean = true;
   flage: boolean = false;
+  imageArray = '';
   // ASYNC
   filteredBranches: Observable<string[]>;
   filteredCategories: Observable<string[]>;
@@ -81,6 +89,8 @@ export class StockListComponent implements OnInit {
   deleteItem: any;
   deletedStockIndex: any;
   stoneTotal: any;
+  imageFile;
+  StochImage;
   stonePrice: any;
   stonesArray: any;
   stoneSetting: any;
@@ -89,6 +99,7 @@ export class StockListComponent implements OnInit {
   newSettingValue: any;
   newQuantityValue: any;
   newGoldPriceValue: any;
+  labelCost: any;
   newGoldWeightValue: any;
   ItemDataCalculated: any = {};
   stoneList: any = [];
@@ -118,7 +129,7 @@ export class StockListComponent implements OnInit {
   transferName: any = '';
   transferCode: any = '';
   imgSrc: any = '';
-  per_page: number = 50;
+  per_page: number = 10;
   pageEvent: any;
   totalSearch: any = '';
   totalCost: any = '';
@@ -126,6 +137,11 @@ export class StockListComponent implements OnInit {
   productTransferID: any;
   checkedItems: any = 0;
   stone_id: any = '';
+  pageSize: any = 10;
+  imagePlaceHolder: any = 'Stock Image';
+  stonAreaPlaceHolder: any = 'No Stones Added Yet';
+  imageBase64StringCharacter: any;
+
   // Form Controls
   myControlBranch = new FormControl('');
   myControlCategory = new FormControl('');
@@ -149,7 +165,9 @@ export class StockListComponent implements OnInit {
     updateGoldWeight: new FormControl(''),
     updateGoldPrice: new FormControl(''),
     updateStonesQuantity: new FormControl(''),
+    upadateStonesName: new FormControl(''),
     updateSettingsSetting: new FormControl(''),
+    profit_percent: new FormControl(''),
     updateStonesWeight: new FormControl(''),
     updateStonesPrice: new FormControl(''),
     goldTotalPrice: new FormControl(''),
@@ -174,6 +192,18 @@ export class StockListComponent implements OnInit {
     product_id: new FormControl('', Validators.required),
     note: new FormControl('')
   });
+  pageIndex: any;
+  numberOfPages: any = [];
+  currentPage: any = 1;
+  goldWeight: any;
+  goldPrice: number;
+  goldTotal: any;
+  totalPrice: void;
+  total_price: number;
+  imageExtention: any;
+  totalProducts: any;
+  countProducts: any;
+
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -189,13 +219,16 @@ export class StockListComponent implements OnInit {
       this.categoryList = data.categoryList.data;
       // --------------------------------------- Get Products
       this.products = data.productsData.data.data;
+      this.pageIndex = data.productsData.data.last_page;
       this.data = Object.assign(data.productsData.data.data);
       this.totalSearch = data.productsData.data.total;
+      // this.pageIndex
+      console.log('Stock List Products -> ', data.productsData.data.data);
       this.dataSource = new MatTableDataSource(data.productsData.data.data);
-      console.log(data.productsData.data.last_page);
-      console.log(this.pageNumbers);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.totalProducts = data.productsData.total;
+      this.countProducts = data.productsData.count;
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
@@ -209,14 +242,15 @@ export class StockListComponent implements OnInit {
             return item[property];
         }
       };
+
       // -------------------------------------- Get Status
       this.statusList = data.statusList.data;
       // -------------------------------------- Get Stones
-      this.stoneList = data.stones.data.data;
-      console.log(this.stoneList);
+      this.stoneList = data.stones.data;
+      console.log('Stones -> ', this.stoneList);
       // -------------------------------------- Get Status
       this.clients = data.clients;
-      console.log(this.clients);
+      console.log('Clinets -> ', this.clients);
     });
     // Filter Branches
     this.filteredBranches = this.myControlBranch.valueChanges.pipe(
@@ -243,7 +277,14 @@ export class StockListComponent implements OnInit {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    for (let i = 1; i <= this.pageIndex; i++) {
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
   }
+
   /* ---------------------------- Filter Branches ------------------------ */
   private filterBranch(value) {
     // tslint:disable-next-line: triple-equals
@@ -256,14 +297,18 @@ export class StockListComponent implements OnInit {
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 50
+          per_page: this.per_page,
+          page: this.currentPage
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           setTimeout(() => {
+            console.log('Empty Branch -> ', value.data.data);
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -291,14 +336,18 @@ export class StockListComponent implements OnInit {
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 50
+          per_page: 'all',
+          page: this.currentPage
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
+          console.log(value);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -360,11 +409,12 @@ export class StockListComponent implements OnInit {
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 50
+          per_page: this.per_page,
+          page: this.currentPage
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log(value);
+          console.log('Empty Category -> ', value.data.data);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
@@ -396,14 +446,18 @@ export class StockListComponent implements OnInit {
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 50
+          per_page: 'all',
+          page: this.currentPage
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
+          console.log(value);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -432,6 +486,7 @@ export class StockListComponent implements OnInit {
       this.dataSource = new MatTableDataSource(info);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
+
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
@@ -466,14 +521,18 @@ export class StockListComponent implements OnInit {
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 50
+          per_page: this.per_page,
+          page: this.currentPage
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
+          console.log('Empty Code -> ', value.data.data);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -501,14 +560,17 @@ export class StockListComponent implements OnInit {
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 50
+          per_page: 'all',
+          page: this.currentPage
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -529,6 +591,33 @@ export class StockListComponent implements OnInit {
       );
       // tslint:disable-next-line: triple-equals
     } else if (typeof value == 'string') {
+      this.api
+        .get('products', {
+          branch_id: this.branch_id,
+          category_id: this.category_id,
+          label: value,
+          status_id: this.status_id,
+          per_page: 'all',
+          page: this.currentPage
+        })
+        .subscribe(value => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'category.name':
+                return item.category.name;
+              case 'branch.name':
+                return item.branch.name;
+              case 'status.name':
+                return item.status.name;
+              default:
+                return item[property];
+            }
+          };
+        });
       // value = this.tem_category;
       const filterValueName = value.toLowerCase();
       const info = this.products.filter(option =>
@@ -572,7 +661,8 @@ export class StockListComponent implements OnInit {
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 50
+          per_page: this.per_page,
+          page: this.currentPage
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
@@ -607,14 +697,18 @@ export class StockListComponent implements OnInit {
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 50
+          per_page: 'all',
+          page: this.currentPage
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
+          console.log(value);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -752,6 +846,9 @@ export class StockListComponent implements OnInit {
     this.category = row.category.name;
     this.branch = row.branch.name;
     this.stones = row.stones;
+    this.goldWeight = +(+row.gold_weight).toFixed(2);
+    this.goldPrice = +(+row.gold_price).toFixed(2);
+    this.goldTotal = +(+row.gold_total).toFixed(2);
     const sum = [];
     row.stones.filter(stone => {
       sum.push(stone.total);
@@ -764,6 +861,7 @@ export class StockListComponent implements OnInit {
   openLabel(row) {
     this.labelModal.show();
     this.labelData = row;
+    this.labelCost = Math.ceil(row.item_total_after_profit);
   }
   // Open Edit Popup
   openUpdataPopup(stockData, stockId) {
@@ -775,6 +873,9 @@ export class StockListComponent implements OnInit {
     this.branch = stockData.branch.name;
     this.stones = stockData.stones;
     this.status = stockData.status.name;
+    this.goldWeight = +(+stockData.gold_weight).toFixed(2);
+    this.goldPrice = +(+stockData.gold_price).toFixed(2);
+    this.goldTotal = +(+stockData.gold_total).toFixed(2);
     const sums = [];
     stockData.stones.filter(stone => {
       sums.push(stone.total);
@@ -797,11 +898,33 @@ export class StockListComponent implements OnInit {
     this.imgSrc = this.baseUrl + data.image;
     this.stonePrice = +data.price;
     this.stoneSetting = +data.setting;
+    this.stockUpdatForm.controls.profit_percent.setValue(+data.profit_percent);
     this.stockUpdatForm.controls.updateGoldWeight.setValue(+data.gold_weight);
     this.stockUpdatForm.controls.updateGoldPrice.setValue(+data.gold_price);
-    this.stockUpdatForm.controls.goldTotalPrice.setValue(+data.gold_total);
+    this.total_price = +stockData.gold_total.toFixed(2);
+    this.ItemDataCalculated.item_total = +stockData.item_total.toFixed(2);
+    this.stockUpdatForm.controls.goldTotalPrice.setValue(this.total_price);
     this.testStonesArray = data.stones;
   }
+  // Upload Image
+  onUploadChange(event) {
+    if (event.target.files && event.target.files[0]) {
+      // tslint:disable-next-line: prefer-const
+      let filesAmount = event.target.files.length;
+      for (let i = 0; i < filesAmount; i++) {
+        const reader = new FileReader();
+        // tslint:disable-next-line: no-shadowed-variable
+        reader.onload = (event: any) => {
+          console.log(event.target.result);
+          this.imageArray = event.target.result;
+        };
+        reader.readAsDataURL(event.target.files[i]);
+      }
+    }
+    // this.updatedItemData.image = this.imageArray;
+    this.checkItemDataCalculatedIsDefiend = true;
+  }
+
   /* --------------------- Total Calculate Stone Total ---------------------- */
   calculateStoneTotal(e, stoneIndex, key) {
     console.log(stoneIndex);
@@ -811,16 +934,18 @@ export class StockListComponent implements OnInit {
       if (key === 'gW') {
         this.newGoldWeightValue = e.target.value;
         this.ItemDataCalculated.gold_weight = this.newGoldWeightValue;
-        this.ItemDataCalculated.gold_total =
+        this.ItemDataCalculated.gold_total = +(
           this.ItemDataCalculated.gold_weight *
-          this.ItemDataCalculated.gold_price;
+          this.ItemDataCalculated.gold_price
+        ).toFixed(2);
       }
       if (key === 'gP') {
         this.newGoldPriceValue = e.target.value;
         this.ItemDataCalculated.gold_price = this.newGoldPriceValue;
-        this.ItemDataCalculated.gold_total =
+        this.ItemDataCalculated.gold_total = +(
           this.ItemDataCalculated.gold_weight *
-          this.ItemDataCalculated.gold_price;
+          this.ItemDataCalculated.gold_price
+        ).toFixed(2);
       } else {
         if (key === 'sQ') {
           this.newQuantityValue = e.target.value;
@@ -838,11 +963,13 @@ export class StockListComponent implements OnInit {
           this.newSettingValue = e.target.value;
           this.stonesArray[stoneIndex].setting = this.newSettingValue;
         }
-        const stoneTotal =
+
+        const stoneTotal = +(
           this.stonesArray[stoneIndex].quantity *
             this.stonesArray[stoneIndex].setting +
           this.stonesArray[stoneIndex].weight *
-            this.stonesArray[stoneIndex].price;
+            this.stonesArray[stoneIndex].price
+        ).toFixed(2);
         // Set New Stone
         this.stonesArray[stoneIndex].total = stoneTotal;
       }
@@ -853,8 +980,10 @@ export class StockListComponent implements OnInit {
         sum += value.total;
       });
       // End Calculate Total of Stone Total
-      this.ItemDataCalculated.item_total =
-        this.ItemDataCalculated.gold_total + sum;
+      this.ItemDataCalculated.item_total = +(
+        this.ItemDataCalculated.gold_total + sum
+      ).toFixed(2);
+
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
           this.ItemDataCalculated.profit_percent
@@ -863,31 +992,31 @@ export class StockListComponent implements OnInit {
       if (key === 'gW') {
         this.newGoldWeightValue = e.target.value;
         this.ItemDataCalculated.gold_weight = this.newGoldWeightValue;
-        this.ItemDataCalculated.gold_total =
+        this.ItemDataCalculated.gold_total = +(
           this.ItemDataCalculated.gold_weight *
-          this.ItemDataCalculated.gold_price;
+          this.ItemDataCalculated.gold_price
+        ).toFixed(2);
       }
       if (key === 'gP') {
         this.newGoldPriceValue = e.target.value;
         this.ItemDataCalculated.gold_price = this.newGoldPriceValue;
-        this.ItemDataCalculated.gold_total =
+        this.ItemDataCalculated.gold_total = +(
           this.ItemDataCalculated.gold_weight *
-          this.ItemDataCalculated.gold_price;
+          this.ItemDataCalculated.gold_price
+        ).toFixed(2);
       }
-      this.ItemDataCalculated.item_total = Math.round(
-        Math.ceil(this.ItemDataCalculated.gold_total)
+      this.ItemDataCalculated.item_total = +this.ItemDataCalculated.gold_total.toFixed(
+        2
       );
-      this.ItemDataCalculated.item_total_after_profit = Math.round(
-        Math.ceil(
-          this.ItemDataCalculated.item_total *
-            this.ItemDataCalculated.profit_percent
-        )
+      this.ItemDataCalculated.item_total_after_profit = Math.ceil(
+        this.ItemDataCalculated.item_total *
+          this.ItemDataCalculated.profit_percent
       );
     }
   }
   /* --------------------------- Number Validation ------------------------ */
   numberCheckValidation(e) {
-    if ((48 <= e.keyCode && e.keyCode <= 57) || e.keyCode === 46) {
+    if ((48 <= e.keyCode && e.keyCode <= 107) || e.keyCode === 46) {
     } else {
       return false;
     }
@@ -903,6 +1032,14 @@ export class StockListComponent implements OnInit {
       }
     }
   }
+  getStoneDetails(event) {
+    console.log(event);
+    this.api.get('stones/' + event).subscribe(data => {
+      console.log(data.data);
+      this.stonesForm.controls.price.setValue(data.data.price);
+      this.stonesForm.controls.setting.setValue(data.data.setting);
+    });
+  }
   /* ---------------------------------- Remove Stone ------------------------ */
   removeStone(i) {
     this.checkItemDataCalculatedIsDefiend = true;
@@ -914,8 +1051,9 @@ export class StockListComponent implements OnInit {
       sum += value.total;
     });
     // End Calculate Total of Stone Total
-    this.ItemDataCalculated.item_total =
-      this.ItemDataCalculated.gold_total + sum;
+    this.ItemDataCalculated.item_total = +(
+      this.ItemDataCalculated.gold_total + sum
+    ).toFixed(2);
     this.ItemDataCalculated.item_total_after_profit = Math.ceil(
       this.ItemDataCalculated.item_total *
         this.ItemDataCalculated.profit_percent
@@ -945,8 +1083,9 @@ export class StockListComponent implements OnInit {
       items.forEach(value => {
         sum += value.total;
       });
-      this.ItemDataCalculated.item_total =
-        this.ItemDataCalculated.gold_total + sum;
+      this.ItemDataCalculated.item_total = +(
+        this.ItemDataCalculated.gold_total + sum
+      ).toFixed(2);
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
           this.ItemDataCalculated.profit_percent
@@ -955,6 +1094,15 @@ export class StockListComponent implements OnInit {
       this.api.fireAlert('error', 'Please Fill in All Data', '');
     }
     this.stone_id = '';
+  }
+  // Button
+  openButton() {
+    this.checkItemDataCalculatedIsDefiend = true;
+    this.ItemDataCalculated.profit_percent = this.stockUpdatForm.controls.profit_percent.value;
+    this.ItemDataCalculated.item_total_after_profit = Math.ceil(
+      this.ItemDataCalculated.item_total *
+        this.ItemDataCalculated.profit_percent
+    );
   }
   /* --------------------- Update Item ---------------------- */
   onSubmit(form) {
@@ -969,6 +1117,11 @@ export class StockListComponent implements OnInit {
     if (this.updatedItemData.stones.length === 0) {
       delete this.updatedItemData.stones;
     }
+    if (this.imageArray != '' || this.imageArray == undefined) {
+      this.updatedItemData.image = this.imageArray;
+      console.log(this.updatedItemData);
+    }
+    this.updatedItemData.profit_percent = this.stockUpdatForm.controls.profit_percent.value;
     this.api
       .put('products/' + this.updatedItemData.id, this.updatedItemData)
       .subscribe(value => {
@@ -1011,7 +1164,8 @@ export class StockListComponent implements OnInit {
           this.deleteModal.hide();
           this.api
             .get('products', {
-              per_page: 50
+              per_page: this.per_page,
+              page: this.currentPage
             })
             // tslint:disable-next-line: no-shadowed-variable
             .subscribe(value => {
@@ -1072,7 +1226,8 @@ export class StockListComponent implements OnInit {
               category_id: this.category_id,
               label: this.label,
               status_id: this.status_id,
-              per_page: 50
+              per_page: this.per_page,
+              page: this.currentPage
             })
             // tslint:disable-next-line: no-shadowed-variable
             .subscribe(value => {
@@ -1103,13 +1258,58 @@ export class StockListComponent implements OnInit {
   }
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
+    console.log(event);
+    this.per_page = event.pageSize;
     this.api
       .get('products', {
-        per_page: event.pageSize
+        per_page: event.pageSize,
+        page: 1
+      })
+      .subscribe((productList: any) => {
+        console.log(productList);
+        this.products = productList.data.data;
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'category.name':
+              return item.category.name;
+            case 'branch.name':
+              return item.branch.name;
+            case 'status.name':
+              return item.status.name;
+            default:
+              return item[property];
+          }
+        };
+        console.log(this.pageIndex);
+
+        this.numberOfPages = [];
+        for (let i = 1; i <= this.pageIndex; i++) {
+          console.log(i);
+          this.numberOfPages.push(i);
+          this.numberOfPages.sort(function(a, b) {
+            return a - b;
+          });
+        }
+        console.log(this.numberOfPages);
+      });
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('products', {
+        per_page: this.per_page,
+        page: event
       })
       .subscribe((productList: any) => {
         console.log(productList.data.data);
         this.products = productList.data.data;
+        this.pageIndex = productList.data.last_page;
         this.dataSource = new MatTableDataSource(productList.data.data);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
@@ -1149,7 +1349,7 @@ export class StockListComponent implements OnInit {
             category_id: this.category_id,
             label: this.label,
             status_id: this.status_id,
-            per_page: 50
+            per_page: this.per_page
           })
           // tslint:disable-next-line: no-shadowed-variable
           .subscribe(value => {
@@ -1200,14 +1400,5 @@ export class StockListComponent implements OnInit {
   logout() {
     sessionStorage.removeItem('token');
     this.router.navigate(['/']);
-  }
-
-  /* ------------------------------------- Print ---------------------------- */
-  print() {
-    this.detailsModal.hide();
-    this.labelModal.show();
-    setTimeout(() => {
-      window.print();
-    }, 500);
   }
 }

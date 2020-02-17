@@ -57,6 +57,9 @@ export class ClientsListComponent implements OnInit {
   checkedItems: any = 0;
   pageSize: number = 50;
   per_page: number = 50;
+  currentPage: number = 1;
+  numberOfPages: any = [];
+  pageIndex: any;
   // Form Controls
   clientNameData = new FormControl('');
   /* ------------------------------------- Form ------------------------ */
@@ -82,6 +85,7 @@ export class ClientsListComponent implements OnInit {
       console.log(data);
       // Get Clients
       this.clientList = data.clients.data.data;
+      this.pageIndex = data.clients.data.last_page;
       this.dataSource = new MatTableDataSource(data.clients.data.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -95,7 +99,17 @@ export class ClientsListComponent implements OnInit {
   }
 
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() {}
+  ngOnInit() {
+    this.numberOfPages = [];
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
+  }
   /* ---------------------------- Filter Clients ------------------------ */
   private filterClient(value) {
     // tslint:disable-next-line: triple-equals
@@ -341,15 +355,56 @@ export class ClientsListComponent implements OnInit {
   }
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
-    this.pageSize = event.pageSize;
+    this.per_page = event.pageSize;
+
     this.api
       .get('clients', {
         per_page: event.pageSize
       })
       .subscribe((value: any) => {
         this.dataSource = new MatTableDataSource(value.data.data);
+        this.pageIndex = value.data.last_page;
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
+      });
+    console.log(this.pageIndex);
+
+    this.numberOfPages = [];
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('clients', {
+        per_page: 10,
+        page: event
+      })
+      .subscribe((productList: any) => {
+        console.log(productList.data.data);
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch (property) {
+            case 'category.name':
+              return item.category.name;
+            case 'branch.name':
+              return item.branch.name;
+            case 'status.name':
+              return item.status.name;
+            default:
+              return item[property];
+          }
+        };
       });
   }
   /* ------------- Clear Error Message When Modal Opened ------------------ */

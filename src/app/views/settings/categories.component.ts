@@ -46,6 +46,9 @@ export class CategoriesComponent implements OnInit {
   pageEvent: any;
   pageSize: number = 50;
   per_page: number = 50;
+  pageIndex;
+  numberOfPages = [];
+  currentPage;
   // Form Controls
   myControlcategory = new FormControl('');
   /* ------------------------------------- Form ------------------------ */
@@ -71,6 +74,7 @@ export class CategoriesComponent implements OnInit {
       // Get categories
       this.categoryList = data.categories.data.data;
       this.dataSource = new MatTableDataSource(data.categories.data.data);
+      this.pageIndex = data.categories.data.last_page;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
@@ -81,7 +85,16 @@ export class CategoriesComponent implements OnInit {
     );
   }
   /* ----------------------------------- OnInit ------------------------ */
-  ngOnInit() {}
+  ngOnInit() {
+    for (let i = 1; i <= this.pageIndex; i++) {
+      console.log(i);
+      this.numberOfPages.push(i);
+      this.numberOfPages.sort(function(a, b) {
+        return a - b;
+      });
+    }
+    console.log(this.numberOfPages);
+  }
   /* ---------------------------- Filter Categories ------------------------ */
   private filtercategory(value) {
     // tslint:disable-next-line: triple-equals
@@ -269,15 +282,48 @@ export class CategoriesComponent implements OnInit {
     console.log('Reload Popup');
   }
   /* ---------- Pagniation & Number of items showed in the page ------------- */
+
   onPaginateChange(event) {
-    this.pageSize = event.pageSize;
+    console.log(event);
+    this.per_page = event.pageSize;
     this.api
       .get('categories', {
-        per_page: event.pageSize
+        per_page: event.pageSize,
+        page: 1
       })
-      .subscribe((value: any) => {
-        console.log(value.data.data);
-        this.dataSource = new MatTableDataSource(value.data.data);
+      .subscribe((productList: any) => {
+        console.log(productList);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+
+        console.log(this.pageIndex);
+
+        this.numberOfPages = [];
+        for (let i = 1; i <= this.pageIndex; i++) {
+          console.log(i);
+          this.numberOfPages.push(i);
+          this.numberOfPages.sort(function(a, b) {
+            return a - b;
+          });
+        }
+        console.log(this.numberOfPages);
+      });
+  }
+  selectPage(event) {
+    console.log(event);
+    this.currentPage = event;
+    this.api
+      .get('categories', {
+        per_page: this.per_page,
+        page: event
+      })
+      .subscribe((productList: any) => {
+        console.log(productList.data.data);
+        this.pageIndex = productList.data.last_page;
+        this.dataSource = new MatTableDataSource(productList.data.data);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
       });

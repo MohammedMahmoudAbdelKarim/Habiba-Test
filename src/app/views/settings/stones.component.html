@@ -3,7 +3,9 @@
   <header class="bg-blue p-5">
     <div class="row align-items-end">
       <!-- left-hand-side-of-header -->
-      <div class="row align-items-baseline col-12 justify-content-between no-gutters pl-0">
+      <div
+        class="row align-items-baseline col-12 justify-content-between no-gutters pl-0"
+      >
         <div class="col-8">
           <!-- Titles -->
           <h6 class="col-12 p-0">Stones | List</h6>
@@ -200,6 +202,21 @@
       [pageSizeOptions]="[10, 20, 30, 40, 50]"
       (page)="pageEvent = $event; onPaginateChange($event)"
     ></mat-paginator>
+    <div style="position: relative;">
+      <div class="paginator">
+        <span class="mr-2 text-white" style="font-size: 12px;"
+          >Number of Page</span
+        >
+        <select name="" id="" (change)="selectPage($event.target.value)">
+          <option
+            *ngFor="let num of numberOfPages; let i = index"
+            [value]="num"
+          >
+            {{ num }}
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
   <!-- End Table -->
   <!-- Add New Stone Modal -->
@@ -235,9 +252,7 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
-                  <label
-                    >Stone Name <span class="text-red">*</span></label
-                  >
+                  <label>Stone Name <span class="text-red">*</span></label>
                   <input
                     class="input-text w-100"
                     value=""
@@ -263,9 +278,7 @@
               </div>
               <div class="col-md-12">
                 <div class="form-group">
-                  <label
-                    >Stone Code <span class="text-red">*</span></label
-                  >
+                  <label>Stone Code <span class="text-red">*</span></label>
                   <input
                     class="input-text w-100"
                     value=""
@@ -345,12 +358,10 @@
               </div>
             </div>
             <div class="modal-footer border-0 justify-content-start pl-0">
-              <button
-                type="submit"
-                class="submit-btn"
-              >
-              <i class="icon-settings mr-2 align-middle"></i>
-              Add Stone</button>
+              <button type="submit" class="submit-btn">
+                <i class="icon-settings mr-2 align-middle"></i>
+                Add Stone
+              </button>
             </div>
           </form>
         </div>
@@ -500,11 +511,8 @@
               </div>
             </div>
             <div class="modal-footer border-0 justify-content-start pl-0">
-              <button
-                type="submit"
-                class="submit-btn"
-              >
-              <i class="icon-settings mr-2 align-middle"></i>
+              <button type="submit" class="submit-btn">
+                <i class="icon-settings mr-2 align-middle"></i>
                 Update Stone
               </button>
             </div>
@@ -513,57 +521,59 @@
       </div>
     </div>
   </div>
-   <!-- Delete One Item -->
-<div
-id="deleteModal"
-  bsModal
-  #deleteModal="bs-modal"
-  class="modal fade"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="myModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header d-flex align-items-baseline border-0">
-        <button
-          type="button"
-          class="close"
-          (click)="deleteModal.hide()"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">Close</span>
-        </button>
-      </div>
-      <!-- Body -->
-      <div class="modal-body">
-        <h4 class="modal-title mb-4 text-center">
-          <span>For delete item please type</span> DELETE
-        </h4>
-        <form
-          [formGroup]="deleteForm"
-          (ngSubmit)="deleteStone()"
-          #form="ngForm"
-        >
-          <div class="row">
-            <div class="col-md-8 row">
-              <div class="form-group col-12 no-gutters">
-                <input type="text" class="input-text w-100" formControlName="deleteInput" placeholder="DELETE">
+  <!-- Delete One Item -->
+  <div
+    id="deleteModal"
+    bsModal
+    #deleteModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-baseline border-0">
+          <button
+            type="button"
+            class="close"
+            (click)="deleteModal.hide()"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">Close</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body">
+          <h4 class="modal-title mb-4 text-center">
+            <span>For delete item please type</span> DELETE
+          </h4>
+          <form
+            [formGroup]="deleteForm"
+            (ngSubmit)="deleteStone()"
+            #form="ngForm"
+          >
+            <div class="row">
+              <div class="col-md-8 row">
+                <div class="form-group col-12 no-gutters">
+                  <input
+                    type="text"
+                    class="input-text w-100"
+                    formControlName="deleteInput"
+                    placeholder="DELETE"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4 modal-footer border-0 p-0">
+                <button type="submit" class="submit-btn">
+                  Delete
+                </button>
               </div>
             </div>
-            <div class="col-md-4 modal-footer border-0 p-0">
-              <button
-                type="submit"
-                class="submit-btn"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>
