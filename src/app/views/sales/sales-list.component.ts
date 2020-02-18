@@ -18,6 +18,8 @@ export class SalesListComponent {
   // Variables
   @ViewChild('detailsModal', { static: false })
   public detailsModal: ModalDirective;
+  @ViewChild('invoiceModal', { static: false })
+  public invoiceModal: ModalDirective;
   selection = new SelectionModel<any>(true, []);
   //  --------------------------------------   Tables Colums
   displayedColumns: string[] = [
@@ -28,7 +30,7 @@ export class SalesListComponent {
     'receipts.receipt_date',
     'product.metal.name',
     'receipts.receipt_number',
-    'product.item_total_after_profit',
+    'receipts.total_egp',
     'receipts.employee.name',
     'image',
     'actions'
@@ -88,6 +90,7 @@ export class SalesListComponent {
   imgSrc: any = '';
   payment_id: any = '';
   payment_method: any = '1';
+  invoiceData: any = '';
   metals: any = [];
   page: any = '';
   per_page: number = 50;
@@ -101,6 +104,7 @@ export class SalesListComponent {
   pageIndex: any = '';
   numberOfPages: any = [];
   currentPage: any = '';
+
   // ---------------------------------------------- Form
   deleteForm = new FormGroup({
     deleteInput: new FormControl('')
@@ -116,6 +120,17 @@ export class SalesListComponent {
   goldTotal: number;
   item_total_after_profit: number;
   item_total: number;
+  inoviceBranch: any;
+  inoviceClient: any;
+  inoviceEmployee: any;
+  product: any;
+  inoviceCity: any;
+  inoviceAddress: any;
+  inovicePhone: any;
+  receipts: any;
+  receiptDateInvoice: any;
+  totalEGP: any;
+  paidAmount: any;
   // Constructor
   constructor(
     private api: MainServiceService,
@@ -177,16 +192,16 @@ export class SalesListComponent {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    console.log(this.pageIndex);
+    // console.log(this.pageIndex);
 
-    for (let i = 1; i <= this.pageIndex; i++) {
-      console.log(i);
-      this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
-        return a - b;
-      });
-    }
-    console.log(this.numberOfPages);
+    // for (let i = 1; i <= this.pageIndex; i++) {
+    //   console.log(i);
+    //   this.numberOfPages.push(i);
+    //   this.numberOfPages.sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // }
+    // console.log(this.numberOfPages);
   }
 
   // ----------------------------------------- Filter Branches
@@ -737,74 +752,74 @@ export class SalesListComponent {
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
     console.log(event);
-    this.api
-      .get('sales', {
-        per_page: event.pageSize,
-        page: 1
-      })
-      .subscribe((productList: any) => {
-        console.log(productList);
-        this.products = productList.data.data;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'product.label':
-              return item.product.label;
-            case 'product.metal.name':
-              return item.product.metal.name;
-            case 'receipts.branch.name':
-              return item.receipts.branch.name;
-            case 'receipts.employee.name':
-              return item.receipts.employee.name;
-            case 'receipts.receipt_number':
-              return item.receipts.receipt_number;
-            default:
-              return item[property];
-          }
-        };
-      });
-    console.log(this.pageIndex);
+    // this.api
+    //   .get('sales', {
+    //     per_page: event.pageSize,
+    //     page: 1
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList);
+    //     this.products = productList.data.data;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'product.label':
+    //           return item.product.label;
+    //         case 'product.metal.name':
+    //           return item.product.metal.name;
+    //         case 'receipts.branch.name':
+    //           return item.receipts.branch.name;
+    //         case 'receipts.employee.name':
+    //           return item.receipts.employee.name;
+    //         case 'receipts.receipt_number':
+    //           return item.receipts.receipt_number;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //   });
+    // console.log(this.pageIndex);
 
-    this.numberOfPages = [];
-    for (let i = 1; i <= this.pageIndex; i++) {
-      console.log(i);
-      this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
-        return a - b;
-      });
-    }
-    console.log(this.numberOfPages);
+    // this.numberOfPages = [];
+    // for (let i = 1; i <= this.pageIndex; i++) {
+    //   console.log(i);
+    //   this.numberOfPages.push(i);
+    //   this.numberOfPages.sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // }
+    // console.log(this.numberOfPages);
   }
   selectPage(event) {
     console.log(event);
-    this.currentPage = event;
-    this.api
-      .get('sales', {
-        per_page: 10,
-        page: this.currentPage
-      })
-      .subscribe((productList: any) => {
-        console.log(productList.data.data);
-        this.products = productList.data.data;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'category.name':
-              return item.category.name;
-            case 'branch.name':
-              return item.branch.name;
-            case 'status.name':
-              return item.status.name;
-            default:
-              return item[property];
-          }
-        };
-      });
+    // this.currentPage = event;
+    // this.api
+    //   .get('sales', {
+    //     per_page: 10,
+    //     page: this.currentPage
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList.data.data);
+    //     this.products = productList.data.data;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'category.name':
+    //           return item.category.name;
+    //         case 'branch.name':
+    //           return item.branch.name;
+    //         case 'status.name':
+    //           return item.status.name;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //   });
   }
   /* ------------------------- Refund Action ---------------------------- */
   routeToReturn(row) {
@@ -818,5 +833,28 @@ export class SalesListComponent {
   logout() {
     sessionStorage.removeItem('token');
     this.router.navigate(['/']);
+  }
+  /* ------------------------------ Open Inovice ----------------------- */
+  openInvoice(row) {
+    console.log(row);
+    this.invoiceModal.show();
+    this.api.get('settings', { per_page: 50 }).subscribe(data => {
+      console.log(data.data);
+      // this.settings_address = data.data[0].address;
+      // this.settings_phone = data.data[0].phone;
+      // this.settings_website = data.data[0].website;
+    });
+    this.invoiceData = row;
+    this.receiptDateInvoice = row.receipts.receipt_date;
+    this.totalEGP = row.receipts.total_egp;
+    this.paidAmount = row.receipts.paid_egp;
+    this.inoviceClient = row.receipts.client.name;
+    this.inoviceEmployee = row.receipts.employee.name;
+    this.inoviceBranch = row.receipts.branch.name;
+    this.product = row.product;
+    this.inoviceCity = row.receipts.branch.city.name;
+    this.inoviceAddress = row.receipts.branch.address;
+    this.inovicePhone = row.receipts.branch.phone;
+    // console.log(this.inoviceProducts);
   }
 }

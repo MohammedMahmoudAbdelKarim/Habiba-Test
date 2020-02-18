@@ -441,7 +441,7 @@
       [length]="100"
       (page)="pageEvent = $event; onPaginateChange($event)"
     ></mat-paginator>
-    <div style="position: relative;">
+    <!-- <div style="position: relative;">
       <div class="paginator">
         <span class="mr-2 text-white" style="font-size: 12px;"
           >Number of Page</span
@@ -455,7 +455,7 @@
           </option>
         </select>
       </div>
-    </div>
+    </div> -->
   </div>
   <!-- End Table -->
   <!-- Details -->
@@ -847,11 +847,14 @@
                     <tbody>
                       <tr>
                         <td class="border-right">
-                          <select
+                          <!-- <select
                             class="px-1 py-2"
                             name=""
                             id=""
                             formControlName="upadateStonesName"
+                            (change)="
+                              updateStoneData($event.target.value, stoneIndex)
+                            "
                           >
                             <option value="" selected hidden>{{
                               stone.name
@@ -862,7 +865,8 @@
                             >
                               {{ stone.name }}
                             </option>
-                          </select>
+                          </select> -->
+                          {{ stone.name }}
                         </td>
                         <td class="border-right text-center">
                           <input
@@ -1021,7 +1025,7 @@
                   >
                   <select
                     class="p-2 itemInput w-100"
-                    formControlName="name"
+                    formControlName="id"
                     (change)="getSelectedListOptionId()"
                     (change)="getStoneDetails($event.target.value)"
                   >

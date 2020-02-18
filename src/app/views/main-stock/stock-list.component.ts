@@ -218,13 +218,13 @@ export class StockListComponent implements OnInit {
       // -------------------------------------- Get Categories
       this.categoryList = data.categoryList.data;
       // --------------------------------------- Get Products
-      this.products = data.productsData.data.data;
+      this.products = data.productsData.data;
       this.pageIndex = data.productsData.data.last_page;
-      this.data = Object.assign(data.productsData.data.data);
+      this.data = Object.assign(data.productsData.data);
       this.totalSearch = data.productsData.data.total;
       // this.pageIndex
-      console.log('Stock List Products -> ', data.productsData.data.data);
-      this.dataSource = new MatTableDataSource(data.productsData.data.data);
+      console.log('Stock List Products -> ', data.productsData.data);
+      this.dataSource = new MatTableDataSource(data.productsData.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.totalProducts = data.productsData.total;
@@ -277,12 +277,12 @@ export class StockListComponent implements OnInit {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    for (let i = 1; i <= this.pageIndex; i++) {
-      this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
-        return a - b;
-      });
-    }
+    // for (let i = 1; i <= this.pageIndex; i++) {
+    //   this.numberOfPages.push(i);
+    //   this.numberOfPages.sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // }
   }
 
   /* ---------------------------- Filter Branches ------------------------ */
@@ -303,8 +303,8 @@ export class StockListComponent implements OnInit {
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           setTimeout(() => {
-            console.log('Empty Branch -> ', value.data.data);
-            this.dataSource = new MatTableDataSource(value.data.data);
+            console.log('Empty Branch -> ', value.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             this.totalProducts = value.total;
@@ -414,9 +414,9 @@ export class StockListComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log('Empty Category -> ', value.data.data);
+          console.log('Empty Category -> ', value.data);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
@@ -526,9 +526,9 @@ export class StockListComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log('Empty Code -> ', value.data.data);
+          console.log('Empty Code -> ', value.data);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             this.totalProducts = value.total;
@@ -601,7 +601,7 @@ export class StockListComponent implements OnInit {
           page: this.currentPage
         })
         .subscribe(value => {
-          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource = new MatTableDataSource(value.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
           // Sort item inside inner Object
@@ -667,7 +667,7 @@ export class StockListComponent implements OnInit {
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
@@ -813,7 +813,7 @@ export class StockListComponent implements OnInit {
           this.toast.success('The Items are Successfully delete', '!Success');
           this.delete2Modal.hide();
           this.api.get('products').subscribe(value => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
@@ -924,7 +924,6 @@ export class StockListComponent implements OnInit {
     // this.updatedItemData.image = this.imageArray;
     this.checkItemDataCalculatedIsDefiend = true;
   }
-
   /* --------------------- Total Calculate Stone Total ---------------------- */
   calculateStoneTotal(e, stoneIndex, key) {
     console.log(stoneIndex);
@@ -1023,21 +1022,60 @@ export class StockListComponent implements OnInit {
   }
   getSelectedListOptionId() {
     // Get Stone Name
-    const name = this.stonesForm.value.name;
-    for (const stone of this.stoneList) {
-      if (name === stone.name) {
-        console.log(stone);
-        this.stone_id = stone.id;
-        console.log(this.stone_id);
-      }
-    }
+    // const name = this.stonesForm.value.name;
+    // for (const stone of this.stoneList) {
+    //   if (name === stone.name) {
+    //     console.log(stone);
+    //     this.stone_id = stone.id;
+    //     console.log(this.stone_id);
+    //   }
+    // }
   }
   getStoneDetails(event) {
     console.log(event);
     this.api.get('stones/' + event).subscribe(data => {
       console.log(data.data);
+      this.stonesForm.controls.name.setValue(data.data.name);
       this.stonesForm.controls.price.setValue(data.data.price);
       this.stonesForm.controls.setting.setValue(data.data.setting);
+      this.stonesForm.controls.id.setValue(data.data.id);
+      console.log(this.stonesForm.value);
+    });
+  }
+  /* ---------------------------- Update Stone Data ------------------------- */
+  updateStoneData(event, i) {
+    console.log(event);
+    console.log(i);
+    this.api.get('stones/' + event).subscribe(data => {
+      console.log(data.data);
+      this.checkItemDataCalculatedIsDefiend = false;
+      console.log(this.stockUpdatForm.value);
+      this.stockUpdatForm.controls.updateStonesPrice.setValue(+data.data.price);
+      this.stockUpdatForm.controls.updateSettingsSetting.setValue(
+        +data.data.setting
+      );
+      console.log(this.stockUpdatForm.value);
+      console.log(this.newStoneArray);
+      this.newPriceValue = data.data.price;
+      this.newSettingValue = data.data.setting;
+      const obj1 = {
+        target: {
+          value: data.data.price
+        }
+      };
+      const obj2 = {
+        target: {
+          value: data.data.setting
+        }
+      };
+      console.log(this.testStonesArray);
+      this.testStonesArray.splice(i, 1);
+      console.log(this.testStonesArray);
+      this.testStonesArray.push(data.data);
+      console.log(this.testStonesArray);
+      // this.testStonesArray[i].quantity = 0;
+      this.calculateStoneTotal(obj1, i, 'sP');
+      this.calculateStoneTotal(obj2, i, 'sS');
     });
   }
   /* ---------------------------------- Remove Stone ------------------------ */
@@ -1061,8 +1099,9 @@ export class StockListComponent implements OnInit {
   }
   /* ------------------------------ Create New Stone ------------------------ */
   onSubmitStone(form) {
+    console.log(form.value);
     this.newStoneArray = this.testStonesArray;
-    form.value.id = this.stone_id;
+    // form.value.id = this.stone_id;
     form.value.total = Math.ceil(
       form.value.quantity * form.value.price +
         form.value.weight * form.value.setting
@@ -1076,7 +1115,10 @@ export class StockListComponent implements OnInit {
     ) {
       this.checkItemDataCalculatedIsDefiend = true;
       this.stoneFlage = true;
+      console.log(this.newStoneArray);
       this.newStoneArray.push(form.value);
+      console.log(this.newStoneArray);
+
       this.stoneModal.hide();
       const items = this.ItemDataCalculated.stones;
       let sum = null;
@@ -1107,8 +1149,8 @@ export class StockListComponent implements OnInit {
   /* --------------------- Update Item ---------------------- */
   onSubmit(form) {
     // tslint:disable-next-line: no-unused-expression
-    this.stoneFlage === true;
-    if (this.stoneFlage === true) {
+    this.stoneFlage = true;
+    if (this.stoneFlage == true) {
       console.log('New Stones Add');
     } else {
       this.newStoneArray = [];
@@ -1122,6 +1164,7 @@ export class StockListComponent implements OnInit {
       console.log(this.updatedItemData);
     }
     this.updatedItemData.profit_percent = this.stockUpdatForm.controls.profit_percent.value;
+
     this.api
       .put('products/' + this.updatedItemData.id, this.updatedItemData)
       .subscribe(value => {
@@ -1134,7 +1177,7 @@ export class StockListComponent implements OnInit {
         );
         setTimeout(() => {
           this.editModal.hide();
-          location.reload();
+          // location.reload();
         }, 1000);
       });
   }
@@ -1169,7 +1212,7 @@ export class StockListComponent implements OnInit {
             })
             // tslint:disable-next-line: no-shadowed-variable
             .subscribe(value => {
-              this.dataSource = new MatTableDataSource(value.data.data);
+              this.dataSource = new MatTableDataSource(value.data);
               this.dataSource.paginator = this.paginator;
               this.dataSource.sort = this.sort;
               this.dataSource.sortingDataAccessor = (item, property) => {
@@ -1231,7 +1274,7 @@ export class StockListComponent implements OnInit {
             })
             // tslint:disable-next-line: no-shadowed-variable
             .subscribe(value => {
-              this.dataSource = new MatTableDataSource(value.data.data);
+              this.dataSource = new MatTableDataSource(value.data);
               this.dataSource.sort = this.sort;
               this.dataSource.paginator = this.paginator;
               // Sort item inside inner Object
@@ -1259,73 +1302,73 @@ export class StockListComponent implements OnInit {
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
     console.log(event);
-    this.per_page = event.pageSize;
-    this.api
-      .get('products', {
-        per_page: event.pageSize,
-        page: 1
-      })
-      .subscribe((productList: any) => {
-        console.log(productList);
-        this.products = productList.data.data;
-        this.pageIndex = productList.data.last_page;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'category.name':
-              return item.category.name;
-            case 'branch.name':
-              return item.branch.name;
-            case 'status.name':
-              return item.status.name;
-            default:
-              return item[property];
-          }
-        };
-        console.log(this.pageIndex);
+    // this.per_page = event.pageSize;
+    // this.api
+    //   .get('products', {
+    //     per_page: event.pageSize,
+    //     page: 1
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList);
+    //     this.products = productList.data.data;
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'category.name':
+    //           return item.category.name;
+    //         case 'branch.name':
+    //           return item.branch.name;
+    //         case 'status.name':
+    //           return item.status.name;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //     console.log(this.pageIndex);
 
-        this.numberOfPages = [];
-        for (let i = 1; i <= this.pageIndex; i++) {
-          console.log(i);
-          this.numberOfPages.push(i);
-          this.numberOfPages.sort(function(a, b) {
-            return a - b;
-          });
-        }
-        console.log(this.numberOfPages);
-      });
+    //     this.numberOfPages = [];
+    //     for (let i = 1; i <= this.pageIndex; i++) {
+    //       console.log(i);
+    //       this.numberOfPages.push(i);
+    //       this.numberOfPages.sort(function(a, b) {
+    //         return a - b;
+    //       });
+    //     }
+    //     console.log(this.numberOfPages);
+    //   });
   }
   selectPage(event) {
     console.log(event);
     this.currentPage = event;
-    this.api
-      .get('products', {
-        per_page: this.per_page,
-        page: event
-      })
-      .subscribe((productList: any) => {
-        console.log(productList.data.data);
-        this.products = productList.data.data;
-        this.pageIndex = productList.data.last_page;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'category.name':
-              return item.category.name;
-            case 'branch.name':
-              return item.branch.name;
-            case 'status.name':
-              return item.status.name;
-            default:
-              return item[property];
-          }
-        };
-      });
+    // this.api
+    //   .get('products', {
+    //     per_page: this.per_page,
+    //     page: event
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList.data.data);
+    //     this.products = productList.data.data;
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'category.name':
+    //           return item.category.name;
+    //         case 'branch.name':
+    //           return item.branch.name;
+    //         case 'status.name':
+    //           return item.status.name;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //   });
   }
   /* -------------------------- Open Image Modal ---------------------------- */
   openImage(event) {
@@ -1353,7 +1396,7 @@ export class StockListComponent implements OnInit {
           })
           // tslint:disable-next-line: no-shadowed-variable
           .subscribe(value => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object

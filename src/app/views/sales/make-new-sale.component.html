@@ -178,7 +178,7 @@
                             value="{{ stone.quantity }}"
                             formControlName="productStoneQuantity"
                             (keyup)="
-                              calculateStoneTotal($event, stoneIndex,i, 'sW')
+                              calculateStoneTotal($event, stoneIndex, i, 'sW')
                             "
                             (keypress)="numberCheckValidation($event)"
                             maxlength="9"
@@ -190,7 +190,7 @@
                             value="{{ stone.weight }}"
                             formControlName="productStoneWeight"
                             (keyup)="
-                              calculateStoneTotal($event, stoneIndex,i, 'sW')
+                              calculateStoneTotal($event, stoneIndex, i, 'sW')
                             "
                             (keypress)="numberCheckValidation($event)"
                             maxlength="9"
@@ -375,7 +375,7 @@
         <table class="table border-0 ">
           <thead>
             <tr class="border-0">
-              <th scope="col" class="border-right text-center">Total USD</th>
+              <!-- <th scope="col" class="border-right text-center">Total USD</th> -->
               <th class="border-right text-center" scope="col">
                 Total EGP
               </th>
@@ -385,13 +385,13 @@
           </thead>
           <tbody>
             <tr>
-              <td
+              <!-- <td
                 class="border-right text-center"
                 style=" font-size: 19px;
                 font-weight: 600;"
               >
                 {{ invoiceTotal }}
-              </td>
+              </td> -->
               <td class="border-right text-center">
                 <input
                   class="input-text w-100 text-center"

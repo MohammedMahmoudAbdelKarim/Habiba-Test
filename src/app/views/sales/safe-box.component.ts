@@ -90,14 +90,14 @@ export class SafeBoxComponent {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    for (let i = 1; i <= this.pageIndex; i++) {
-      console.log(i);
-      this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
-        return a - b;
-      });
-    }
-    console.log(this.numberOfPages);
+    // for (let i = 1; i <= this.pageIndex; i++) {
+    //   console.log(i);
+    //   this.numberOfPages.push(i);
+    //   this.numberOfPages.sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // }
+    // console.log(this.numberOfPages);
   }
   /* -------------------------------- Checkbox---------------------------- */
   /** Whether the number of selected elements matches the total number of rows. */
@@ -405,63 +405,63 @@ export class SafeBoxComponent {
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
     console.log(event);
-    this.per_page = event.pageSize;
-    this.api
-      .get('savebox/actions', {
-        per_page: event.pageSize,
-        page: 1
-      })
-      .subscribe((productList: any) => {
-        console.log(productList);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'branches.name':
-              return item.branches.name;
-            default:
-              return item[property];
-          }
-        };
-        console.log(this.pageIndex);
+    // this.per_page = event.pageSize;
+    // this.api
+    //   .get('savebox/actions', {
+    //     per_page: event.pageSize,
+    //     page: 1
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'branches.name':
+    //           return item.branches.name;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //     console.log(this.pageIndex);
 
-        this.numberOfPages = [];
-        for (let i = 1; i <= this.pageIndex; i++) {
-          console.log(i);
-          this.numberOfPages.push(i);
-          this.numberOfPages.sort(function(a, b) {
-            return a - b;
-          });
-        }
-        console.log(this.numberOfPages);
-      });
+    //     this.numberOfPages = [];
+    //     for (let i = 1; i <= this.pageIndex; i++) {
+    //       console.log(i);
+    //       this.numberOfPages.push(i);
+    //       this.numberOfPages.sort(function(a, b) {
+    //         return a - b;
+    //       });
+    //     }
+    //     console.log(this.numberOfPages);
+    //   });
   }
   selectPage(event) {
     console.log(event);
-    this.currentPage = event;
-    this.api
-      .get('savebox/actions', {
-        per_page: this.per_page,
-        page: event
-      })
-      .subscribe((productList: any) => {
-        console.log(productList.data.data);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'branches.name':
-              return item.branches.name;
-            default:
-              return item[property];
-          }
-        };
-      });
+    // this.currentPage = event;
+    // this.api
+    //   .get('savebox/actions', {
+    //     per_page: this.per_page,
+    //     page: event
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList.data.data);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'branches.name':
+    //           return item.branches.name;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //   });
   }
   /*--------------------------------- Logout ------------------------------ */
   logout() {

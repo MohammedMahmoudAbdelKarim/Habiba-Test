@@ -14,7 +14,7 @@ export class productsAllSolver implements Resolve<any> {
   resolve() {
     return this.mainService
       .get('products', {
-        per_page: 10
+        // per_page: 10
       })
       .pipe(
         catchError(error => {

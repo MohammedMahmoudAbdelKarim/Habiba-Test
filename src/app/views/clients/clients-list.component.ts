@@ -84,12 +84,12 @@ export class ClientsListComponent implements OnInit {
     this.route.data.subscribe(data => {
       console.log(data);
       // Get Clients
-      this.clientList = data.clients.data.data;
+      this.clientList = data.clients.data;
       this.pageIndex = data.clients.data.last_page;
-      this.dataSource = new MatTableDataSource(data.clients.data.data);
+      this.dataSource = new MatTableDataSource(data.clients.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.data = Object.assign(data.clients.data.data);
+      this.data = Object.assign(data.clients.data);
     });
     // Filter Clients
     this.filteredclients = this.clientNameData.valueChanges.pipe(
@@ -100,29 +100,27 @@ export class ClientsListComponent implements OnInit {
 
   /* ----------------------------------- OnInit ------------------------ */
   ngOnInit() {
-    this.numberOfPages = [];
-    for (let i = 1; i <= this.pageIndex; i++) {
-      console.log(i);
-      this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
-        return a - b;
-      });
-    }
-    console.log(this.numberOfPages);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    // this.numberOfPages = [];
+    // for (let i = 1; i <= this.pageIndex; i++) {
+    //   console.log(i);
+    //   this.numberOfPages.push(i);
+    //   this.numberOfPages.sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // }
+    // console.log(this.numberOfPages);
   }
   /* ---------------------------- Filter Clients ------------------------ */
   private filterClient(value) {
     // tslint:disable-next-line: triple-equals
     if (value == '' || value == undefined) {
-      this.api
-        .get('clients', {
-          per_page: 50
-        })
-        .subscribe(data => {
-          this.dataSource = new MatTableDataSource(data.data.data);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        });
+      this.api.get('clients', {}).subscribe(data => {
+        this.dataSource = new MatTableDataSource(data.data);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
     }
     // tslint:disable-next-line: triple-equals
     if (typeof value == 'object') {
@@ -136,7 +134,7 @@ export class ClientsListComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource = new MatTableDataSource(value.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
         });
@@ -355,57 +353,55 @@ export class ClientsListComponent implements OnInit {
   }
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
-    this.per_page = event.pageSize;
-
-    this.api
-      .get('clients', {
-        per_page: event.pageSize
-      })
-      .subscribe((value: any) => {
-        this.dataSource = new MatTableDataSource(value.data.data);
-        this.pageIndex = value.data.last_page;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    console.log(this.pageIndex);
-
-    this.numberOfPages = [];
-    for (let i = 1; i <= this.pageIndex; i++) {
-      console.log(i);
-      this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
-        return a - b;
-      });
-    }
-    console.log(this.numberOfPages);
+    // this.per_page = event.pageSize;
+    // this.api
+    //   .get('clients', {
+    //     per_page: event.pageSize
+    //   })
+    //   .subscribe((value: any) => {
+    //     this.dataSource = new MatTableDataSource(value.data.data);
+    //     this.pageIndex = value.data.last_page;
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //   });
+    // console.log(this.pageIndex);
+    // this.numberOfPages = [];
+    // for (let i = 1; i <= this.pageIndex; i++) {
+    //   console.log(i);
+    //   this.numberOfPages.push(i);
+    //   this.numberOfPages.sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // }
+    // console.log(this.numberOfPages);
   }
   selectPage(event) {
     console.log(event);
-    this.currentPage = event;
-    this.api
-      .get('clients', {
-        per_page: 10,
-        page: event
-      })
-      .subscribe((productList: any) => {
-        console.log(productList.data.data);
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'category.name':
-              return item.category.name;
-            case 'branch.name':
-              return item.branch.name;
-            case 'status.name':
-              return item.status.name;
-            default:
-              return item[property];
-          }
-        };
-      });
+    // this.currentPage = event;
+    // this.api
+    //   .get('clients', {
+    //     per_page: 10,
+    //     page: event
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList.data.data);
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'category.name':
+    //           return item.category.name;
+    //         case 'branch.name':
+    //           return item.branch.name;
+    //         case 'status.name':
+    //           return item.status.name;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //   });
   }
   /* ------------- Clear Error Message When Modal Opened ------------------ */
   clearError() {

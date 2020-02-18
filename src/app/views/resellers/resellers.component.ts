@@ -199,14 +199,14 @@ export class ResllersComponent implements OnInit {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    for (let i = 1; i <= this.pageIndex; i++) {
-      console.log(i);
-      this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
-        return a - b;
-      });
-    }
-    console.log(this.numberOfPages);
+    // for (let i = 1; i <= this.pageIndex; i++) {
+    //   console.log(i);
+    //   this.numberOfPages.push(i);
+    //   this.numberOfPages.sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // }
+    // console.log(this.numberOfPages);
   }
 
   // ----------------------------------------- Filter Branches
@@ -223,7 +223,7 @@ export class ResllersComponent implements OnInit {
           client_id: this.client_id,
           from_date: this.fromDate,
           to_date: this.toDate,
-          label: this.label,
+          product_id: this.label,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -265,7 +265,7 @@ export class ResllersComponent implements OnInit {
           client_id: this.client_id,
           from_date: this.fromDate,
           to_date: this.toDate,
-          label: this.label,
+          product_id: this.label,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -344,7 +344,7 @@ export class ResllersComponent implements OnInit {
           client_id: this.client_id,
           from_date: this.fromDate,
           to_date: this.toDate,
-          label: this.label,
+          product_id: this.label,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -354,6 +354,8 @@ export class ResllersComponent implements OnInit {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -375,7 +377,7 @@ export class ResllersComponent implements OnInit {
     // tslint:disable-next-line: triple-equals
     if (typeof value == 'object') {
       const filterValue = value.product.label;
-      this.label = value.product.label;
+      this.label = value.product.id;
       console.log(this.label);
       // Send Request
       this.api
@@ -384,7 +386,7 @@ export class ResllersComponent implements OnInit {
           client_id: this.client_id,
           from_date: this.fromDate,
           to_date: this.toDate,
-          label: this.label,
+          product_id: this.label,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -394,6 +396,8 @@ export class ResllersComponent implements OnInit {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -459,7 +463,7 @@ export class ResllersComponent implements OnInit {
         .get('reseller', {
           branch_id: this.branch_id,
           client_id: this.client_id,
-          label: this.label,
+          product_id: this.label,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -469,6 +473,8 @@ export class ResllersComponent implements OnInit {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -499,7 +505,7 @@ export class ResllersComponent implements OnInit {
         client_id: this.client_id,
         from_date: this.fromDate,
         to_date: this.toDate,
-        label: this.label,
+        product_id: this.label,
         per_page: 50
       })
       // tslint:disable-next-line: no-shadowed-variable
@@ -508,6 +514,8 @@ export class ResllersComponent implements OnInit {
           this.dataSource = new MatTableDataSource(value.data.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
+          this.totalProducts = value.total;
+          this.countProducts = value.count;
           // Sort item inside inner Object
           this.dataSource.sortingDataAccessor = (item, property) => {
             switch (property) {
@@ -533,7 +541,7 @@ export class ResllersComponent implements OnInit {
         .get('reseller', {
           branch_id: this.branch_id,
           client_id: this.client_id,
-          label: this.label,
+          product_id: this.label,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -542,6 +550,8 @@ export class ResllersComponent implements OnInit {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
@@ -572,7 +582,7 @@ export class ResllersComponent implements OnInit {
         client_id: this.client_id,
         from_date: this.fromDate,
         to_date: this.toDate,
-        label: this.label,
+        product_id: this.label,
         per_page: 50
       })
       // tslint:disable-next-line: no-shadowed-variable
@@ -581,6 +591,8 @@ export class ResllersComponent implements OnInit {
           this.dataSource = new MatTableDataSource(value.data.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
+          this.totalProducts = value.total;
+          this.countProducts = value.count;
           // Sort item inside inner Object
           this.dataSource.sortingDataAccessor = (item, property) => {
             switch (property) {
@@ -611,7 +623,7 @@ export class ResllersComponent implements OnInit {
           client_id: this.client_id,
           from_date: this.fromDate,
           to_date: this.toDate,
-          label: this.label,
+          product_id: this.label,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -652,7 +664,7 @@ export class ResllersComponent implements OnInit {
           client_id: this.client_id,
           from_date: this.fromDate,
           to_date: this.toDate,
-          label: this.label,
+          product_id: this.label,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -800,6 +812,8 @@ export class ResllersComponent implements OnInit {
         this.dataSource = new MatTableDataSource(value.data.data);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
+        this.totalProducts = value.total;
+        this.countProducts = value.count;
         // Sort item inside inner Object
         this.dataSource.sortingDataAccessor = (item, property) => {
           switch (property) {
@@ -821,77 +835,77 @@ export class ResllersComponent implements OnInit {
 
   onPaginateChange(event) {
     console.log(event);
-    this.per_page = event.pageSize;
-    this.api
-      .get('reseller', {
-        per_page: event.pageSize,
-        page: 1
-      })
-      .subscribe((productList: any) => {
-        console.log(productList);
-        this.products = productList.data.data;
-        this.pageIndex = productList.data.last_page;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'product.label':
-              return item.product.label;
-            case 'branch.name':
-              return item.branch.name;
-            case 'client.name':
-              return item.client.name;
-            case 'created_at':
-              return item.created_at;
-            default:
-              return item[property];
-          }
-        };
-        console.log(this.pageIndex);
+    // this.per_page = event.pageSize;
+    // this.api
+    //   .get('reseller', {
+    //     per_page: event.pageSize,
+    //     page: 1
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList);
+    //     this.products = productList.data.data;
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'product.label':
+    //           return item.product.label;
+    //         case 'branch.name':
+    //           return item.branch.name;
+    //         case 'client.name':
+    //           return item.client.name;
+    //         case 'created_at':
+    //           return item.created_at;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //     console.log(this.pageIndex);
 
-        this.numberOfPages = [];
-        for (let i = 1; i <= this.pageIndex; i++) {
-          console.log(i);
-          this.numberOfPages.push(i);
-          this.numberOfPages.sort(function(a, b) {
-            return a - b;
-          });
-        }
-        console.log(this.numberOfPages);
-      });
+    //     this.numberOfPages = [];
+    //     for (let i = 1; i <= this.pageIndex; i++) {
+    //       console.log(i);
+    //       this.numberOfPages.push(i);
+    //       this.numberOfPages.sort(function(a, b) {
+    //         return a - b;
+    //       });
+    //     }
+    //     console.log(this.numberOfPages);
+    //   });
   }
   selectPage(event) {
     console.log(event);
-    this.currentPage = event;
-    this.api
-      .get('reseller', {
-        per_page: this.per_page,
-        page: event
-      })
-      .subscribe((productList: any) => {
-        console.log(productList.data.data);
-        this.products = productList.data.data;
-        this.pageIndex = productList.data.last_page;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'product.label':
-              return item.product.label;
-            case 'branch.name':
-              return item.branch.name;
-            case 'client.name':
-              return item.client.name;
-            case 'created_at':
-              return item.created_at;
-            default:
-              return item[property];
-          }
-        };
-      });
+    // this.currentPage = event;
+    // this.api
+    //   .get('reseller', {
+    //     per_page: this.per_page,
+    //     page: event
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList.data.data);
+    //     this.products = productList.data.data;
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'product.label':
+    //           return item.product.label;
+    //         case 'branch.name':
+    //           return item.branch.name;
+    //         case 'client.name':
+    //           return item.client.name;
+    //         case 'created_at':
+    //           return item.created_at;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //   });
   }
   /* ------------------------- Refund Action ---------------------------- */
   routeToSale(row) {

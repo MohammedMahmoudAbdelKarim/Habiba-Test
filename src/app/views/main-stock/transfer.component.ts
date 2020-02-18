@@ -82,10 +82,12 @@ export class TransferComponent implements OnInit {
       // Get Branches
       this.branchList = data.branchList.data;
       // Get Products
-      this.items = data.productsData.data.data;
+      this.items = data.productsData.data;
+      console.log('Products -> ', data.productsData.data);
       // Get Transfers
       this.products = data.transfers.data.data;
-      this.data = Object.assign(data.transfers.data.data);
+      console.log('Transfered Products -> ', data.transfers.data.data);
+      this.data = Object.assign(data.transfers.data);
       this.totalSearch = data.transfers.data.total;
       this.pageIndex = data.transfers.data.last_page;
       this.dataSource = new MatTableDataSource(data.transfers.data.data);
@@ -122,16 +124,12 @@ export class TransferComponent implements OnInit {
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    console.log(this.pageIndex);
-
-    for (let i = 1; i <= this.pageIndex; i++) {
-      console.log(i);
-      this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
-        return a - b;
-      });
-    }
-    console.log(this.numberOfPages);
+    // for (let i = 1; i <= this.pageIndex; i++) {
+    //   this.numberOfPages.push(i);
+    //   this.numberOfPages.sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // }
   }
   /* ---------------------------- Filter Branches ------------------------ */
   private filterBranch(value) {
@@ -140,11 +138,10 @@ export class TransferComponent implements OnInit {
       this.branch_id = '';
       // Send Request
       this.api
-        .get('transfer', {
-          per_page: 50
-        })
+        .get('transfer', {})
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
+          console.log('Empty Branch -> ', value);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
@@ -178,6 +175,7 @@ export class TransferComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
+          console.log('Filtered Branch -> ', value.data.data);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
@@ -250,7 +248,7 @@ export class TransferComponent implements OnInit {
         .get('products')
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log(value);
+          console.log('Empty Branch -> ', value.data);
           setTimeout(() => {}, 300);
         });
     }
@@ -265,9 +263,11 @@ export class TransferComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log(value.data.data[0]);
-          this.transferName = value.data.data[0].branch.name;
-          this.productTransferID = value.data.data[0].id;
+          console.log('Filtered Code -> ', value.data);
+
+          console.log(value.data[0]);
+          this.transferName = value.data[0].branch.name;
+          this.productTransferID = value.data[0].id;
           setTimeout(() => {}, 300);
         });
       return this.items.filter(option =>
@@ -280,7 +280,7 @@ export class TransferComponent implements OnInit {
           label: value
         })
         .subscribe(value => {
-          console.log(value);
+          console.log('Filtered Code (String) -> ', value);
         });
       // value = this.tem_category;
       const filterValueName = value.toLowerCase();
@@ -354,6 +354,10 @@ export class TransferComponent implements OnInit {
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
         setTimeout(() => {
+          console.log(
+            'Transfer Items After transfer request -> ',
+            value.data.data
+          );
           this.dataSource = new MatTableDataSource(value.data.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
@@ -384,33 +388,33 @@ export class TransferComponent implements OnInit {
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
     console.log(event);
-    this.api
-      .get('transfer', {
-        per_page: event.pageSize,
-        page: 1
-      })
-      .subscribe((productList: any) => {
-        console.log(productList);
-        this.products = productList.data.data;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'product.label':
-              return item.product.label;
-            case 'from_branch.name':
-              return item.from_branch.name;
-            case 'product.item_total_after_profit':
-              return item.product.item_total_after_profit;
-            case 'employee.name':
-              return item.employee.name;
-            default:
-              return item[property];
-          }
-        };
-      });
+    // this.api
+    //   .get('transfer', {
+    //     per_page: event.pageSize,
+    //     page: 1
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList);
+    //     this.products = productList.data.data;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'product.label':
+    //           return item.product.label;
+    //         case 'from_branch.name':
+    //           return item.from_branch.name;
+    //         case 'product.item_total_after_profit':
+    //           return item.product.item_total_after_profit;
+    //         case 'employee.name':
+    //           return item.employee.name;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //   });
     console.log(this.pageIndex);
 
     this.numberOfPages = [];
@@ -425,32 +429,32 @@ export class TransferComponent implements OnInit {
   }
   selectPage(event) {
     console.log(event);
-    this.currentPage = event;
-    this.api
-      .get('transfer', {
-        per_page: 10,
-        page: this.currentPage
-      })
-      .subscribe((productList: any) => {
-        console.log(productList.data.data);
-        this.products = productList.data.data;
-        this.dataSource = new MatTableDataSource(productList.data.data);
-        this.pageIndex = productList.data.last_page;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sortingDataAccessor = (item, property) => {
-          switch (property) {
-            case 'category.name':
-              return item.category.name;
-            case 'branch.name':
-              return item.branch.name;
-            case 'status.name':
-              return item.status.name;
-            default:
-              return item[property];
-          }
-        };
-      });
+    // this.currentPage = event;
+    // this.api
+    //   .get('transfer', {
+    //     per_page: 10,
+    //     page: this.currentPage
+    //   })
+    //   .subscribe((productList: any) => {
+    //     console.log(productList.data.data);
+    //     this.products = productList.data.data;
+    //     this.dataSource = new MatTableDataSource(productList.data.data);
+    //     this.pageIndex = productList.data.last_page;
+    //     this.dataSource.sort = this.sort;
+    //     this.dataSource.paginator = this.paginator;
+    //     this.dataSource.sortingDataAccessor = (item, property) => {
+    //       switch (property) {
+    //         case 'category.name':
+    //           return item.category.name;
+    //         case 'branch.name':
+    //           return item.branch.name;
+    //         case 'status.name':
+    //           return item.status.name;
+    //         default:
+    //           return item[property];
+    //       }
+    //     };
+    //   });
   }
   /*--------------------------------- Logout -------------------------------- */
   logout() {

@@ -1471,6 +1471,12 @@ header {
 }
 
 #invoice-list {
+
+  .mat-paginator-navigation-previous,
+  .mat-paginator-navigation-next {
+    display: none !important;
+  }
+
   #showOrdercontrols {
     .basic_button {
       width: 85px;
@@ -1502,6 +1508,12 @@ header {
 
 /* -------------------------- Categories --------------------- */
 #categories {
+
+  .mat-paginator-navigation-previous,
+  .mat-paginator-navigation-next {
+    display: none !important;
+  }
+
   #showOrdercontrols {
     right: 22%;
   }
@@ -1526,6 +1538,12 @@ header {
 
 /* -------------------------- Stones --------------------- */
 #stones {
+
+  .mat-paginator-navigation-previous,
+  .mat-paginator-navigation-next {
+    display: none !important;
+  }
+
   #showOrdercontrols {
     right: 15%;
   }
@@ -1550,6 +1568,12 @@ header {
 
 /* -------------------------- Branches --------------------- */
 #branches {
+
+  .mat-paginator-navigation-previous,
+  .mat-paginator-navigation-next {
+    display: none !important;
+  }
+
   #showOrdercontrols {
     right: 5%;
   }
@@ -1639,6 +1663,12 @@ header {
 
 /* ----------------------------- Users ---------------------------- */
 #users {
+
+  .mat-paginator-navigation-previous,
+  .mat-paginator-navigation-next {
+    display: none !important;
+  }
+
   .modal {
     h4 {
       font-size: 1rem;
@@ -1761,10 +1791,10 @@ header {
   }
 }
 
-.mat-paginator-navigation-previous,
+// .mat-paginator-navigation-previous,
 // .mat-paginator-navigation-next {
-  //   display: none !important;
-  // }
+//   display: none !important;
+// }
 
 
 .paginator {
