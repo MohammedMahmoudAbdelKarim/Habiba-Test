@@ -105,6 +105,7 @@
         <!-- From Date -->
         <div class="col p-0 mr-3">
           <input
+            #fromInput
             style="padding: 5px 8px;"
             [matDatepicker]="picker"
             placeholder="Date From"
@@ -117,10 +118,23 @@
             required
           />
           <mat-datepicker touchUi #picker></mat-datepicker>
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="fromInput.value = ''"
+            (click)="getFromData()"
+            style="position: relative;
+          top: -30px;
+          left: 222px;
+          z-index: 9;"
+            >close</mat-icon
+          >
         </div>
         <!-- To Date -->
         <div class="col p-0 mr-3">
           <input
+            #toInput
             style="padding: 5px;"
             [matDatepicker]="picker2"
             placeholder="Date To"
@@ -133,6 +147,19 @@
             required
           />
           <mat-datepicker touchUi #picker2></mat-datepicker>
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="toInput.value = ''"
+            (click)="getToData()"
+            style="position: relative;
+            top: -29px;
+            left: 222px;
+            z-index: 9;
+        "
+            >close</mat-icon
+          >
         </div>
         <!-- Metal -->
         <div class="col p-0 mr-3">
@@ -281,7 +308,7 @@
         </th>
         <td mat-cell *matCellDef="let row">
           <img
-            src="http://jewelry.ixscope.com/backend/img/products/{{
+            src="http://jewelry.inspia.net/backend/img/products/{{
               row.product.image
             }}"
             width="78px"
@@ -412,7 +439,7 @@
               <img
                 class="w-100"
                 height="205px"
-                src="http://jewelry.ixscope.com/backend/img/products/{{
+                src="http://jewelry.inspia.net/backend/img/products/{{
                   stockData.product.image
                 }}"
                 [alt]="stockData.label"
@@ -597,77 +624,160 @@
                   {{ inoviceClient }}
                 </h5>
               </div>
-              <div class="col-12 row no-gutters mt-3">
-                <table id="table-invoice" *ngIf="product">
-                  <thead>
-                    <tr class="text-center">
-                      <th>Image</th>
-                      <th>Code</th>
-                      <th>Category</th>
-                      <th>Gold Weight</th>
-                      <th>Stones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="text-center">
-                      <td>
-                        <img
-                          src="http://jewelry.ixscope.com/backend/img/products/{{
-                            product.image
-                          }}"
-                          alt=""
-                          width="55px"
-                          height="50px"
-                        />
-                      </td>
-                      <td>{{ product.label }}</td>
-                      <td>{{ product.category.name }}</td>
-                      <td>{{ product.gold_weight }}</td>
-                      <td>
-                        <table class="inner">
-                          <thead>
-                            <tr>
-                              <th>No</th>
-                              <th>Label</th>
-                              <th>Qty</th>
-                              <th>Weight</th>
-                              <th>Price</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr
-                              *ngFor="
-                                let stone of invoiceData.stones;
-                                let i = index
-                              "
-                            >
-                              <td>{{ i + 1 }}</td>
-                              <td>{{ stone.code }}</td>
-                              <td>{{ stone.quantity }}</td>
-                              <td>{{ stone.weight }}</td>
-                              <td>{{ stone.price }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <!-- <table id="table-invoice" *ngIf="product">
+                <thead>
+                  <tr class="text-center">
+                    <th>Image</th>
+                    <th>Code</th>
+                    <th>Category</th>
+                    <th>Gold Weight</th>
+                    <th>Stones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="text-center">
+                    <td>
+                      <img
+                        src="http://jewelry.inspia.net/backend/img/products/{{
+                          product.image
+                        }}"
+                        alt=""
+                        width="55px"
+                        height="50px"
+                      />
+                    </td>
+                    <td>{{ product.label }}</td>
+                    <td>{{ product.category.name }}</td>
+                    <td>{{ product.gold_weight }}</td>
+                    <td>
+                      <table class="inner">
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>Label</th>
+                            <th>Qty</th>
+                            <th>Weight</th>
+                            <th>Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            *ngFor="
+                              let stone of invoiceData.stones;
+                              let i = index
+                            "
+                          >
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ stone.code }}</td>
+                            <td>{{ stone.quantity }}</td>
+                            <td>{{ stone.weight }}</td>
+                            <td>{{ stone.price }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table> -->
+              <div
+                class="col-12 row no-gutters mt-5 justify-content-between align-items-start"
+                *ngIf="product"
+              >
+                <div class="col-6 row no-gutters">
+                  <div
+                    class="col-12 row no-gutters border-invoice border-bottom-0"
+                  >
+                    <h5 class="col-6 mb-0">
+                      Item Code
+                    </h5>
+                    <h5 class=" col-6">
+                      {{ product.label }}
+                    </h5>
+                  </div>
+                  <div
+                    class="col-12 row no-gutters border-invoice border-bottom-0"
+                  >
+                    <h5 class="col-6 mb-0">
+                      Category
+                    </h5>
+                    <h5 class="col-6">
+                      {{ product.category.name }}
+                    </h5>
+                  </div>
+                  <div class="col-12 row no-gutters border-invoice mb-3">
+                    <h5 class="col-6 mb-0">
+                      Gold Weight
+                    </h5>
+                    <h5 class="col-6">
+                      {{ product.gold_weight }}
+                    </h5>
+                  </div>
+                  <table id="table-invoice" class="mt-5" *ngIf="product">
+                    <thead>
+                      <tr class="text-center">
+                        <th class="text-capitalize">Diamond Details</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="text-center">
+                        <td>
+                          <table class="inner">
+                            <thead>
+                              <tr>
+                                <th>no</th>
+                                <th>Label</th>
+                                <th>qty</th>
+                                <th>Weight</th>
+                                <th>Colour</th>
+                                <th>Clarity</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                *ngFor="
+                                  let stone of invoiceData.stones;
+                                  let i = index
+                                "
+                              >
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ stone.code }}</td>
+                                <td>{{ stone.quantity }}</td>
+                                <td>{{ stone.weight }}</td>
+                                <td>{{ stone.color }}</td>
+                                <td>{{ stone.clarity }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-5 row no-gutters">
+                  <img
+                    class="col-12"
+                    src="http://jewelry.inspia.net/backend/img/products/{{
+                      product.image
+                    }}"
+                    alt=""
+                    width="100%"
+                  />
+                </div>
               </div>
-              <div class="col-6 row no-gutters mt-3">
+              <div class="col-12 row no-gutters mt-3">
                 <h5 class="border-invoice col-4 border-right-0">Price (EGP)</h5>
                 <h5 class="border-invoice col-8">
                   {{ totalEGP ? totalEGP : '-' }}
                 </h5>
               </div>
-              <div class="col-6 row no-gutters mt-3">
+              <!-- <div class="col-6 row no-gutters mt-3">
                 <h5 class="border-invoice col-6 border-right-0">
                   Paid Amount (EGP)
                 </h5>
                 <h5 class="border-invoice col-6">
                   {{ paidAmount ? paidAmount : '-' }}
                 </h5>
-              </div>
+              </div> -->
               <div class="col-12 row no-gutters mt-3">
                 <h5 class="border-invoice col-4 border-right-0">Seller Name</h5>
                 <h5 class="border-invoice col-8">

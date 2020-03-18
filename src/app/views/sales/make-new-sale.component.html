@@ -127,7 +127,7 @@
                 <img
                   *ngIf="product.image"
                   width="100%"
-                  src="http://jewelry.ixscope.com/backend/img/products/{{
+                  src="http://jewelry.inspia.net/backend/img/products/{{
                     product.image
                   }}"
                   [alt]="product.label"
@@ -158,6 +158,12 @@
                         <th class="border-right" scope="col">
                           Setting
                         </th>
+                        <th class="border-right" scope="col">
+                          Color
+                        </th>
+                        <th class="border-right" scope="col">
+                          Clarity
+                        </th>
                         <th scope="col">Total ($)</th>
                       </tr>
                     </thead>
@@ -169,25 +175,25 @@
                           let stoneIndex = index
                         "
                       >
-                        <td class="pb-0 border-right" *ngIf="stone.name">
+                        <td class="pb-0 border-right">
                           {{ stone.name }}
                         </td>
-                        <td class="pb-0 border-right" *ngIf="stone.quantity">
+                        <td class="pb-0 border-right">
                           <input
                             class="stone-input text-center"
-                            value="{{ stone.quantity }}"
+                            value="{{ stone.quantity ? stone.quantity : '0' }}"
                             formControlName="productStoneQuantity"
                             (keyup)="
-                              calculateStoneTotal($event, stoneIndex, i, 'sW')
+                              calculateStoneTotal($event, stoneIndex, i, 'sQ')
                             "
                             (keypress)="numberCheckValidation($event)"
                             maxlength="9"
                           />
                         </td>
-                        <td class="border-right" *ngIf="stone.weight">
+                        <td class="border-right">
                           <input
                             class="stone-input text-center"
-                            value="{{ stone.weight }}"
+                            value="{{ stone.weight ? stone.weight : '0' }}"
                             formControlName="productStoneWeight"
                             (keyup)="
                               calculateStoneTotal($event, stoneIndex, i, 'sW')
@@ -199,7 +205,7 @@
                         <td class="border-right">
                           <input
                             class="stone-input text-center"
-                            value="{{ stone.price }}"
+                            value="{{ stone.price ? stone.price : '0' }}"
                             formControlName="productStonePrice"
                             autocomplete="off"
                             (keyup)="
@@ -212,17 +218,31 @@
                         <td class="border-right">
                           <input
                             class="stone-input text-center"
-                            value="{{ stone.setting }}"
+                            value="{{ stone.setting ? stone.setting : '0' }}"
                             formControlName="productStoneSetting"
                             autocomplete="off"
-                            (keyup)="
-                              calculateStoneTotal($event, stoneIndex, i, 'sS')
-                            "
+                            (keyup)="calculateStoneTotal($event, stoneIndex, i)"
                             (keypress)="numberCheckValidation($event)"
                             maxlength="9"
                           />
                         </td>
-                        <td class="" *ngIf="stone.total">
+                        <td class="pb-0 border-right">
+                          <input
+                            class="stone-input text-center"
+                            value="{{ stone.color }}"
+                            formControlName="productColor"
+                            (keyup)="calculateStoneTotal($event, stoneIndex, i)"
+                          />
+                        </td>
+                        <td class="pb-0 border-right">
+                          <input
+                            class="stone-input text-center"
+                            value="{{ stone.clarity }}"
+                            formControlName="productClarity"
+                            (keyup)="calculateStoneTotal($event, stoneIndex, i)"
+                          />
+                        </td>
+                        <td class="">
                           {{ stone.total }}
                         </td>
                       </tr>
@@ -271,7 +291,7 @@
               [(ngModel)]="clientValue"
             />
             <mat-icon
-              class="pointer"
+              class="pointer text-black-50"
               matSuffix
               aria-label="Clear"
               (click)="clientValue = ''"
@@ -298,6 +318,28 @@
               style="color:#20a8d8; font-size: 12px;"
               >Add New Client</mat-hint
             >
+          </mat-form-field>
+          <mat-hint
+            class="alert alert-danger mt-2 w-100 d-block"
+            *ngIf="errMessage.client_id"
+            >{{ errMessage.client_id }}</mat-hint
+          >
+        </div>
+        <div class="col-md-12 mt-3" *ngIf="reseller_name">
+          <label
+            ><img src=".././../../assets/icon/employee-2.svg" />
+            <span class="ml-2">Reseller Name</span>
+          </label>
+          <mat-form-field class="example-full-width pb-0" appearance="outline">
+            <mat-label>Reseller Name</mat-label>
+            <input
+              type="text"
+              placeholder="Reseller"
+              aria-label="Number"
+              matInput
+              disabled
+              value="{{ reseller_name }}"
+            />
           </mat-form-field>
           <mat-hint
             class="alert alert-danger mt-2 w-100 d-block"
@@ -421,6 +463,12 @@
                 >
                 <span style="font-size: 12px" *ngIf="remainingPrice"
                   >{{ remainingPrice }} EGP</span
+                >
+                <span
+                  class="alert alert-danger w-100 d-block mt-2"
+                  style="font-size: 12px"
+                  *ngIf="errMessage.paid_egp"
+                  >{{ errMessage.paid_egp }}</span
                 >
               </td>
               <td class="text-center text-red">

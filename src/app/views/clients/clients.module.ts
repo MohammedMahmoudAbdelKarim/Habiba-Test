@@ -18,7 +18,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AlertModule, ModalModule } from 'ngx-bootstrap';
 import { clientsAllSolver } from '../../resolvers/clients-index.solver';
-
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 // Theme Routing
 
 @NgModule({
@@ -35,6 +35,7 @@ import { clientsAllSolver } from '../../resolvers/clients-index.solver';
     MatAutocompleteModule,
     MatSortModule,
     MatPaginatorModule,
+    MatSlideToggleModule,
     MatTableModule,
     MatCheckboxModule,
     AlertModule.forRoot(),

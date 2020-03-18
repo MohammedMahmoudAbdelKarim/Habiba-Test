@@ -127,7 +127,7 @@
                 <img
                   *ngIf="product.image"
                   width="100%"
-                  src="http://jewelry.ixscope.com/backend/img/products/{{
+                  src="http://jewelry.inspia.net/backend/img/products/{{
                     product.image
                   }}"
                   [alt]="product.label"
@@ -236,7 +236,22 @@
     <div class="col-md-4 p-5" id="sale-details">
       <form [formGroup]="invoiceDataform">
         <!-- Start Form field -->
-
+        <div class="col-md-12">
+          <div class="form-group">
+            <label
+              ><img src=".././../../assets/icon/employee-2.svg" />
+              <span class="ml-2">Client Name </span>
+            </label>
+            <select class="input-text w-100" value="" required disabled>
+              <option value="" disabled selected *ngIf="!clientName"
+                >Client</option
+              >
+              <option value="" disabled selected *ngIf="clientName">{{
+                clientName
+              }}</option>
+            </select>
+          </div>
+        </div>
         <div class="col-md-12">
           <div class="form-group">
             <label>
@@ -381,7 +396,7 @@
     <div class="col-md-4 p-0">
       <button class="submit-btn" type="submit" (click)="onSubmit()">
         <i class="icon-basket-loaded mr-2 align-middle"></i>
-        Confirm & Generate Invoice
+        Return
       </button>
     </div>
   </div>

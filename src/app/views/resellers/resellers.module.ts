@@ -32,6 +32,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ResellersSolver } from '../../resolvers/resellers-index.solver';
 import { branchListSolver } from '../../resolvers/branch-list.solver';
 import { clientsListSolver } from '../../resolvers/clientsList.solver';
+import { resellerClientsSolver } from '../../resolvers/clientsReseller.solver';
 
 @NgModule({
   imports: [
@@ -64,6 +65,11 @@ import { clientsListSolver } from '../../resolvers/clientsList.solver';
     TooltipModule.forRoot()
   ],
   declarations: [ResllersComponent],
-  providers: [ResellersSolver, branchListSolver, clientsListSolver]
+  providers: [
+    ResellersSolver,
+    branchListSolver,
+    clientsListSolver,
+    resellerClientsSolver
+  ]
 })
 export class ResllersModule {}

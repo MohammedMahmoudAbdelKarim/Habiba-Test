@@ -1,3 +1,4 @@
+import { optionSolver } from './../../resolvers/otpions.solver';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -9,6 +10,9 @@ const routes: Routes = [
     component: OptionsComponent,
     data: {
       title: 'Options'
+    },
+    resolve: {
+      options: optionSolver
     }
   }
 ];

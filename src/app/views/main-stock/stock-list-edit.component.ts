@@ -51,7 +51,7 @@ export class stockListEditComponent {
   testStonesArray: any = [];
   imgSrc: string;
   stone_id: any = '';
-  baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
+  baseUrl: string = 'http://jewelry.inspia.net/backend/img/products/';
   /* ------------------------------------- Form ------------------------ */
   // Stock Form
   stockUpdatForm = new FormGroup({

@@ -125,7 +125,7 @@ export class StockListComponent implements OnInit {
   reseller: any = '';
   resellerBranch: any = '';
   imgUrl: string = 'img/products/';
-  baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
+  baseUrl: string = 'http://jewelry.inspia.net/backend/img/products/';
   transferName: any = '';
   transferCode: any = '';
   imgSrc: any = '';
@@ -902,7 +902,7 @@ export class StockListComponent implements OnInit {
     this.stockUpdatForm.controls.updateGoldWeight.setValue(+data.gold_weight);
     this.stockUpdatForm.controls.updateGoldPrice.setValue(+data.gold_price);
     this.total_price = +stockData.gold_total.toFixed(2);
-    this.ItemDataCalculated.item_total = +stockData.item_total.toFixed(2);
+    // this.ItemDataCalculated.item_total = +stockData.item_total.toFixed(2);
     this.stockUpdatForm.controls.goldTotalPrice.setValue(this.total_price);
     this.testStonesArray = data.stones;
   }
@@ -1011,6 +1011,8 @@ export class StockListComponent implements OnInit {
         this.ItemDataCalculated.item_total *
           this.ItemDataCalculated.profit_percent
       );
+      this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
+      this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
     }
   }
   /* --------------------------- Number Validation ------------------------ */
@@ -1048,35 +1050,82 @@ export class StockListComponent implements OnInit {
     console.log(i);
     this.api.get('stones/' + event).subscribe(data => {
       console.log(data.data);
-      this.checkItemDataCalculatedIsDefiend = false;
-      console.log(this.stockUpdatForm.value);
-      this.stockUpdatForm.controls.updateStonesPrice.setValue(+data.data.price);
-      this.stockUpdatForm.controls.updateSettingsSetting.setValue(
-        +data.data.setting
+      console.log(this.testStonesArray);
+      this.checkItemDataCalculatedIsDefiend = true;
+      console.log(this.updatedItemData.stones[i]);
+      this.updatedItemData.stones[i].name = data.data.name;
+      this.updatedItemData.stones[i].id = data.data.id;
+      this.updatedItemData.stones[i].code = data.data.code;
+      this.updatedItemData.stones[i].price = data.data.price;
+      this.updatedItemData.stones[i].setting = data.data.setting;
+      this.updatedItemData.stones[i].weight = this.updatedItemData.stones[
+        i
+      ].weight;
+      this.updatedItemData.stones[i].quantity = this.updatedItemData.stones[
+        i
+      ].quantity;
+      const stoneTotal = +(
+        this.testStonesArray[i].quantity * this.testStonesArray[i].setting +
+        this.testStonesArray[i].weight * this.testStonesArray[i].price
+      ).toFixed(2);
+      this.updatedItemData.stones[i].total = stoneTotal;
+      // Set New Stone
+      this.testStonesArray[i].total = stoneTotal;
+      console.log(this.updatedItemData.stones);
+      const items = this.ItemDataCalculated.stones;
+      let sum = null;
+      items.forEach(value => {
+        sum += value.total;
+      });
+
+      // End Calculate Total of Stone Total
+      this.ItemDataCalculated.item_total = +(
+        this.ItemDataCalculated.gold_total + sum
+      ).toFixed(2);
+      this.ItemDataCalculated.item_total_after_profit = Math.ceil(
+        this.ItemDataCalculated.item_total *
+          this.ItemDataCalculated.profit_percent
       );
-      console.log(this.stockUpdatForm.value);
-      console.log(this.newStoneArray);
-      this.newPriceValue = data.data.price;
-      this.newSettingValue = data.data.setting;
-      const obj1 = {
-        target: {
-          value: data.data.price
-        }
-      };
-      const obj2 = {
-        target: {
-          value: data.data.setting
-        }
-      };
-      console.log(this.testStonesArray);
-      this.testStonesArray.splice(i, 1);
-      console.log(this.testStonesArray);
-      this.testStonesArray.push(data.data);
-      console.log(this.testStonesArray);
-      // this.testStonesArray[i].quantity = 0;
-      this.calculateStoneTotal(obj1, i, 'sP');
-      this.calculateStoneTotal(obj2, i, 'sS');
+      // End Calculate Total of Stone Total
+
+      // this.ItemDataCalculated.item_total = +(
+      //   this.ItemDataCalculated.gold_total + sum
+      // ).toFixed(2);
+      // this.ItemDataCalculated.item_total_after_profit = Math.ceil(
+      //   this.ItemDataCalculated.item_total *
+      //     this.ItemDataCalculated.profit_percent
+      // );
     });
+    // this.testStonesArray.splice(i, 1);
+    // this.testStonesArray.push(data.data);
+    // console.log(this.stockUpdatForm.value);
+    // this.stockUpdatForm.controls.updateStonesPrice.setValue(+data.data.price);
+    // this.stockUpdatForm.controls.updateSettingsSetting.setValue(
+    //   +data.data.setting
+    // );
+    // console.log(this.stockUpdatForm.value);
+    // console.log(this.newStoneArray);
+    // this.newPriceValue = data.data.price;
+    // this.newSettingValue = data.data.setting;
+    // const obj1 = {
+    //   target: {
+    //     value: data.data.price
+    //   }
+    // };
+    // const obj2 = {
+    //   target: {
+    //     value: data.data.setting
+    //   }
+    // };
+    // console.log(this.testStonesArray);
+    // this.testStonesArray.splice(i, 1);
+    // console.log(this.testStonesArray);
+    // this.testStonesArray.push(data.data);
+    // console.log(this.testStonesArray);
+    // this.testStonesArray[i].quantity = 0;
+    // this.calculateStoneTotal(obj1, i, 'sP');
+    // this.calculateStoneTotal(obj2, i, 'sS');
+    // });
   }
   /* ---------------------------------- Remove Stone ------------------------ */
   removeStone(i) {
@@ -1096,6 +1145,8 @@ export class StockListComponent implements OnInit {
       this.ItemDataCalculated.item_total *
         this.ItemDataCalculated.profit_percent
     );
+    this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
+    this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
   }
   /* ------------------------------ Create New Stone ------------------------ */
   onSubmitStone(form) {
@@ -1118,7 +1169,7 @@ export class StockListComponent implements OnInit {
       console.log(this.newStoneArray);
       this.newStoneArray.push(form.value);
       console.log(this.newStoneArray);
-
+      this.updatedItemData.stones = this.newStoneArray;
       this.stoneModal.hide();
       const items = this.ItemDataCalculated.stones;
       let sum = null;
@@ -1132,6 +1183,8 @@ export class StockListComponent implements OnInit {
         this.ItemDataCalculated.item_total *
           this.ItemDataCalculated.profit_percent
       );
+      this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
+      this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
     } else {
       this.api.fireAlert('error', 'Please Fill in All Data', '');
     }
@@ -1155,7 +1208,7 @@ export class StockListComponent implements OnInit {
     } else {
       this.newStoneArray = [];
     }
-    this.updatedItemData = this.ItemDataCalculated;
+    // this.updatedItemData = this.ItemDataCalculated;
     if (this.updatedItemData.stones.length === 0) {
       delete this.updatedItemData.stones;
     }
@@ -1164,6 +1217,12 @@ export class StockListComponent implements OnInit {
       console.log(this.updatedItemData);
     }
     this.updatedItemData.profit_percent = this.stockUpdatForm.controls.profit_percent.value;
+    if (this.newStoneArray.length) {
+      this.updatedItemData.stones = this.newStoneArray;
+    }
+    console.log(this.updatedItemData);
+
+    console.log(this.updatedItemData.stones);
 
     this.api
       .put('products/' + this.updatedItemData.id, this.updatedItemData)
@@ -1177,7 +1236,7 @@ export class StockListComponent implements OnInit {
         );
         setTimeout(() => {
           this.editModal.hide();
-          // location.reload();
+          location.reload();
         }, 1000);
       });
   }

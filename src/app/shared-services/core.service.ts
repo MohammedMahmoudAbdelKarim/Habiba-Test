@@ -33,7 +33,7 @@ export class CoreService {
       icon: type,
       title: title,
       text: text,
-      confirmButtonText: 'ok'
+      confirmButtonText: 'Ok'
     });
   }
 }

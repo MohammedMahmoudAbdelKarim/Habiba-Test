@@ -73,7 +73,7 @@ export class InvoicesComponent {
   currentPage;
   statusValue: string = '';
   imgUrl: string = 'img/products/';
-  baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
+  baseUrl: string = 'http://jewelry.inspia.net/backend/img/products/';
   modalError: any = [];
   transferName: any = '';
   transferCode: any = '';
@@ -103,6 +103,7 @@ export class InvoicesComponent {
   inovicePhone: any = '';
   pageIndex;
   numberOfPages = [];
+
   // Form Controls
   myControlClient = new FormControl('');
   myControlInvoice = new FormControl('');
@@ -512,6 +513,64 @@ export class InvoicesComponent {
         }, 300);
       });
   }
+  /* --------------------------- Clear From Data ----------------------------- */
+  getFromData() {
+    this.fromDate = '';
+    this.api
+      .get('receipts', {
+        client_name: this.client_name,
+        receipt_number: this.receipt_number,
+        date_from: this.fromDate,
+        date_to: this.toDate,
+        per_page: 50
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'client.name':
+                return item.client.name;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
+  /* --------------------------- Clear To Data ----------------------------- */
+  getToData() {
+    this.toDate = '';
+    this.api
+      .get('receipts', {
+        client_name: this.client_name,
+        receipt_number: this.receipt_number,
+        date_from: this.fromDate,
+        date_to: this.toDate,
+        per_page: 50
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'client.name':
+                return item.client.name;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
   /* ---------------------------- Get Payment Type ------------------------ */
   getPaymentType(event) {
     this.payment_method = event;
@@ -567,14 +626,14 @@ export class InvoicesComponent {
       this.settings_website = data.data[0].website;
     });
     this.invoiceData = row;
+    this.inoviceProducts = row.items[0];
+    console.log(this.inoviceProducts);
     this.inoviceClient = row.client.name;
     this.inoviceEmployee = row.employee.name;
     this.inoviceBranch = row.branch.name;
-    this.inoviceProducts = row.products;
     this.inoviceCity = row.branch.city.name;
     this.inoviceAddress = row.branch.address;
     this.inovicePhone = row.branch.phone;
-    console.log(this.inoviceProducts);
   }
 
   /* ---------- Pagniation & Number of items showed in the page ------------- */
@@ -652,4 +711,6 @@ export class InvoicesComponent {
       window.print();
     }, 200);
   }
+
+  resetEnd() {}
 }

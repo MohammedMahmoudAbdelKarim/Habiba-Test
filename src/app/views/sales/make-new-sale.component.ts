@@ -78,11 +78,13 @@ export class MakeNewSaleComponent implements OnInit {
     productStonePrice: new FormControl(''),
     productStoneSetting: new FormControl(''),
     productStoneQuantity: new FormControl(''),
-    productStoneWeight: new FormControl('')
+    productStoneWeight: new FormControl(''),
+    productColor: new FormControl(''),
+    productClarity: new FormControl('')
   });
   // Paid Amount Form
   paidAmountForm = new FormGroup({
-    paidAmount: new FormControl(''),
+    paidAmount: new FormControl('0'),
     total_egp: new FormControl('')
   });
   // Branch Form
@@ -97,6 +99,9 @@ export class MakeNewSaleComponent implements OnInit {
     mobile: new FormControl('', Validators.required),
     email: new FormControl('', Validators.required)
   });
+  client_name: any;
+  reseller_id: any;
+  reseller_name: any;
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -109,12 +114,20 @@ export class MakeNewSaleComponent implements OnInit {
         console.log(val);
 
         if (val.data) {
+          console.log(val.data);
+
           this.isInvoiced = true;
           this.branch_name = val.data.branch.name;
+          if (val.data.reseller) {
+            this.reseller_name = val.data.reseller.client.name;
+            this.client_name = val.data.reseller.client.name;
+            this.selectedClientId = val.data.reseller.client.id;
+            this.reseller_id = val.data.reseller.client.id;
+          }
           this.sellingProductListArray.push(val.data);
           this.sentFormBranchId = val.data.branch.id;
           this.sellingProductListArray.forEach(value => {
-            this.invoiceTotal += value.item_total_after_profit;
+            this.invoiceTotal += Math.ceil(value.item_total_after_profit);
           });
         } else {
           this.sellingProductListArray = [];
@@ -337,7 +350,7 @@ export class MakeNewSaleComponent implements OnInit {
     if (key === 'sQ') {
       console.log('Quantity');
 
-      this.sellingProductListArray[sellingProductIndex].stone[
+      this.sellingProductListArray[sellingProductIndex].stones[
         stoneIndex
       ].quantity = this.editProductStoneForm.value.productStoneQuantity;
     }
@@ -348,6 +361,12 @@ export class MakeNewSaleComponent implements OnInit {
         stoneIndex
       ].weight = this.editProductStoneForm.value.productStoneWeight;
     }
+    this.sellingProductListArray[sellingProductIndex].stones[
+      stoneIndex
+    ].color = this.editProductStoneForm.value.productColor;
+    this.sellingProductListArray[sellingProductIndex].stones[
+      stoneIndex
+    ].clarity = this.editProductStoneForm.value.productClarity;
     this.sellingProductListArray[sellingProductIndex].stones[
       stoneIndex
     ].total = +(
@@ -371,6 +390,7 @@ export class MakeNewSaleComponent implements OnInit {
     itemStones.forEach(value => {
       stoneTotalsSum += value.total;
     });
+
     this.sellingProductListArray[
       sellingProductIndex
     ].item_total_after_profit = Math.ceil(
@@ -379,10 +399,16 @@ export class MakeNewSaleComponent implements OnInit {
           this.sellingProductListArray[sellingProductIndex].gold_weight) *
         this.sellingProductListArray[sellingProductIndex].profit_percent
     );
+
+    console.log(this.invoiceTotal);
+    this.invoiceTotal = this.sellingProductListArray[
+      sellingProductIndex
+    ].item_total_after_profit;
+
     // Create Array To Stone Items // Place To Stone The Total Cost
-    this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal += value.item_total_after_profit;
-    });
+    // this.sellingProductListArray.forEach(value => {
+    //   // this.invoiceTotal += value.item_total_after_profit;
+    // });
   }
   /* ---------------------------- Number Validation ------------------------ */
   numberCheckValidation(e) {
@@ -496,7 +522,7 @@ export class MakeNewSaleComponent implements OnInit {
     this.sumTotalOFSingleProduct(this.selectedProductData);
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal += value.item_total_after_profit;
+      this.invoiceTotal += Math.ceil(value.item_total_after_profit);
     });
     this.clearSearch();
     this.paidAmountForm.controls.total_egp.setValue(
@@ -520,7 +546,7 @@ export class MakeNewSaleComponent implements OnInit {
     this.sellingProductListArray.splice(sellingProductIndex, 1);
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal -= value.item_total_after_profit;
+      this.invoiceTotal -= Math.ceil(value.item_total_after_profit);
     });
     this.invoiceTotal = Math.abs(this.invoiceTotal);
   }
@@ -531,9 +557,22 @@ export class MakeNewSaleComponent implements OnInit {
     if (this.paidAmountForm.value.paidAmount === '') {
       this.paidAmountForm.value.paidAmount = 0;
     }
+    console.log(this.paidAmountForm.value.total_egp);
+    console.log(this.paidAmountForm);
+
+    if (this.paidAmountForm.value.total_egp == '') {
+      console.log('Empty');
+      this.paidAmountForm.controls.total_egp.setValue(
+        this.invoiceTotal * this.dollarPrice
+      );
+    }
+    console.log(this.paidAmountForm.value.total_egp);
+    console.log(this.reseller_id);
+
     this.api
       .post('receipts', {
         items: arr,
+        reseller_id: this.reseller_id,
         client_id: this.selectedClientId,
         branch_id: this.sentFormBranchId,
         receipt_date: this.sentProductDate,

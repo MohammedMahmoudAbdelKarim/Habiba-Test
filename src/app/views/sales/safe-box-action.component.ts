@@ -60,6 +60,13 @@ export class SafeBoxActionComponent {
       .subscribe(value => {
         console.log(value);
         this.toast.success("The branch's safe box is empty Now!", '!Success');
+        this.api
+          .get('savebox/index', {
+            per_page: 50
+          })
+          .subscribe(data => {
+            this.safeBoxArray = data.data.data;
+          });
       });
   }
   /* -------------------------- Get Payment Method ------------------------- */
@@ -76,6 +83,7 @@ export class SafeBoxActionComponent {
   }
   /* ----------------------- Get Transfer --------------------- */
   makeTransfer(row) {
+    this.transferMoney.reset();
     console.log(row);
     this.branch_name = row.branches.name;
     this.branch_id = row.branches.id;

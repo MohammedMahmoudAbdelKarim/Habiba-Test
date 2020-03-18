@@ -10,6 +10,7 @@ import { MainServiceService } from '../../shared-services/main-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { startWith, map } from 'rxjs/operators';
+import { ThemePalette } from '@angular/material/core';
 @Component({
   templateUrl: 'clients-list.component.html'
 })
@@ -60,6 +61,8 @@ export class ClientsListComponent implements OnInit {
   currentPage: number = 1;
   numberOfPages: any = [];
   pageIndex: any;
+  checked = false;
+  disabled = false;
   // Form Controls
   clientNameData = new FormControl('');
   /* ------------------------------------- Form ------------------------ */
@@ -72,7 +75,8 @@ export class ClientsListComponent implements OnInit {
     id: new FormControl(''),
     name: new FormControl('', Validators.required),
     mobile: new FormControl('', Validators.required),
-    email: new FormControl('', Validators.required)
+    email: new FormControl('', Validators.required),
+    reseller: new FormControl('')
   });
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
@@ -84,12 +88,14 @@ export class ClientsListComponent implements OnInit {
     this.route.data.subscribe(data => {
       console.log(data);
       // Get Clients
-      this.clientList = data.clients.data;
+      this.clientList = data.clients.data.data;
+      console.log(this.clientList);
+
       this.pageIndex = data.clients.data.last_page;
-      this.dataSource = new MatTableDataSource(data.clients.data);
+      this.dataSource = new MatTableDataSource(data.clients.data.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.data = Object.assign(data.clients.data);
+      this.data = Object.assign(data.clients.data.data);
     });
     // Filter Clients
     this.filteredclients = this.clientNameData.valueChanges.pipe(
@@ -116,8 +122,9 @@ export class ClientsListComponent implements OnInit {
   private filterClient(value) {
     // tslint:disable-next-line: triple-equals
     if (value == '' || value == undefined) {
-      this.api.get('clients', {}).subscribe(data => {
-        this.dataSource = new MatTableDataSource(data.data);
+      this.api.get('clients', { per_page: 100 }).subscribe(data => {
+        console.log(data.data.data);
+        this.dataSource = new MatTableDataSource(data.data.data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       });
@@ -134,7 +141,8 @@ export class ClientsListComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          this.dataSource = new MatTableDataSource(value.data);
+          console.log(value);
+          this.dataSource = new MatTableDataSource(value.data.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
         });
@@ -306,6 +314,7 @@ export class ClientsListComponent implements OnInit {
     this.clientsForm.controls.name.setValue(clientData.name);
     this.clientsForm.controls.mobile.setValue(clientData.mobile);
     this.clientsForm.controls.email.setValue(clientData.email);
+    this.clientsForm.controls.reseller.setValue(clientData.reseller);
   }
   // Open Delete Popup
   opendeletePopup(row) {

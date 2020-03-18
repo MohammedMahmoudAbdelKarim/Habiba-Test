@@ -16,7 +16,7 @@ export class OptionsComponent implements OnInit {
   /* ------------------------------------- Form ------------------------ */
   // Main Form
   settingsForm = new FormGroup({
-    dollar_price: new FormControl('', Validators.required),
+    dollar_price: new FormControl(16.5, Validators.required),
     website: new FormControl('', Validators.required),
     address: new FormControl('', Validators.required),
     phone: new FormControl('')
@@ -31,7 +31,17 @@ export class OptionsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private toast: ToastrService
-  ) {}
+  ) {
+    this.route.data.subscribe(data => {
+      console.log(data.options);
+      this.settingsForm.controls.dollar_price.setValue(
+        data.options.data[0].dollar_price
+      );
+      this.settingsForm.controls.website.setValue(data.options.data[0].website);
+      this.settingsForm.controls.address.setValue(data.options.data[0].address);
+      this.settingsForm.controls.phone.setValue(data.options.data[0].phone);
+    });
+  }
   /* ----------------------------------- OnInit ------------------------ */
   // tslint:disable-next-line: use-lifecycle-interface
   ngOnInit() {}

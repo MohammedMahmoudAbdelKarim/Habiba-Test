@@ -15,7 +15,7 @@ export class StockListDetailsComponent {
   totalCost: any = '';
   imgSrc: string = '';
   finalCost: any = '';
-  baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
+  baseUrl: string = 'http://jewelry.inspia.net/backend/img/products/';
   stockData: any = [];
   pageloaded: boolean = false;
   showUpdataPopup: boolean = false;

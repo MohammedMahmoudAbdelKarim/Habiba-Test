@@ -94,6 +94,7 @@ export class ReturnComponent implements OnInit {
     mobile: new FormControl('', Validators.required),
     email: new FormControl('', Validators.required)
   });
+  clientName: any = '';
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -104,14 +105,15 @@ export class ReturnComponent implements OnInit {
     this.route.queryParams.subscribe(value => {
       console.log(value);
       this.api.get('products/' + value.id).subscribe(val => {
-        console.log(val);
+        console.log(val.data);
         if (val.data) {
           this.isInvoiced = true;
+          this.clientName = val.data.receipt.receipts.client.name;
           this.branch_name = val.data.branch.name;
           this.sellingProductListArray.push(val.data);
           this.sentFormBranchId = val.data.branch.id;
           this.sellingProductListArray.forEach(value => {
-            this.invoiceTotal += Math.ceil(value.receipt.receipts.total_egp);
+            this.invoiceTotal = Math.ceil(value.receipt.receipts.total_egp);
             this.invoiceDollarTotal = Math.ceil(
               value.receipt.receipts.total_dollar
             );
@@ -140,6 +142,11 @@ export class ReturnComponent implements OnInit {
           this.productArray = val.data;
           if (val.data.length) {
             this.selectedProductData = val.data;
+            console.log(val.data);
+
+            // this.clientName = val.data[0].client.name;
+            // console.log(this.clientName);
+
             this.filterSerchingHold = false;
             this.emptyArr = false;
           } else {
@@ -239,6 +246,8 @@ export class ReturnComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
+          console.log(val.data[0].receipt.receipts.client.name);
+          this.clientName = val.data[0].receipt.receipts.client.name;
           this.productArray = val.data;
           if (val.data.length) {
             this.selectedProductData = val.data;
@@ -365,7 +374,7 @@ export class ReturnComponent implements OnInit {
     // Create Array To Stone Items // Place To Stone The Total Cost
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal += Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceTotal = Math.ceil(value.receipt.receipts.total_egp);
       this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
   }
@@ -472,7 +481,7 @@ export class ReturnComponent implements OnInit {
     this.sumTotalOFSingleProduct(this.selectedProductData);
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal += Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceTotal = Math.ceil(value.receipt.receipts.total_egp);
       this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
     this.clearSearch();
@@ -489,7 +498,7 @@ export class ReturnComponent implements OnInit {
     this.sellingProductListArray.splice(sellingProductIndex, 1);
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal += Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceTotal = Math.ceil(value.receipt.receipts.total_egp);
       this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
     this.invoiceTotal = Math.abs(this.invoiceTotal);
@@ -507,9 +516,9 @@ export class ReturnComponent implements OnInit {
         branch_id: this.sentFormBranchId,
         receipt_date: this.sentProductDate,
         dollar_price: this.dollarPrice,
-        total_dollar: this.invoiceTotal,
+        total_dollar: this.invoiceDollarTotal,
         paid_egp: this.paidAmountForm.value.paidAmount,
-        total_egp: this.invoiceTotal * this.dollarPrice,
+        total_egp: this.invoiceTotal,
         payment_method: this.payment_method
       })
       .subscribe(
@@ -528,7 +537,8 @@ export class ReturnComponent implements OnInit {
         },
         error => {
           this.errMessage = error.error.errors;
-          this.api.fireAlert('error', 'Please Fill All Data', '');
+          let errorAlert = error.error.message;
+          this.api.fireAlert('error', errorAlert, '');
         }
       );
   }

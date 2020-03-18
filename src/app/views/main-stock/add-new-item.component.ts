@@ -31,6 +31,7 @@ export class AddNewItemComponent {
   });
   // Stone Form
   addStockStoneForm = new FormGroup({
+    id: new FormControl(''),
     stone: new FormControl('', Validators.required),
     stone_cost: new FormControl('', Validators.required),
     stone_weight: new FormControl('', Validators.required),
@@ -208,7 +209,9 @@ export class AddNewItemComponent {
         this.GoldPriceValue * this.addStockForm.value.gold_weight
       ).toFixed(2);
     }
-    this.totalCostWithOutProfit = +(this.goldTotalPice + +this.stonesTotalPrice).toFixed(2);
+    this.totalCostWithOutProfit = +(
+      this.goldTotalPice + +this.stonesTotalPrice
+    ).toFixed(2);
     this.totalCostWithProfit = Math.ceil(
       this.totalCostWithOutProfit * this.factorForm.controls.factor.value
     );
@@ -255,8 +258,9 @@ export class AddNewItemComponent {
       for (const stone of this.stoneList) {
         if (stoneSelectedName === stone.name) {
           const stoneIndex = this.stoneList.indexOf(stone);
-          this.sentFormStoneId = stone.id;
+          // this.sentFormStoneId = stone.id;
           this.addStockStoneForm.patchValue({
+            id: stone.id,
             stone_cost: stone.price,
             stone_setting: stone.setting
           });
@@ -266,8 +270,14 @@ export class AddNewItemComponent {
   }
   /* ----------------------- Add Stone to Item ---------------------- */
   addStoneToItem(form) {
+    console.log(this.editstoneIndex);
+
     if (this.editStoneMode) {
-      (this.sentStonesArray[this.editstoneIndex].id = this.sentFormStoneId),
+      console.log('Submit Edit');
+      console.log(this.sentStonesArray[this.editstoneIndex]);
+      (this.sentStonesArray[
+        this.editstoneIndex
+      ].id = this.addStockStoneForm.value.id),
         (this.sentStonesArray[
           this.editstoneIndex
         ].setting = this.addStockStoneForm.value.stone_setting);
@@ -283,29 +293,33 @@ export class AddNewItemComponent {
       this.sentStonesArray[
         this.editstoneIndex
       ].type_name = this.addStockStoneForm.value.stone;
-      this.sentStonesArray[this.editstoneIndex].total =
-        +(this.addStockStoneForm.value.stone_cost *
+      this.sentStonesArray[this.editstoneIndex].total = +(
+        this.addStockStoneForm.value.stone_cost *
           this.addStockStoneForm.value.stone_weight +
         this.addStockStoneForm.value.stone_quantity *
-          this.addStockStoneForm.value.stone_setting).toFixed(2);
+          this.addStockStoneForm.value.stone_setting
+      ).toFixed(2);
       this.editStoneMode = false;
     } else {
+      console.log('Push');
       this.sentStonesArray.push({
-        id: this.sentFormStoneId,
+        id: this.addStockStoneForm.value.id,
         setting: this.addStockStoneForm.value.stone_setting,
         price: this.addStockStoneForm.value.stone_cost,
         weight: this.addStockStoneForm.value.stone_weight,
         quantity: this.addStockStoneForm.value.stone_quantity,
         type_name: this.addStockStoneForm.value.stone,
-        total:
-          +(this.addStockStoneForm.value.stone_cost *
+        total: +(
+          this.addStockStoneForm.value.stone_cost *
             this.addStockStoneForm.value.stone_weight +
           this.addStockStoneForm.value.stone_quantity *
-            this.addStockStoneForm.value.stone_setting).toFixed(2)
+            this.addStockStoneForm.value.stone_setting
+        ).toFixed(2)
       });
     }
     this.addStockStoneForm.patchValue({
       stone: '',
+      id: '',
       stone_quantity: '',
       stone_weight: '',
       stone_cost: '',
@@ -318,7 +332,9 @@ export class AddNewItemComponent {
       sum += value.total;
     });
     this.stonesTotalPrice = +sum;
-    this.totalCostWithOutProfit = +(this.goldTotalPice + +this.stonesTotalPrice).toFixed(2);
+    this.totalCostWithOutProfit = +(
+      this.goldTotalPice + +this.stonesTotalPrice
+    ).toFixed(2);
     // End Sum Stones
   }
   /* ----------------------- Image Convet to Base64 ---------------------- */
@@ -359,16 +375,25 @@ export class AddNewItemComponent {
   }
   /* ------------------------------- Edit Stone ----------------------------- */
   editStone(editStoneIndex) {
+    console.log(editStoneIndex);
     this.editstoneIndex = editStoneIndex;
     this.editStoneMode = true;
+    console.log(this.sentStonesArray[editStoneIndex]);
+
     for (const editStone of this.stoneList) {
-      if (editStone.id === this.sentStonesArray[editStoneIndex].id) {
+      console.log(editStone);
+
+      if (editStone.id === this.sentStonesArray[this.editstoneIndex].id) {
+        console.log(editStoneIndex);
         this.editeStoneName = editStone.name;
-        this.editeStoneNameIndex = this.stoneList.indexOf(editStone);
       }
     }
+    console.log(this.editstoneIndex);
+    this.editeStoneName = this.sentStonesArray[editStoneIndex].type_name;
+    this.sentFormStoneId = this.sentStonesArray[this.editstoneIndex].id;
     this.addStockStoneForm.patchValue({
-      stone: this.editeStoneName,
+      stone: this.sentStonesArray[editStoneIndex].type_name,
+      id: this.sentStonesArray[this.editstoneIndex].id,
       stone_quantity: this.sentStonesArray[editStoneIndex].quantity,
       stone_weight: this.sentStonesArray[editStoneIndex].weight,
       stone_setting: this.sentStonesArray[editStoneIndex].setting,
@@ -394,7 +419,6 @@ export class AddNewItemComponent {
         stone_cost: '',
         stone_setting: ''
       });
-      this.sentStonesArray = [];
     }
     if (key === 'deleteImage') {
       this.imageDeleted = true;

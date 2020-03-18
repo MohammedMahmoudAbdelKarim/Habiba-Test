@@ -1,3 +1,4 @@
+import { LoaderComponent } from './containers/loader/loader.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -43,6 +44,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { InterceptorService } from './shared-services/interceptor.service';
+import { LoaderService } from './shared-services/loader.service';
+import { LoaderInterceptor } from './shared-services/loader.interceptor';
 
 @NgModule({
   imports: [
@@ -77,7 +80,8 @@ import { InterceptorService } from './shared-services/interceptor.service';
     P404Component,
     P500Component,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    LoaderComponent
   ],
   providers: [
     {
@@ -88,7 +92,9 @@ import { InterceptorService } from './shared-services/interceptor.service';
       provide: HTTP_INTERCEPTORS,
       useClass: InterceptorService,
       multi: true
-    }
+    },
+    LoaderService,
+    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

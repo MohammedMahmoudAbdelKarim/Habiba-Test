@@ -290,8 +290,8 @@ export class SafeBoxComponent {
         .get('savebox/actions', {
           branch_id: this.branch_id,
           status: this.status,
-          from_date: this.fromDate,
-          to_date: this.toDate,
+          // from_date: this.fromDate,
+          // to_date: this.toDate,
           per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -331,8 +331,8 @@ export class SafeBoxComponent {
         .get('savebox/actions', {
           branch_id: this.branch_id,
           status: this.status,
-          from_date: this.fromDate,
-          to_date: this.toDate,
+          // from_date: this.fromDate,
+          // to_date: this.toDate,
           per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -401,7 +401,82 @@ export class SafeBoxComponent {
     console.log(branch);
     return branch ? branch.name : branch;
   }
-
+  /* --------------------------- Clear From Data ----------------------------- */
+  getFromData() {
+    this.fromDate = '';
+    this.api
+      .get('savebox/actions', {
+        branch_id: this.branch_id,
+        status: this.status,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        per_page: 10
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        console.log(value);
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'product.label':
+                return item.product.label;
+              case 'product.metal.name':
+                return item.product.metal.name;
+              case 'receipts.branch.name':
+                return item.receipts.branch.name;
+              case 'receipts.employee.name':
+                return item.receipts.employee.name;
+              case 'receipts.receipt_number':
+                return item.receipts.receipt_number;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
+  /* --------------------------- Clear To Data ----------------------------- */
+  getToData() {
+    this.toDate = '';
+    this.api
+      .get('savebox/actions', {
+        branch_id: this.branch_id,
+        status: this.status,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        per_page: 10
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        console.log(value);
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'product.label':
+                return item.product.label;
+              case 'product.metal.name':
+                return item.product.metal.name;
+              case 'receipts.branch.name':
+                return item.receipts.branch.name;
+              case 'receipts.employee.name':
+                return item.receipts.employee.name;
+              case 'receipts.receipt_number':
+                return item.receipts.receipt_number;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
   /* ---------- Pagniation & Number of items showed in the page ------------- */
   onPaginateChange(event) {
     console.log(event);

@@ -64,7 +64,7 @@ export class UsersComponent implements OnInit {
   codeValue: string = '';
   statusValue: string = '';
   imgUrl: string = 'img/products/';
-  baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
+  baseUrl: string = 'http://jewelry.inspia.net/backend/img/products/';
   roleValue: any = '';
   data: any;
   pageEvent: any;

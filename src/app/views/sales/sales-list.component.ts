@@ -82,7 +82,7 @@ export class SalesListComponent {
   checkedItems: any = 0;
   statusValue: string = '';
   imgUrl: string = 'img/products/';
-  baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
+  baseUrl: string = 'http://jewelry.inspia.net/backend/img/products/';
   flage: boolean = false;
   modalError: any = [];
   transferName: any = '';
@@ -131,6 +131,9 @@ export class SalesListComponent {
   receiptDateInvoice: any;
   totalEGP: any;
   paidAmount: any;
+  settings_address: any;
+  settings_phone: any;
+  settings_website: any;
   // Constructor
   constructor(
     private api: MainServiceService,
@@ -575,6 +578,84 @@ export class SalesListComponent {
         }, 300);
       });
   }
+  /* --------------------------- Clear From Data ----------------------------- */
+  getFromData() {
+    this.fromDate = '';
+    this.api
+      .get('sales', {
+        branch_id: this.branch_id,
+        receipt_number: this.receipt_number,
+        metal_type: this.metal_type,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        per_page: 50
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        console.log(value);
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'product.label':
+                return item.product.label;
+              case 'product.metal.name':
+                return item.product.metal.name;
+              case 'receipts.branch.name':
+                return item.receipts.branch.name;
+              case 'receipts.employee.name':
+                return item.receipts.employee.name;
+              case 'receipts.receipt_number':
+                return item.receipts.receipt_number;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
+  /* --------------------------- Clear To Data ----------------------------- */
+  getToData() {
+    this.toDate = '';
+    this.api
+      .get('sales', {
+        branch_id: this.branch_id,
+        receipt_number: this.receipt_number,
+        metal_type: this.metal_type,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        per_page: 50
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        console.log(value);
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'product.label':
+                return item.product.label;
+              case 'product.metal.name':
+                return item.product.metal.name;
+              case 'receipts.branch.name':
+                return item.receipts.branch.name;
+              case 'receipts.employee.name':
+                return item.receipts.employee.name;
+              case 'receipts.receipt_number':
+                return item.receipts.receipt_number;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
   // ----------------------------------- Filter Metal
   private filterMetal(value) {
     // tslint:disable-next-line: triple-equals
@@ -840,9 +921,9 @@ export class SalesListComponent {
     this.invoiceModal.show();
     this.api.get('settings', { per_page: 50 }).subscribe(data => {
       console.log(data.data);
-      // this.settings_address = data.data[0].address;
-      // this.settings_phone = data.data[0].phone;
-      // this.settings_website = data.data[0].website;
+      this.settings_address = data.data[0].address;
+      this.settings_phone = data.data[0].phone;
+      this.settings_website = data.data[0].website;
     });
     this.invoiceData = row;
     this.receiptDateInvoice = row.receipts.receipt_date;

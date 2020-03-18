@@ -5,6 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { ResllersComponent } from './resellers.component';
 import { ResellersSolver } from '../../resolvers/resellers-index.solver';
+import { resellerClientsSolver } from '../../resolvers/clientsReseller.solver';
 
 const routes: Routes = [
   {
@@ -16,7 +17,7 @@ const routes: Routes = [
     resolve: {
       resellers: ResellersSolver,
       branches: branchListSolver,
-      clients: clientsListSolver
+      clients: resellerClientsSolver
     }
   }
 ];

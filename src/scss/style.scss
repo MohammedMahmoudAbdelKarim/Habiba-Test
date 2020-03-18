@@ -36,6 +36,15 @@
     left: 0;
     top: 0;
   }
+  #print-invoice * {
+    visibility: visible;
+  }
+
+  #print-invoice {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
 }
 
 
@@ -1116,7 +1125,7 @@ header {
 
     .inside-table {
       position: absolute;
-      width: 74%;
+      width: 77%;
 
       thead {
         tr {
@@ -1137,7 +1146,7 @@ header {
       tbody {
         tr {
           td {
-            width: 16.667%;
+            width: 12.667%;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
             font-weight: 500;
@@ -1165,6 +1174,8 @@ header {
   .price-fixed {
     background: $primary-color;
     color: $white;
+    position: relative;
+    bottom: -70px;
 
     table {
       thead {
@@ -1428,7 +1439,7 @@ header {
 
   .modal-footer {
     position: relative;
-    top: 40%;
+    top: 8%;
   }
 
   .modal-content {
@@ -1449,7 +1460,7 @@ header {
       tr {
         th {
           font-size: .75rem;
-          text-transform: uppercase;
+          text-transform: capitalize;
           border: 1px solid #333;
         }
       }
@@ -1745,6 +1756,10 @@ header {
     tbody {
       tr {
         border-bottom: 1px dotted #707070;
+
+        td {
+          padding: 20px;
+        }
       }
     }
 
@@ -1810,4 +1825,21 @@ header {
 
 .cdk-overlay-container {
   z-index: 999999 !important;
+}
+
+.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+  background-color: #039BE5;
+}
+
+.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: #039BE5;
+}
+
+.mat-slide-toggle-bar,
+.mat-slide-toggle-thumb {
+  background-color: grey;
+}
+
+.mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+  background-color: #039BE5;
 }

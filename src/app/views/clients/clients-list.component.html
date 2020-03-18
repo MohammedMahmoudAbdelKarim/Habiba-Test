@@ -350,6 +350,32 @@
                   >{{ modalError.email }}</mat-hint
                 >
               </div>
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label>Reseller</label>
+                  <mat-slide-toggle
+                    class="example-margin w-100"
+                    [checked]="checked"
+                    [disabled]="disabled"
+                    formControlName="reseller"
+                  >
+                  </mat-slide-toggle>
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    clientsForm.controls.email.errors?.required &&
+                    clientsForm.controls.email.touched &&
+                    !modalError.email
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.email"
+                  >{{ modalError.email }}</mat-hint
+                >
+              </div>
             </div>
             <div class="modal-footer border-0 justify-content-start pl-0">
               <button type="submit" class="submit-btn">
@@ -455,6 +481,33 @@
                     autocomplete="off"
                     placeholder="Client Email"
                   />
+                </div>
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="
+                    clientsForm.controls.email.errors?.required &&
+                    clientsForm.controls.email.touched &&
+                    !modalError.email
+                  "
+                  >This Field is Required</mat-hint
+                >
+                <mat-hint
+                  class="d-inline-block text-center w-100 alert alert-danger"
+                  *ngIf="modalError.email"
+                  >{{ modalError.email }}</mat-hint
+                >
+              </div>
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label>Reseller</label>
+                  <mat-slide-toggle
+                    class="example-margin w-100"
+                    [checked]="checked"
+                    [disabled]="disabled"
+                    formControlName="reseller"
+                  >
+                    Check if reseller
+                  </mat-slide-toggle>
                 </div>
                 <mat-hint
                   class="d-inline-block text-center w-100 alert alert-danger"

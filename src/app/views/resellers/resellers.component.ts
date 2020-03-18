@@ -26,7 +26,7 @@ export class ResllersComponent implements OnInit {
     'select',
     'id',
     'product.label',
-    'branch.name',
+    'product.branch.name',
     'created_at',
     'product.item_total_after_profit',
     'client.name',
@@ -81,7 +81,7 @@ export class ResllersComponent implements OnInit {
   checkedItems: any = 0;
   statusValue: string = '';
   imgUrl: string = 'img/products/';
-  baseUrl: string = 'http://jewelry.ixscope.com/backend/img/products/';
+  baseUrl: string = 'http://jewelry.inspia.net/backend/img/products/';
   flage: boolean = false;
   modalError: any = [];
   transferName: any = '';
@@ -167,8 +167,8 @@ export class ResllersComponent implements OnInit {
         switch (property) {
           case 'product.label':
             return item.product.label;
-          case 'branch.name':
-            return item.branch.name;
+          case 'product.branch.name':
+            return item.product.branch.name;
           case 'client.name':
             return item.client.name;
           case 'created_at':
@@ -240,8 +240,8 @@ export class ResllersComponent implements OnInit {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
-                case 'branch.name':
-                  return item.branch.name;
+                case 'product.branch.name':
+                  return item.product.branch.name;
                 case 'client.name':
                   return item.client.name;
                 case 'created_at':
@@ -282,8 +282,8 @@ export class ResllersComponent implements OnInit {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
-                case 'branch.name':
-                  return item.branch.name;
+                case 'product.branch.name':
+                  return item.product.branch.name;
                 case 'client.name':
                   return item.client.name;
                 case 'created_at':
@@ -301,7 +301,7 @@ export class ResllersComponent implements OnInit {
     } else if (typeof value == 'string') {
       const filterValueName = value.toLowerCase();
       const info = this.products.filter(option =>
-        option.branch.name.toLowerCase().includes(filterValueName)
+        option.product.branch.name.toLowerCase().includes(filterValueName)
       );
       console.log(info);
       this.dataSource = new MatTableDataSource(info);
@@ -312,8 +312,8 @@ export class ResllersComponent implements OnInit {
         switch (property) {
           case 'product.label':
             return item.product.label;
-          case 'branch.name':
-            return item.branch.name;
+          case 'product.branch.name':
+            return item.product.branch.name;
           case 'client.name':
             return item.client.name;
           case 'created_at':
@@ -361,8 +361,8 @@ export class ResllersComponent implements OnInit {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
-                case 'branch.name':
-                  return item.branch.name;
+                case 'product.branch.name':
+                  return item.product.branch.name;
                 case 'client.name':
                   return item.client.name;
                 case 'created_at':
@@ -403,8 +403,8 @@ export class ResllersComponent implements OnInit {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
-                case 'branch.name':
-                  return item.branch.name;
+                case 'product.branch.name':
+                  return item.product.branch.name;
                 case 'client.name':
                   return item.client.name;
                 case 'created_at':
@@ -434,8 +434,8 @@ export class ResllersComponent implements OnInit {
         switch (property) {
           case 'product.label':
             return item.product.label;
-          case 'branch.name':
-            return item.branch.name;
+          case 'product.branch.name':
+            return item.product.branch.name;
           case 'client.name':
             return item.client.name;
           case 'created_at':
@@ -464,6 +464,8 @@ export class ResllersComponent implements OnInit {
           branch_id: this.branch_id,
           client_id: this.client_id,
           product_id: this.label,
+          from_date: this.fromDate,
+          to_date: this.toDate,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -480,8 +482,8 @@ export class ResllersComponent implements OnInit {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
-                case 'branch.name':
-                  return item.branch.name;
+                case 'product.branch.name':
+                  return item.product.branch.name;
                 case 'client.name':
                   return item.client.name;
                 case 'created_at':
@@ -521,8 +523,8 @@ export class ResllersComponent implements OnInit {
             switch (property) {
               case 'product.label':
                 return item.product.label;
-              case 'branch.name':
-                return item.branch.name;
+              case 'product.branch.name':
+                return item.product.branch.name;
               case 'client.name':
                 return item.client.name;
               case 'created_at':
@@ -542,6 +544,8 @@ export class ResllersComponent implements OnInit {
           branch_id: this.branch_id,
           client_id: this.client_id,
           product_id: this.label,
+          from_date: this.fromDate,
+          to_date: this.toDate,
           per_page: 50
         })
         // tslint:disable-next-line: no-shadowed-variable
@@ -640,8 +644,8 @@ export class ResllersComponent implements OnInit {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
-                case 'branch.name':
-                  return item.branch.name;
+                case 'product.branch.name':
+                  return item.product.branch.name;
                 case 'client.name':
                   return item.client.name;
                 case 'created_at':
@@ -681,8 +685,8 @@ export class ResllersComponent implements OnInit {
               switch (property) {
                 case 'product.label':
                   return item.product.label;
-                case 'branch.name':
-                  return item.branch.name;
+                case 'product.branch.name':
+                  return item.product.branch.name;
                 case 'client.name':
                   return item.client.name;
                 case 'created_at':
@@ -697,10 +701,10 @@ export class ResllersComponent implements OnInit {
       // tslint:disable-next-line: triple-equals
     } else if (typeof value == 'string') {
       // value = this.tem_category;
-      const filterValueName = value;
+      const filterValueName = value.toLowerCase();
 
       const info = this.products.filter(option =>
-        option.client.name.includes(filterValueName)
+        option.client.name.toLowerCase().includes(filterValueName)
       );
       console.log(info);
       this.dataSource = new MatTableDataSource(info);
@@ -711,8 +715,8 @@ export class ResllersComponent implements OnInit {
         switch (property) {
           case 'product.label':
             return item.product.label;
-          case 'branch.name':
-            return item.branch.name;
+          case 'product.branch.name':
+            return item.product.branch.name;
           case 'client.name':
             return item.client.name;
           case 'created_at':
@@ -730,6 +734,84 @@ export class ResllersComponent implements OnInit {
   displayClient(client): string {
     console.log(client);
     return client ? client.name : client;
+  }
+  /* --------------------------- Clear From Data ----------------------------- */
+  getFromData() {
+    this.fromDate = '';
+    this.api
+      .get('reseller', {
+        branch_id: this.branch_id,
+        client_id: this.client_id,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        product_id: this.label,
+        per_page: 50
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        console.log(value);
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          this.totalProducts = value.total;
+          this.countProducts = value.count;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'product.label':
+                return item.product.label;
+              case 'product.branch.name':
+                return item.product.branch.name;
+              case 'client.name':
+                return item.client.name;
+              case 'created_at':
+                return item.created_at;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
+  /* --------------------------- Clear To Data ----------------------------- */
+  getToData() {
+    this.toDate = '';
+    this.api
+      .get('reseller', {
+        branch_id: this.branch_id,
+        client_id: this.client_id,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        product_id: this.label,
+        per_page: 50
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        console.log(value);
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          this.totalProducts = value.total;
+          this.countProducts = value.count;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'product.label':
+                return item.product.label;
+              case 'product.branch.name':
+                return item.product.branch.name;
+              case 'client.name':
+                return item.client.name;
+              case 'created_at':
+                return item.created_at;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
   }
   /* -------------------------------- Checkbox---------------------------- */
   /** Whether the number of selected elements matches the total number of rows. */

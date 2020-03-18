@@ -26,6 +26,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { optionSolver } from '../../resolvers/otpions.solver';
 
 @NgModule({
   imports: [
@@ -56,6 +57,7 @@ import { CommonModule } from '@angular/common';
     ProgressbarModule.forRoot(),
     TooltipModule.forRoot()
   ],
-  declarations: [OptionsComponent]
+  declarations: [OptionsComponent],
+  providers: [optionSolver]
 })
 export class OptionsModule {}

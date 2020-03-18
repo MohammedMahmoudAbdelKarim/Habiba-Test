@@ -85,6 +85,7 @@
         <!-- From Date -->
         <div class="col p-0 mr-3">
           <input
+            #fromInput
             style="padding: 5px 8px;"
             [matDatepicker]="picker"
             placeholder="Date From"
@@ -97,10 +98,23 @@
             required
           />
           <mat-datepicker touchUi #picker></mat-datepicker>
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="fromInput.value = ''"
+            (click)="getFromData()"
+            style="position: relative;
+          top: -30px;
+          left: 222px;
+          z-index: 9;"
+            >close</mat-icon
+          >
         </div>
         <!-- To Date -->
         <div class="col p-0 mr-3">
           <input
+            #toInput
             style="padding: 5px;"
             [matDatepicker]="picker2"
             placeholder="Date To"
@@ -113,6 +127,19 @@
             required
           />
           <mat-datepicker touchUi #picker2></mat-datepicker>
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="toInput.value = ''"
+            (click)="getToData()"
+            style="position: relative;
+            top: -29px;
+            left: 222px;
+            z-index: 9;
+        "
+            >close</mat-icon
+          >
         </div>
         <div class="col-4 row justify-content-between">
           <div class="col-6"></div>

@@ -52,9 +52,7 @@
       >
         <div class="col-md-7 pl-0 pr-5 mt-3">
           <div class="col-md-12 p-0">
-            <label
-              >Entry Date <span class="text-red">*</span></label
-            >
+            <label>Entry Date <span class="text-red">*</span></label>
             <input
               matInput
               [matDatepicker]="picker"
@@ -315,7 +313,10 @@
                   />
                 </div>
               </div>
-              <div class="maxFile d-flex mt-2 float-right text-grey" style="font-size: 12px;">
+              <div
+                class="maxFile d-flex mt-2 float-right text-grey"
+                style="font-size: 12px;"
+              >
                 Jpg, Png (Maximum 2 MB)
               </div>
               <mat-hint
@@ -498,9 +499,12 @@
             <span class="text-grey"> {{ sentStonesArray.length }} Stones</span>
           </h4>
           <div class="stone-border p-2 text-center">
-            <span class="text-red" style="font-size: .8rem;" *ngIf="sentStonesArray.length <= 0">{{
-              stonAreaPlaceHolder
-            }}</span>
+            <span
+              class="text-red"
+              style="font-size: .8rem;"
+              *ngIf="sentStonesArray.length <= 0"
+              >{{ stonAreaPlaceHolder }}</span
+            >
             <div
               class="stones-table"
               *ngFor="let stone of sentStonesArray; let stoneIndex = index"
@@ -549,18 +553,10 @@
                       {{ sentStonesArray.length > 0 ? stone.weight : '0' }}
                     </td>
                     <td class="border-right">
-                      {{
-                        sentStonesArray.length > 0
-                          ? stone.price
-                          : '0'
-                      }}
+                      {{ sentStonesArray.length > 0 ? stone.price : '0' }}
                     </td>
                     <td class="border-right">
-                      {{
-                        sentStonesArray.length > 0
-                          ? stone.setting
-                          : '0'
-                      }}
+                      {{ sentStonesArray.length > 0 ? stone.setting : '0' }}
                     </td>
                     <td>{{ stone.total }}</td>
                   </tr>
@@ -603,7 +599,7 @@
         </div>
         <div class="mt-3">
           <button
-          (click)="onSubmit(addStockForm.value)"
+            (click)="onSubmit(addStockForm.value)"
             class="submit-btn w-100 text-center py-3"
             [disabled]="
               !addStockForm.controls.product_date.value ||

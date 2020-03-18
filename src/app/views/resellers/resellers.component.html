@@ -138,6 +138,7 @@
         <!-- From Date -->
         <div class="col p-0 mr-3">
           <input
+            #fromInput
             style="padding: 5px 8px;"
             [matDatepicker]="picker"
             placeholder="Date From"
@@ -150,10 +151,23 @@
             required
           />
           <mat-datepicker touchUi #picker></mat-datepicker>
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="fromInput.value = ''"
+            (click)="getFromData()"
+            style="position: relative;
+        top: -30px;
+        left: 222px;
+        z-index: 9;"
+            >close</mat-icon
+          >
         </div>
         <!-- To Date -->
         <div class="col p-0 mr-3">
           <input
+            #toInput
             style="padding: 5px;"
             [matDatepicker]="picker2"
             placeholder="Date To"
@@ -166,6 +180,19 @@
             required
           />
           <mat-datepicker touchUi #picker2></mat-datepicker>
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="toInput.value = ''"
+            (click)="getToData()"
+            style="position: relative;
+            top: -29px;
+            left: 222px;
+            z-index: 9;
+        "
+            >close</mat-icon
+          >
         </div>
 
         <div class="col row justify-content-end no-gutters">
@@ -242,10 +269,10 @@
         <td mat-footer-cell *matFooterCellDef class=""></td>
       </ng-container>
       <!-- Column -->
-      <ng-container matColumnDef="branch.name">
+      <ng-container matColumnDef="product.branch.name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>BRANCH</th>
         <td mat-cell *matCellDef="let row">
-          <span>{{ row.branch.name }}</span>
+          <span>{{ row.product.branch.name }}</span>
         </td>
         <td mat-footer-cell *matFooterCellDef class=""></td>
       </ng-container>
@@ -290,7 +317,7 @@
         </th>
         <td mat-cell *matCellDef="let row">
           <img
-            src="http://jewelry.ixscope.com/backend/img/products/{{
+            src="http://jewelry.inspia.net/backend/img/products/{{
               row.product.image
             }}"
             width="78px"
@@ -413,7 +440,7 @@
               <img
                 class="w-100"
                 height="205px"
-                src="http://jewelry.ixscope.com/backend/img/products/{{
+                src="http://jewelry.inspia.net/backend/img/products/{{
                   stockData.product.image
                 }}"
                 [alt]="stockData.product.label"
@@ -438,7 +465,7 @@
                     </td>
                     <td class="border-right">{{ stockData.product.label }}</td>
                     <td class="border-right">
-                      {{ stockData.branch.name }}
+                      {{ stockData.product.branch.name }}
                     </td>
                     <td>{{ stockData.product.product_date }}</td>
                   </tr>
