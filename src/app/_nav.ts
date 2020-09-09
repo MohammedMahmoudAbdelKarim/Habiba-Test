@@ -48,23 +48,23 @@ export const navItems: INavData[] = [
         name: 'Return',
         url: '/sales/return',
         icon: 'icon-basket-loaded'
+      }
+    ]
+  },
+  {
+    name: 'Save Box',
+    url: '/sales/safe-box',
+    icon: 'icon-basket-loaded',
+    children: [
+      {
+        name: 'Save Box List',
+        url: '/sales/safe-box-list',
+        icon: 'icon-basket-loaded'
       },
       {
-        name: 'Sale Box',
-        url: '/sales/safe-box',
-        icon: 'icon-basket-loaded',
-        children: [
-          {
-            name: 'Sale Box List',
-            url: '/sales/safe-box-list',
-            icon: 'icon-basket-loaded'
-          },
-          {
-            name: 'Sale Box Action',
-            url: '/sales/safe-box-action',
-            icon: 'icon-basket-loaded'
-          }
-        ]
+        name: 'Save Box Action',
+        url: '/sales/safe-box-action',
+        icon: 'icon-basket-loaded'
       }
     ]
   },
@@ -79,6 +79,11 @@ export const navItems: INavData[] = [
         icon: 'icon-people'
       }
     ]
+  },
+  {
+    name: 'Client Report',
+    url: '/clients-history',
+    icon: 'icon-people',
   },
   {
     name: 'Invoices',
@@ -120,27 +125,6 @@ export const navItems: INavData[] = [
     ]
   },
   {
-    name: 'Reports',
-    icon: 'icon-doc',
-    children: [
-      {
-        name: 'Stock List',
-        url: '/main-stock/stock-list',
-        icon: 'icon-doc'
-      },
-      {
-        name: 'Sales List',
-        url: '/sales/sales-list',
-        icon: 'icon-doc'
-      },
-      {
-        name: 'Branches',
-        url: '/sales/safe-box-list',
-        icon: 'icon-doc'
-      }
-    ]
-  },
-  {
     name: 'Options',
     url: '/options',
     icon: 'icon-settings'
@@ -149,5 +133,36 @@ export const navItems: INavData[] = [
     name: 'Resellers',
     url: '/resellers',
     icon: 'icon-user'
+  },
+  {
+    name: 'Reports',
+    icon: 'icon-doc',
+    children: [
+      {
+        name: 'Stock List Reports',
+        url: '/main-stock/stock-list',
+        icon: 'icon-doc'
+      },
+      {
+        name: 'Sales List Reports',
+        url: '/sales/sales-list',
+        icon: 'icon-doc'
+      },
+      {
+        name: 'Save Box Reports',
+        url: '/sales/safe-box-list',
+        icon: 'icon-doc'
+      },
+      {
+        name: 'Transfers Reports',
+        url: '/main-stock/transfer',
+        icon: 'icon-doc'
+      },
+      {
+        name: 'Resellers Reports',
+        url: '/resellers',
+        icon: 'icon-doc'
+      }
+    ]
   }
 ];

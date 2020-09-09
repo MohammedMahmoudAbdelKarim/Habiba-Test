@@ -5,7 +5,7 @@ import { map, startWith } from 'rxjs/operators';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 @Component({
   templateUrl: 'return.component.html'
 })
@@ -53,6 +53,7 @@ export class ReturnComponent implements OnInit {
   branch_name: any = '';
   payment_method: any = 1;
   invoiceTotal: any = '';
+  invoiceTotalSum: any = '';
   invoiceDollarTotal: any = '';
   invoiceNumber: any = '';
   // ASYNC
@@ -95,6 +96,7 @@ export class ReturnComponent implements OnInit {
     email: new FormControl('', Validators.required)
   });
   clientName: any = '';
+  client_id: any = '';
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -109,11 +111,13 @@ export class ReturnComponent implements OnInit {
         if (val.data) {
           this.isInvoiced = true;
           this.clientName = val.data.receipt.receipts.client.name;
+          this.client_id = val.data.receipt.receipts.client.id;
           this.branch_name = val.data.branch.name;
           this.sellingProductListArray.push(val.data);
           this.sentFormBranchId = val.data.branch.id;
           this.sellingProductListArray.forEach(value => {
-            this.invoiceTotal = Math.ceil(value.receipt.receipts.total_egp);
+            this.invoiceTotal = Math.ceil(value.receipt.receipts.paid_egp);
+            this.invoiceTotalSum = Math.ceil(value.receipt.receipts.total_egp);
             this.invoiceDollarTotal = Math.ceil(
               value.receipt.receipts.total_dollar
             );
@@ -139,19 +143,21 @@ export class ReturnComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
-          this.productArray = val.data;
-          if (val.data.length) {
-            this.selectedProductData = val.data;
-            console.log(val.data);
+          if (val['data']) {
+            this.productArray = val.data;
+            if (val.data.length) {
+              this.selectedProductData = val.data;
+              console.log(val.data);
 
-            // this.clientName = val.data[0].client.name;
-            // console.log(this.clientName);
+              // this.clientName = val.data[0].client.name;
+              // console.log(this.clientName);
 
-            this.filterSerchingHold = false;
-            this.emptyArr = false;
-          } else {
-            this.addDisAbledState = true;
-            this.emptyArr = true;
+              this.filterSerchingHold = false;
+              this.emptyArr = false;
+            } else {
+              this.addDisAbledState = true;
+              this.emptyArr = true;
+            }
           }
         });
       this.branchName = data.branchList.data[0].name;
@@ -221,14 +227,16 @@ export class ReturnComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
-          this.productArray = val.data;
-          if (val.data.length) {
-            this.selectedProductData = val.data;
-            this.filterSerchingHold = false;
-            this.emptyArr = false;
-          } else {
-            this.addDisAbledState = true;
-            this.emptyArr = true;
+          if (val['data']) {
+            this.productArray = val.data;
+            if (val.data.length) {
+              this.selectedProductData = val.data;
+              this.filterSerchingHold = false;
+              this.emptyArr = false;
+            } else {
+              this.addDisAbledState = true;
+              this.emptyArr = true;
+            }
           }
         });
       return this.productArray.filter(option => {
@@ -248,6 +256,7 @@ export class ReturnComponent implements OnInit {
         .subscribe(val => {
           console.log(val.data[0].receipt.receipts.client.name);
           this.clientName = val.data[0].receipt.receipts.client.name;
+          this.client_id = val.data[0].receipt.receipts.client.id;
           this.productArray = val.data;
           if (val.data.length) {
             this.selectedProductData = val.data;
@@ -373,8 +382,10 @@ export class ReturnComponent implements OnInit {
     );
     // Create Array To Stone Items // Place To Stone The Total Cost
     this.invoiceTotal = 0;
+    this.invoiceTotalSum = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal = Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceTotal = Math.ceil(value.receipt.receipts.paid_egp);
+      this.invoiceTotalSum = Math.ceil(value.receipt.receipts.total_egp);
       this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
   }
@@ -402,7 +413,11 @@ export class ReturnComponent implements OnInit {
         this.myModalBranch.hide();
       },
       error => {
-        this.modalError = error.error.errors;
+        if (error.error.errors) {
+          this.toast.error(error.error.errors, '!Error');
+        } else {
+          this.toast.error(error.error.message, '!Error');
+        }
         this.api.fireAlert('error', 'Please Fill All Data', '');
       }
     );
@@ -424,7 +439,11 @@ export class ReturnComponent implements OnInit {
         this.myModalClient.hide();
       },
       error => {
-        this.modalError = error.error.errors;
+        if (error.error.errors) {
+          this.toast.error(error.error.errors, '!Error');
+        } else {
+          this.toast.error(error.error.message, '!Error');
+        }
         this.api.fireAlert('error', 'Please Fill All Data', '');
       }
     );
@@ -480,8 +499,10 @@ export class ReturnComponent implements OnInit {
     this.sellingProductListArray.push(...this.selectedProductData);
     this.sumTotalOFSingleProduct(this.selectedProductData);
     this.invoiceTotal = 0;
+    this.invoiceTotalSum = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal = Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceTotalSum = Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceTotal = Math.ceil(value.receipt.receipts.paid_egp);
       this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
     this.clearSearch();
@@ -497,8 +518,10 @@ export class ReturnComponent implements OnInit {
     }
     this.sellingProductListArray.splice(sellingProductIndex, 1);
     this.invoiceTotal = 0;
+    this.invoiceTotalSum = 0;
     this.sellingProductListArray.forEach(value => {
-      this.invoiceTotal = Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceTotalSum = Math.ceil(value.receipt.receipts.total_egp);
+      this.invoiceTotal = Math.ceil(value.receipt.receipts.paid_egp);
       this.invoiceDollarTotal = Math.ceil(value.receipt.receipts.total_dollar);
     });
     this.invoiceTotal = Math.abs(this.invoiceTotal);
@@ -514,6 +537,7 @@ export class ReturnComponent implements OnInit {
         items: arr,
         product_id: arr[0].id,
         branch_id: this.sentFormBranchId,
+        client_id: this.client_id,
         receipt_date: this.sentProductDate,
         dollar_price: this.dollarPrice,
         total_dollar: this.invoiceDollarTotal,
@@ -536,7 +560,11 @@ export class ReturnComponent implements OnInit {
           }
         },
         error => {
-          this.errMessage = error.error.errors;
+          if (error.error.errors) {
+            this.toast.error(error.error.errors, '!Error');
+          } else {
+            this.toast.error(error.error.message, '!Error');
+          }
           let errorAlert = error.error.message;
           this.api.fireAlert('error', errorAlert, '');
         }

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -101,7 +101,7 @@ export class StonesComponent implements OnInit {
     for (let i = 1; i <= this.pageIndex; i++) {
       console.log(i);
       this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
+      this.numberOfPages.sort(function (a, b) {
         return a - b;
       });
     }
@@ -174,7 +174,7 @@ export class StonesComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
 
   /* -------------------------- Create New Stones ----------------------- */
@@ -323,7 +323,7 @@ export class StonesComponent implements OnInit {
         for (let i = 1; i <= this.pageIndex; i++) {
           console.log(i);
           this.numberOfPages.push(i);
-          this.numberOfPages.sort(function(a, b) {
+          this.numberOfPages.sort(function (a, b) {
             return a - b;
           });
         }

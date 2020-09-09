@@ -9,7 +9,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import htmlToImage from 'html-to-image';
 import html2canvas from 'html2canvas';
 import $ from 'jquery';
@@ -790,7 +790,7 @@ export class StockListComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* ---------------------------- Remove Multi-Items ----------------------- */
   mutliplyAction(event) {
@@ -854,8 +854,8 @@ export class StockListComponent implements OnInit {
       sum.push(stone.total);
     });
     const total = sum.reduce((a, b) => a + b, 0);
-    this.totalCost = total + row.gold_total;
-    this.finalCost = Math.ceil(this.totalCost * row.profit_percent);
+    this.totalCost = +(total + row.gold_total).toFixed(2);
+    this.finalCost = row.item_total_after_profit;
   }
   // Open Label
   openLabel(row) {
@@ -869,6 +869,7 @@ export class StockListComponent implements OnInit {
     this.updatedItemData = this.stockData;
     this.editModal.show();
     console.log(stockData);
+    stockData.gold_total = +(+stockData.gold_total).toFixed(2);
     this.category = stockData.category.name;
     this.branch = stockData.branch.name;
     this.stones = stockData.stones;
@@ -881,11 +882,13 @@ export class StockListComponent implements OnInit {
       sums.push(stone.total);
     });
     const total = sums.reduce((a, b) => a + b, 0);
-    this.totalCost = total + stockData.gold_total;
-    this.finalCost = Math.ceil(this.totalCost * stockData.profit_percent);
+    this.totalCost = +(total + stockData.gold_total).toFixed(2);
+    this.finalCost = stockData.item_total_after_profit;
+    // this.totalCost = Math.ceil(total + stockData.gold_total);
+    // this.finalCost = Math.ceil(this.totalCost * stockData.profit_percent);
     this.showUpdataPopup = true;
     this.ItemDataCalculated = Object.assign({}, this.updatedItemData);
-    for (let i = 0; i < this.ItemDataCalculated.length; i++) {}
+    for (let i = 0; i < this.ItemDataCalculated.length; i++) { }
     const items = this.updatedItemData.stones;
     let sum = null;
     items.forEach((value, index, arry) => {
@@ -965,9 +968,9 @@ export class StockListComponent implements OnInit {
 
         const stoneTotal = +(
           this.stonesArray[stoneIndex].quantity *
-            this.stonesArray[stoneIndex].setting +
+          this.stonesArray[stoneIndex].setting +
           this.stonesArray[stoneIndex].weight *
-            this.stonesArray[stoneIndex].price
+          this.stonesArray[stoneIndex].price
         ).toFixed(2);
         // Set New Stone
         this.stonesArray[stoneIndex].total = stoneTotal;
@@ -985,7 +988,7 @@ export class StockListComponent implements OnInit {
 
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-          this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
       );
     } else {
       if (key === 'gW') {
@@ -1009,11 +1012,12 @@ export class StockListComponent implements OnInit {
       );
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-          this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
       );
       this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
       this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
     }
+    this.goldTotal = +this.goldTotal.toFixed(2);
   }
   /* --------------------------- Number Validation ------------------------ */
   numberCheckValidation(e) {
@@ -1084,7 +1088,7 @@ export class StockListComponent implements OnInit {
       ).toFixed(2);
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-          this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
       );
       // End Calculate Total of Stone Total
 
@@ -1143,7 +1147,7 @@ export class StockListComponent implements OnInit {
     ).toFixed(2);
     this.ItemDataCalculated.item_total_after_profit = Math.ceil(
       this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+      this.ItemDataCalculated.profit_percent
     );
     this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
     this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
@@ -1155,7 +1159,7 @@ export class StockListComponent implements OnInit {
     // form.value.id = this.stone_id;
     form.value.total = Math.ceil(
       form.value.quantity * form.value.price +
-        form.value.weight * form.value.setting
+      form.value.weight * form.value.setting
     );
     if (
       form.value.name &&
@@ -1181,7 +1185,7 @@ export class StockListComponent implements OnInit {
       ).toFixed(2);
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-          this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
       );
       this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
       this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
@@ -1196,7 +1200,7 @@ export class StockListComponent implements OnInit {
     this.ItemDataCalculated.profit_percent = this.stockUpdatForm.controls.profit_percent.value;
     this.ItemDataCalculated.item_total_after_profit = Math.ceil(
       this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+      this.ItemDataCalculated.profit_percent
     );
   }
   /* --------------------- Update Item ---------------------- */
@@ -1217,6 +1221,15 @@ export class StockListComponent implements OnInit {
       console.log(this.updatedItemData);
     }
     this.updatedItemData.profit_percent = this.stockUpdatForm.controls.profit_percent.value;
+    this.updatedItemData[
+      'gold_price'
+    ] = this.stockUpdatForm.controls.updateGoldPrice.value;
+    this.updatedItemData[
+      'gold_weight'
+    ] = this.stockUpdatForm.controls.updateGoldWeight.value;
+    console.log(this.ItemDataCalculated.gold_total);
+    this.updatedItemData['gold_total'] = this.ItemDataCalculated.gold_total;
+    console.log(this.updatedItemData.gold_total);
     if (this.newStoneArray.length) {
       this.updatedItemData.stones = this.newStoneArray;
     }

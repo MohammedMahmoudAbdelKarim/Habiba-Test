@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { MainServiceService } from './../../shared-services/main-service.service';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 @Component({
   templateUrl: 'add-new-item.component.html'
 })
@@ -115,7 +115,7 @@ export class AddNewItemComponent {
   }
   /* ----------------------------------- OnInit ------------------------ */
   // tslint:disable-next-line: use-lifecycle-interface
-  ngOnInit() {}
+  ngOnInit() { }
   /* ----------------------------------- Open Modal ------------------------ */
   openModel(template: TemplateRef<any>) {
     this.categoriesForm.reset();
@@ -295,9 +295,9 @@ export class AddNewItemComponent {
       ].type_name = this.addStockStoneForm.value.stone;
       this.sentStonesArray[this.editstoneIndex].total = +(
         this.addStockStoneForm.value.stone_cost *
-          this.addStockStoneForm.value.stone_weight +
+        this.addStockStoneForm.value.stone_weight +
         this.addStockStoneForm.value.stone_quantity *
-          this.addStockStoneForm.value.stone_setting
+        this.addStockStoneForm.value.stone_setting
       ).toFixed(2);
       this.editStoneMode = false;
     } else {
@@ -311,9 +311,9 @@ export class AddNewItemComponent {
         type_name: this.addStockStoneForm.value.stone,
         total: +(
           this.addStockStoneForm.value.stone_cost *
-            this.addStockStoneForm.value.stone_weight +
+          this.addStockStoneForm.value.stone_weight +
           this.addStockStoneForm.value.stone_quantity *
-            this.addStockStoneForm.value.stone_setting
+          this.addStockStoneForm.value.stone_setting
         ).toFixed(2)
       });
     }

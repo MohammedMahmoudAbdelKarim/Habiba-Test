@@ -50,6 +50,7 @@
     "html-to-image": "^0.1.1",
     "html2canvas": "^1.0.0-rc.5",
     "jquery": "^3.4.1",
+    "jspdf": "^1.5.3",
     "moment": "^2.24.0",
     "mutationobserver-shim": "^0.3.3",
     "ng2-charts": "^2.3.0",

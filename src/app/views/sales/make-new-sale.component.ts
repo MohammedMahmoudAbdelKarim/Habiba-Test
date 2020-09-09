@@ -5,7 +5,7 @@ import { map, startWith } from 'rxjs/operators';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 @Component({
   templateUrl: 'make-new-sale.component.html'
 })
@@ -110,32 +110,29 @@ export class MakeNewSaleComponent implements OnInit {
     private router: Router
   ) {
     this.route.queryParams.subscribe(value => {
-      this.api.get('products/' + value.id).subscribe(val => {
-        console.log(val);
-
-        if (val.data) {
-          console.log(val.data);
-
-          this.isInvoiced = true;
-          this.branch_name = val.data.branch.name;
-          if (val.data.reseller) {
-            this.reseller_name = val.data.reseller.client.name;
-            this.client_name = val.data.reseller.client.name;
-            this.selectedClientId = val.data.reseller.client.id;
-            this.reseller_id = val.data.reseller.client.id;
+      if (value) {
+        this.api.get('products/' + value.id).subscribe(val => {
+          if (val.data) {
+            this.isInvoiced = true;
+            this.branch_name = val.data.branch.name;
+            if (val.data.reseller) {
+              this.reseller_name = val.data.reseller.client.name;
+              this.client_name = val.data.reseller.client.name;
+              this.selectedClientId = val.data.reseller.client.id;
+              this.reseller_id = val.data.reseller.client.id;
+            }
+            this.sellingProductListArray.push(val.data);
+            this.sentFormBranchId = val.data.branch.id;
+            this.sellingProductListArray.forEach(value => {
+              this.invoiceTotal += Math.ceil(value.item_total_after_profit);
+            });
+          } else {
+            this.sellingProductListArray = [];
           }
-          this.sellingProductListArray.push(val.data);
-          this.sentFormBranchId = val.data.branch.id;
-          this.sellingProductListArray.forEach(value => {
-            this.invoiceTotal += Math.ceil(value.item_total_after_profit);
-          });
-        } else {
-          this.sellingProductListArray = [];
-        }
-      });
+        });
+      }
     });
     this.route.data.subscribe(data => {
-      console.log(data);
       // Get Cities
       this.citiesListArray = data.cities.data;
       // Get Clients
@@ -164,9 +161,7 @@ export class MakeNewSaleComponent implements OnInit {
   getSettingsApiData() {
     this.api.get('settings', {}).subscribe(
       (settings: any) => {
-        console.log(settings);
         this.dollarPrice = Number(settings.data[0].dollar_price);
-        console.log(this.dollarPrice);
       },
       error => {
         console.log('Error in Getting Data');
@@ -191,8 +186,6 @@ export class MakeNewSaleComponent implements OnInit {
       })
       //     // tslint:disable-next-line: no-shadowed-variable
       .subscribe(val => {
-        console.log(val);
-
         this.productArray = val.data;
         if (val.data.length) {
           this.selectedProductData = [];
@@ -218,18 +211,19 @@ export class MakeNewSaleComponent implements OnInit {
         })
         //     // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
-          console.log(val);
-
-          this.productArray = val.data;
-          if (val.data.length) {
-            this.selectedProductData = [];
-            this.selectedProductData = val.data;
-            this.filterSerchingHold = false;
-            this.addDisAbledState = true;
-            this.emptyArr = false;
-          } else {
-            this.addDisAbledState = false;
-            this.emptyArr = true;
+          if (val['data']) {
+            this.productArray = val.data;
+            if (val.data.length) {
+              this.selectedProductData = [];
+              this.selectedProductData = val.data;
+              this.filterSerchingHold = false;
+              this.addDisAbledState = true;
+              this.emptyArr = false;
+            } else {
+              this.addDisAbledState = false;
+              this.emptyArr = true;
+              this.productArray = [];
+            }
           }
         });
       return this.productArray.filter(option => {
@@ -240,19 +234,14 @@ export class MakeNewSaleComponent implements OnInit {
     if (typeof value == 'object') {
       const filterValue = value.label.toLowerCase();
       this.label = value.label;
-      console.log(value);
-
       this.api
         .get('products/' + value.id, {})
         //     // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
-          console.log(val.data);
           this.productArray = [];
           this.selectedProductData = [];
           this.productArray.push(val.data);
           this.selectedProductData.push(val.data);
-          console.log(this.productArray);
-
           if (val) {
             this.selectedProductData = [];
             this.selectedProductData.push(val.data);
@@ -264,7 +253,6 @@ export class MakeNewSaleComponent implements OnInit {
             this.emptyArr = true;
           }
         });
-      //   console.log(this.productArray);
       return this.productArray.filter(option =>
         option.label.toLowerCase().includes(filterValue)
       );
@@ -273,20 +261,22 @@ export class MakeNewSaleComponent implements OnInit {
       const filterValueName = value.toLowerCase().trim();
       this.api
         .get('products/active', {
-          label: this.label,
+          label: value,
           branch_id: this.sentFormBranchId
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(val => {
-          console.log(val);
-
-          this.productArray = val.data;
-          if (val.data.length) {
-            this.filterSerchingHold = false;
-            this.addDisAbledState = true;
+          if (val['data']) {
+            this.productArray = val.data;
+            if (val.data.length) {
+              this.filterSerchingHold = false;
+              this.addDisAbledState = true;
+            } else {
+              this.addDisAbledState = false;
+              this.emptyArr = true;
+            }
           } else {
-            this.addDisAbledState = false;
-            this.emptyArr = true;
+            this.productArray = [];
           }
         });
       return this.productArray.filter(option => {
@@ -348,25 +338,25 @@ export class MakeNewSaleComponent implements OnInit {
       ].setting = this.editProductStoneForm.value.productStoneSetting;
     }
     if (key === 'sQ') {
-      console.log('Quantity');
-
       this.sellingProductListArray[sellingProductIndex].stones[
         stoneIndex
       ].quantity = this.editProductStoneForm.value.productStoneQuantity;
     }
     if (key === 'sW') {
-      console.log(this.sellingProductListArray);
-
       this.sellingProductListArray[sellingProductIndex].stones[
         stoneIndex
       ].weight = this.editProductStoneForm.value.productStoneWeight;
     }
-    this.sellingProductListArray[sellingProductIndex].stones[
-      stoneIndex
-    ].color = this.editProductStoneForm.value.productColor;
-    this.sellingProductListArray[sellingProductIndex].stones[
-      stoneIndex
-    ].clarity = this.editProductStoneForm.value.productClarity;
+    if (key === 'Color') {
+      this.sellingProductListArray[sellingProductIndex].stones[
+        stoneIndex
+      ].color = this.editProductStoneForm.value.productColor;
+    }
+    if (key === 'Clarity') {
+      this.sellingProductListArray[sellingProductIndex].stones[
+        stoneIndex
+      ].clarity = this.editProductStoneForm.value.productClarity;
+    }
     this.sellingProductListArray[sellingProductIndex].stones[
       stoneIndex
     ].total = +(
@@ -399,8 +389,6 @@ export class MakeNewSaleComponent implements OnInit {
           this.sellingProductListArray[sellingProductIndex].gold_weight) *
         this.sellingProductListArray[sellingProductIndex].profit_percent
     );
-
-    console.log(this.invoiceTotal);
     this.invoiceTotal = this.sellingProductListArray[
       sellingProductIndex
     ].item_total_after_profit;
@@ -423,7 +411,6 @@ export class MakeNewSaleComponent implements OnInit {
       value => {
         // tslint:disable-next-line: no-shadowed-variable
         this.api.get('branches/active').subscribe(value => {
-          console.log(value.data);
           this.branchesList = value.data;
         });
         this.toast.success(
@@ -436,8 +423,11 @@ export class MakeNewSaleComponent implements OnInit {
         this.myModalBranch.hide();
       },
       error => {
-        this.modalError = error.error.errors;
-        this.api.fireAlert('error', 'Please Fill All Data', '');
+        if (error.error.errors) {
+          this.toast.error(error.error.errors, '!Error');
+        } else {
+          this.toast.error(error.error.message, '!Error');
+        }
       }
     );
   }
@@ -449,8 +439,6 @@ export class MakeNewSaleComponent implements OnInit {
         this.api.get('clients/active').subscribe(value => {
           this.clientsArray = value;
         });
-        console.log(this.clientsArray);
-        console.log(value);
         this.toast.success(
           form.value.name + ' ' + ' has been successfully Created',
           'Success!',
@@ -461,7 +449,11 @@ export class MakeNewSaleComponent implements OnInit {
         this.myModalClient.hide();
       },
       error => {
-        this.modalError = error.error.errors;
+        if (error.error.errors) {
+          this.toast.error(error.error.errors, '!Error');
+        } else {
+          this.toast.error(error.error.message, '!Error');
+        }
         this.api.fireAlert('error', 'Please Fill All Data', '');
       }
     );
@@ -517,8 +509,6 @@ export class MakeNewSaleComponent implements OnInit {
   /* ----------------- Push Item To Array -------------------- */
   addItemTosellingProductListArray() {
     this.sellingProductListArray.push(...this.selectedProductData);
-    console.log(this.selectedProductData);
-
     this.sumTotalOFSingleProduct(this.selectedProductData);
     this.invoiceTotal = 0;
     this.sellingProductListArray.forEach(value => {
@@ -552,23 +542,16 @@ export class MakeNewSaleComponent implements OnInit {
   }
   /* ----------------- Create New Sale -------------------- */
   onSubmit() {
-    console.log(this.sellingProductListArray);
     let arr = this.sellingProductListArray.slice(0);
     if (this.paidAmountForm.value.paidAmount === '') {
       this.paidAmountForm.value.paidAmount = 0;
     }
-    console.log(this.paidAmountForm.value.total_egp);
-    console.log(this.paidAmountForm);
 
     if (this.paidAmountForm.value.total_egp == '') {
-      console.log('Empty');
       this.paidAmountForm.controls.total_egp.setValue(
         this.invoiceTotal * this.dollarPrice
       );
     }
-    console.log(this.paidAmountForm.value.total_egp);
-    console.log(this.reseller_id);
-
     this.api
       .post('receipts', {
         items: arr,
@@ -597,7 +580,11 @@ export class MakeNewSaleComponent implements OnInit {
           }
         },
         error => {
-          this.errMessage = error.error.errors;
+          if (error.error.errors) {
+            this.toast.error(error.error.errors, '!Error');
+          } else {
+            this.toast.error(error.error.message, '!Error');
+          }
           this.api.fireAlert('error', 'Please Fill All Data', '');
         }
       );

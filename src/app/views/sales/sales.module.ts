@@ -4,7 +4,9 @@ import { NgModule } from '@angular/core';
 // Ngx-Bootstrap
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { ModalModule, TabsModule, PaginationModule } from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 // Components
 import { SafeBoxComponent } from './safe-box.component';
 import { ReturnComponent } from './return.component';

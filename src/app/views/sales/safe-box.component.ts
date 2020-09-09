@@ -18,6 +18,7 @@ export class SafeBoxComponent {
   selection = new SelectionModel<any>(true, []);
   displayedColumns: string[] = [
     'select',
+    'client',
     'created',
     'branches.name',
     'amount',
@@ -37,8 +38,10 @@ export class SafeBoxComponent {
   per_page: number = 10;
   myControlStatus = new FormControl('');
   myControlBranch = new FormControl('');
+  myControlClient = new FormControl('');
   filteredStatus: Observable<string[]>;
   filteredBranches: Observable<string[]>;
+  filteredClients: Observable<string[]>;
   status: any = '';
   branch_id: any = '';
   safebox: any = [];
@@ -47,9 +50,13 @@ export class SafeBoxComponent {
   entryDate: any = [];
   branchList: any = [];
   branchValue: any = '';
+  clientValue: any = '';
   pageIndex: any;
   numberOfPages: any = [];
   currentPage: 1;
+  payment: any = '';
+  clientsArray: any = [];
+  client_id: any = '';
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
     private api: MainServiceService,
@@ -59,14 +66,21 @@ export class SafeBoxComponent {
   ) {
     this.route.data.subscribe(data => {
       console.log(data);
+      // Get Clients
+      this.clientsArray = data.clients;
+      // Filter Clients
+      this.filteredClients = this.myControlClient.valueChanges.pipe(
+        startWith(''),
+        map(value => this.filterClient(value))
+      );
       // Get Safe Box
-      this.safebox = data.safeBox.data.data;
-      this.data = Object.assign(data.safeBox.data.data);
+      this.safebox = data.safeBox.data;
+      this.data = Object.assign(data.safeBox.data);
       this.pageIndex = data.safeBox.data.last_page;
       // Get Branch
       this.branchList = data.branchList.data;
       this.totalSearch = data.safeBox.data.total;
-      this.dataSource = new MatTableDataSource(data.safeBox.data.data);
+      this.dataSource = new MatTableDataSource(data.safeBox.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       // Sort item inside inner Object
@@ -136,13 +150,46 @@ export class SafeBoxComponent {
         status: this.status,
         from_date: this.fromDate,
         to_date: this.toDate,
-        per_page: 10
+        payment_method: this.payment
+        // per_page: 10
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
         console.log(value);
         setTimeout(() => {
-          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource = new MatTableDataSource(value.data);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          // Sort item inside inner Object
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'client.name':
+                return item.client.name;
+              default:
+                return item[property];
+            }
+          };
+        }, 300);
+      });
+  }
+  /* ----------------------- Get Payment ---------------------- */
+  getPayment(event) {
+    console.log(event);
+    this.payment = event;
+    this.api
+      .get('savebox/actions', {
+        branch_id: this.branch_id,
+        status: this.status,
+        from_date: this.fromDate,
+        to_date: this.toDate,
+        payment_method: this.payment
+        // per_page: 10
+      })
+      // tslint:disable-next-line: no-shadowed-variable
+      .subscribe(value => {
+        console.log(value);
+        setTimeout(() => {
+          this.dataSource = new MatTableDataSource(value.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
           // Sort item inside inner Object
@@ -165,13 +212,15 @@ export class SafeBoxComponent {
         .get('savebox/actions', {
           branch_id: this.branch_id,
           status: this.status,
-          per_page: 10
+          client_id: this.client_id,
+          payment_method: this.payment
+          // per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           console.log(value);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
@@ -198,12 +247,14 @@ export class SafeBoxComponent {
         status: this.status,
         from_date: this.fromDate,
         to_date: this.toDate,
-        per_page: 10
+        client_id: this.client_id,
+        payment_method: this.payment
+        // per_page: 10
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
         setTimeout(() => {
-          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource = new MatTableDataSource(value.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
           // Sort item inside inner Object
@@ -226,13 +277,15 @@ export class SafeBoxComponent {
           branch_id: this.branch_id,
           status: this.status,
           from_date: this.fromDate,
+          client_id: this.client_id,
           to_date: this.toDate,
-          per_page: 10
+          payment_method: this.payment
+          // per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
@@ -259,12 +312,14 @@ export class SafeBoxComponent {
         status: this.status,
         from_date: this.fromDate,
         to_date: this.toDate,
-        per_page: 10
+        client_id: this.client_id,
+        payment_method: this.payment
+        // per_page: 10
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
         setTimeout(() => {
-          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource = new MatTableDataSource(value.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
           // Sort item inside inner Object
@@ -290,15 +345,17 @@ export class SafeBoxComponent {
         .get('savebox/actions', {
           branch_id: this.branch_id,
           status: this.status,
+          client_id: this.client_id,
+          payment_method: this.payment
           // from_date: this.fromDate,
           // to_date: this.toDate,
-          per_page: 10
+          // per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           console.log(value);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
@@ -330,16 +387,18 @@ export class SafeBoxComponent {
       this.api
         .get('savebox/actions', {
           branch_id: this.branch_id,
+          client_id: this.client_id,
           status: this.status,
+          payment_method: this.payment
           // from_date: this.fromDate,
           // to_date: this.toDate,
-          per_page: 10
+          // per_page: 10
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           console.log(value);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
@@ -401,6 +460,131 @@ export class SafeBoxComponent {
     console.log(branch);
     return branch ? branch.name : branch;
   }
+  // ----------------------------------------- Filter Branches
+  private filterClient(value) {
+    // tslint:disable-next-line: triple-equals
+    if (value == '' || value == undefined) {
+      this.client_id = '';
+      // Send Request
+      this.api
+        .get('savebox/actions', {
+          branch_id: this.branch_id,
+          status: this.status,
+          payment_method: this.payment,
+          client_id: this.client_id
+          // from_date: this.fromDate,
+          // to_date: this.toDate,
+          // per_page: 10
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value);
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'product.label':
+                  return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
+                case 'receipts.branch.name':
+                  return item.receipts.branch.name;
+                case 'receipts.employee.name':
+                  return item.receipts.employee.name;
+                case 'receipts.receipt_number':
+                  return item.receipts.receipt_number;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+    }
+    // tslint:disable-next-line: triple-equals
+    if (typeof value == 'object') {
+      const filterValue = value.name.toLowerCase();
+      this.client_id = value.id;
+      console.log(this.branch_id);
+      // Send Request
+      this.api
+        .get('savebox/actions', {
+          branch_id: this.branch_id,
+          status: this.status,
+          client_id: this.client_id,
+          payment_method: this.payment
+          // from_date: this.fromDate,
+          // to_date: this.toDate,
+          // per_page: 10
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value);
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'product.label':
+                  return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
+                case 'receipts.branch.name':
+                  return item.receipts.branch.name;
+                case 'receipts.employee.name':
+                  return item.receipts.employee.name;
+                case 'receipts.receipt_number':
+                  return item.receipts.receipt_number;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+      return this.clientsArray.filter(option =>
+        option.name.toLowerCase().includes(filterValue)
+      );
+      // tslint:disable-next-line: triple-equals
+    } else if (typeof value == 'string') {
+      const filterValueName = value.toLowerCase();
+      const info = this.clientsArray.filter(option =>
+        option.name.toLowerCase().includes(filterValueName)
+      );
+      console.log(info);
+      this.dataSource = new MatTableDataSource(info);
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+      // Sort item inside inner Object
+      this.dataSource.sortingDataAccessor = (item, property) => {
+        switch (property) {
+          case 'product.label':
+            return item.product.label;
+          case 'product.metal.name':
+            return item.product.metal.name;
+          case 'receipts.branch.name':
+            return item.receipts.branch.name;
+          case 'receipts.employee.name':
+            return item.receipts.employee.name;
+          case 'receipts.receipt_number':
+            return item.receipts.receipt_number;
+          default:
+            return item[property];
+        }
+      };
+      return this.clientsArray.filter(option =>
+        option.name.toLowerCase().includes(filterValueName)
+      );
+    }
+  }
+  // ----------------------------------------- Display Branches
+  displayClient(client): string {
+    console.log(client);
+    return client ? client.name : client;
+  }
   /* --------------------------- Clear From Data ----------------------------- */
   getFromData() {
     this.fromDate = '';
@@ -410,13 +594,14 @@ export class SafeBoxComponent {
         status: this.status,
         from_date: this.fromDate,
         to_date: this.toDate,
-        per_page: 10
+        payment_method: this.payment
+        // per_page: 10
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
         console.log(value);
         setTimeout(() => {
-          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource = new MatTableDataSource(value.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
           // Sort item inside inner Object
@@ -448,13 +633,14 @@ export class SafeBoxComponent {
         status: this.status,
         from_date: this.fromDate,
         to_date: this.toDate,
-        per_page: 10
+        payment_method: this.payment
+        // per_page: 10
       })
       // tslint:disable-next-line: no-shadowed-variable
       .subscribe(value => {
         console.log(value);
         setTimeout(() => {
-          this.dataSource = new MatTableDataSource(value.data.data);
+          this.dataSource = new MatTableDataSource(value.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
           // Sort item inside inner Object
@@ -516,7 +702,7 @@ export class SafeBoxComponent {
   }
   selectPage(event) {
     console.log(event);
-    // this.currentPage = event;
+    this.currentPage = event;
     // this.api
     //   .get('savebox/actions', {
     //     per_page: this.per_page,

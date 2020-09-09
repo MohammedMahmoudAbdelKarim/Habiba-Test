@@ -1,16 +1,10 @@
 import { InvoicesComponent } from './invoices.component';
 import { NgModule } from '@angular/core';
-
-import { FlagsComponent } from './flags.component';
-import { FontAwesomeComponent } from './font-awesome.component';
-import { SimpleLineIconsComponent } from './simple-line-icons.component';
 import { InvoicesRoutingModule } from './invoices-routing.module';
-import {
-  BsDropdownModule,
-  ModalModule,
-  TabsModule,
-  PaginationModule
-} from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -56,12 +50,7 @@ import { clientsListSolver } from '../../resolvers/clientsList.solver';
     TabsModule,
     PaginationModule.forRoot()
   ],
-  declarations: [
-    InvoicesComponent,
-    FlagsComponent,
-    FontAwesomeComponent,
-    SimpleLineIconsComponent
-  ],
+  declarations: [InvoicesComponent],
   providers: [salesAllSolver, branchListSolver, clientsListSolver]
 })
 export class InvoicesModule {}

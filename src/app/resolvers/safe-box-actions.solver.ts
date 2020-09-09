@@ -9,7 +9,7 @@ import { MainServiceService } from '../shared-services/main-service.service';
 @Injectable()
 // tslint:disable-next-line: class-name
 export class safeBoxActionsSolver implements Resolve<any> {
-  constructor(private mainService: MainServiceService) {}
+  constructor(private mainService: MainServiceService) { }
 
   resolve() {
     return this.mainService

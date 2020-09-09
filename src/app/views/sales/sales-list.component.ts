@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { MainServiceService } from '../../shared-services/main-service.service';
@@ -20,6 +20,8 @@ export class SalesListComponent {
   public detailsModal: ModalDirective;
   @ViewChild('invoiceModal', { static: false })
   public invoiceModal: ModalDirective;
+  @ViewChild('invoiceModalView', { static: false })
+  public invoiceModalView: ModalDirective;
   selection = new SelectionModel<any>(true, []);
   //  --------------------------------------   Tables Colums
   displayedColumns: string[] = [
@@ -31,6 +33,8 @@ export class SalesListComponent {
     'product.metal.name',
     'receipts.receipt_number',
     'receipts.total_egp',
+    'receipts.paid_egp',
+    'remaining',
     'receipts.employee.name',
     'image',
     'actions'
@@ -50,11 +54,13 @@ export class SalesListComponent {
   myControlInvoice = new FormControl('');
   myControlDate = new FormControl('');
   myControlMetal = new FormControl('');
+  myControlClient = new FormControl('');
   // ------------------------------------------------------ ASYNC
   filteredBranches: Observable<string[]>;
   filteredInvoices: Observable<string[]>;
   filteredDates: Observable<string[]>;
   filteredMetals: Observable<string[]>;
+  filteredClients: Observable<string[]>;
   // ----------------------------------------------- Arrays and Inital Variables
   hideme: any = [];
   products: any = [];
@@ -75,6 +81,7 @@ export class SalesListComponent {
   data: any;
   invoiceValue: any = '';
   dateValue: any = '';
+  clientValue: any = '';
   stockData: any = '';
   branchValue: string = '';
   categoryValue: string = '';
@@ -104,6 +111,8 @@ export class SalesListComponent {
   pageIndex: any = '';
   numberOfPages: any = [];
   currentPage: any = '';
+  clientArray: any = [];
+  client_id: any = '';
 
   // ---------------------------------------------- Form
   deleteForm = new FormGroup({
@@ -148,6 +157,8 @@ export class SalesListComponent {
       // --------------------------------------  Get Metals
       this.metals = data.metal.data;
       // --------------------------------------- Get Sales
+      // --------------------------------------- Get Clients
+      this.clientArray = data.clients;
       this.products = data.receipts.data.data;
       this.data = Object.assign(data.receipts.data.data);
       this.pageIndex = data.receipts.data.last_page;
@@ -168,7 +179,12 @@ export class SalesListComponent {
           case 'receipts.employee.name':
             return item.receipts.employee.name;
           case 'receipts.receipt_number':
+          case 'receipts.total_egp':
+            return item.receipts.total_egp;
+          case 'receipts.receipt_number':
             return item.receipts.receipt_number;
+          case 'receipts.paid_egp':
+            return item.receipts.paid_egp;
           default:
             return item[property];
         }
@@ -187,6 +203,10 @@ export class SalesListComponent {
     this.filteredMetals = this.myControlMetal.valueChanges.pipe(
       startWith(''),
       map(value => this.filterMetal(value))
+    );
+    this.filteredClients = this.myControlClient.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterClient(value))
     );
   }
 
@@ -241,8 +261,12 @@ export class SalesListComponent {
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
                   return item.receipts.employee.name;
+                case 'receipts.total_egp':
+                  return item.receipts.total_egp;
                 case 'receipts.receipt_number':
                   return item.receipts.receipt_number;
+                case 'receipts.paid_egp':
+                  return item.receipts.paid_egp;
                 default:
                   return item[property];
               }
@@ -282,8 +306,12 @@ export class SalesListComponent {
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
                   return item.receipts.employee.name;
+                case 'receipts.total_egp':
+                  return item.receipts.total_egp;
                 case 'receipts.receipt_number':
                   return item.receipts.receipt_number;
+                case 'receipts.paid_egp':
+                  return item.receipts.paid_egp;
                 default:
                   return item[property];
               }
@@ -314,8 +342,12 @@ export class SalesListComponent {
             return item.receipts.branch.name;
           case 'receipts.employee.name':
             return item.receipts.employee.name;
+          case 'receipts.total_egp':
+            return item.receipts.total_egp;
           case 'receipts.receipt_number':
             return item.receipts.receipt_number;
+          case 'receipts.paid_egp':
+            return item.receipts.paid_egp;
           default:
             return item[property];
         }
@@ -327,6 +359,144 @@ export class SalesListComponent {
   }
   // ----------------------------------------- Display Branches
   displayBranch(branch): string {
+    console.log(branch);
+    return branch ? branch.name : branch;
+  }
+
+  // ----------------------------------------- Filter Client
+  private filterClient(value) {
+    // tslint:disable-next-line: triple-equals
+    if (value == '' || value == undefined) {
+      console.log(this.products);
+
+      this.client_id = '';
+      // Send Request
+      this.api
+        .get('sales', {
+          branch_id: this.branch_id,
+          receipt_number: this.receipt_number,
+          receipt_date: this.receipt_date,
+          metal_type: this.metal_type,
+          per_page: 50,
+          client_id: this.client_id
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value);
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'product.label':
+                  return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
+                case 'receipts.branch.name':
+                  return item.receipts.branch.name;
+                case 'receipts.employee.name':
+                  return item.receipts.employee.name;
+                case 'receipts.total_egp':
+                  return item.receipts.total_egp;
+                case 'receipts.receipt_number':
+                  return item.receipts.receipt_number;
+                case 'receipts.paid_egp':
+                  return item.receipts.paid_egp;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+    }
+    // tslint:disable-next-line: triple-equals
+    if (typeof value == 'object') {
+      const filterValue = value.name.toLowerCase();
+      this.client_id = value.id;
+      console.log(this.client_id);
+      // Send Request
+      this.api
+        .get('sales', {
+          branch_id: this.branch_id,
+          receipt_number: this.receipt_number,
+          receipt_date: this.receipt_date,
+          metal_type: this.metal_type,
+          client_id: this.client_id,
+          per_page: 50
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value);
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'product.label':
+                  return item.product.label;
+                case 'product.metal.name':
+                  return item.product.metal.name;
+                case 'receipts.branch.name':
+                  return item.receipts.branch.name;
+                case 'receipts.employee.name':
+                  return item.receipts.employee.name;
+                case 'receipts.total_egp':
+                  return item.receipts.total_egp;
+                case 'receipts.receipt_number':
+                  return item.receipts.receipt_number;
+                case 'receipts.paid_egp':
+                  return item.receipts.paid_egp;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+      return this.clientArray.filter(option =>
+        option.name.toLowerCase().includes(filterValue)
+      );
+      // tslint:disable-next-line: triple-equals
+    } else if (typeof value == 'string') {
+      const filterValueName = value.toLowerCase();
+      const info = this.products.filter(option =>
+        option.receipts.branch.name.toLowerCase().includes(filterValueName)
+      );
+      console.log(info);
+      this.dataSource = new MatTableDataSource(info);
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+      // Sort item inside inner Object
+      this.dataSource.sortingDataAccessor = (item, property) => {
+        switch (property) {
+          case 'product.label':
+            return item.product.label;
+          case 'product.metal.name':
+            return item.product.metal.name;
+          case 'receipts.branch.name':
+            return item.receipts.branch.name;
+          case 'receipts.employee.name':
+            return item.receipts.employee.name;
+          case 'receipts.total_egp':
+            return item.receipts.total_egp;
+          case 'receipts.receipt_number':
+            return item.receipts.receipt_number;
+          case 'receipts.paid_egp':
+            return item.receipts.paid_egp;
+          default:
+            return item[property];
+        }
+      };
+      return this.clientArray.filter(option =>
+        option.name.toLowerCase().includes(filterValueName)
+      );
+    }
+  }
+  // ----------------------------------------- Display Branches
+  displayClient(branch): string {
     console.log(branch);
     return branch ? branch.name : branch;
   }
@@ -363,8 +533,12 @@ export class SalesListComponent {
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
                   return item.receipts.employee.name;
+                case 'receipts.total_egp':
+                  return item.receipts.total_egp;
                 case 'receipts.receipt_number':
                   return item.receipts.receipt_number;
+                case 'receipts.paid_egp':
+                  return item.receipts.paid_egp;
                 default:
                   return item[property];
               }
@@ -405,8 +579,12 @@ export class SalesListComponent {
                   return item.receipts.branch.name;
                 case 'receipts.employee.name':
                   return item.receipts.employee.name;
+                case 'receipts.total_egp':
+                  return item.receipts.total_egp;
                 case 'receipts.receipt_number':
                   return item.receipts.receipt_number;
+                case 'receipts.paid_egp':
+                  return item.receipts.paid_egp;
                 default:
                   return item[property];
               }
@@ -438,8 +616,12 @@ export class SalesListComponent {
             return item.receipts.branch.name;
           case 'receipts.employee.name':
             return item.receipts.employee.name;
+          case 'receipts.total_egp':
+            return item.receipts.total_egp;
           case 'receipts.receipt_number':
             return item.receipts.receipt_number;
+          case 'receipts.paid_egp':
+            return item.receipts.paid_egp;
           default:
             return item[property];
         }
@@ -610,6 +792,10 @@ export class SalesListComponent {
                 return item.receipts.employee.name;
               case 'receipts.receipt_number':
                 return item.receipts.receipt_number;
+              case 'receipts.total_egp':
+                return item.receipts.total_egp;
+              case 'receipts.paid_egp':
+                return item.receipts.paid_egp;
               default:
                 return item[property];
             }
@@ -649,6 +835,10 @@ export class SalesListComponent {
                 return item.receipts.employee.name;
               case 'receipts.receipt_number':
                 return item.receipts.receipt_number;
+              case 'receipts.total_egp':
+                return item.receipts.total_egp;
+              case 'receipts.paid_egp':
+                return item.receipts.paid_egp;
               default:
                 return item[property];
             }
@@ -691,6 +881,10 @@ export class SalesListComponent {
                   return item.receipts.employee.name;
                 case 'receipts.receipt_number':
                   return item.receipts.receipt_number;
+                case 'receipts.total_egp':
+                  return item.receipts.total_egp;
+                case 'receipts.paid_egp':
+                  return item.receipts.paid_egp;
                 default:
                   return item[property];
               }
@@ -732,6 +926,10 @@ export class SalesListComponent {
                   return item.receipts.employee.name;
                 case 'receipts.receipt_number':
                   return item.receipts.receipt_number;
+                case 'receipts.total_egp':
+                  return item.receipts.total_egp;
+                case 'receipts.paid_egp':
+                  return item.receipts.paid_egp;
                 default:
                   return item[property];
               }
@@ -763,6 +961,10 @@ export class SalesListComponent {
             return item.receipts.employee.name;
           case 'receipts.receipt_number':
             return item.receipts.receipt_number;
+          case 'receipts.total_egp':
+            return item.receipts.total_egp;
+          case 'receipts.paid_egp':
+            return item.receipts.paid_egp;
           default:
             return item[property];
         }
@@ -918,7 +1120,7 @@ export class SalesListComponent {
   /* ------------------------------ Open Inovice ----------------------- */
   openInvoice(row) {
     console.log(row);
-    this.invoiceModal.show();
+    this.invoiceModalView.show();
     this.api.get('settings', { per_page: 50 }).subscribe(data => {
       console.log(data.data);
       this.settings_address = data.data[0].address;
@@ -937,5 +1139,29 @@ export class SalesListComponent {
     this.inoviceAddress = row.receipts.branch.address;
     this.inovicePhone = row.receipts.branch.phone;
     // console.log(this.inoviceProducts);
+  }
+  /* -------------------------- Print ---------------------------- */
+  print(row) {
+    this.invoiceModal.show();
+    this.api.get('settings', { per_page: 50 }).subscribe(data => {
+      console.log(data.data);
+      this.settings_address = data.data[0].address;
+      this.settings_phone = data.data[0].phone;
+      this.settings_website = data.data[0].website;
+    });
+    this.invoiceData = row;
+    this.receiptDateInvoice = row.receipts.receipt_date;
+    this.totalEGP = row.receipts.total_egp;
+    this.paidAmount = row.receipts.paid_egp;
+    this.inoviceClient = row.receipts.client.name;
+    this.inoviceEmployee = row.receipts.employee.name;
+    this.inoviceBranch = row.receipts.branch.name;
+    this.product = row.product;
+    this.inoviceCity = row.receipts.branch.city.name;
+    this.inoviceAddress = row.receipts.branch.address;
+    this.inovicePhone = row.receipts.branch.phone;
+    setTimeout(() => {
+      window.print();
+    }, 3000);
   }
 }

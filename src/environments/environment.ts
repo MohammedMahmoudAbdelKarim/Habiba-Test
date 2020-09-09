@@ -6,8 +6,9 @@
 export const environment = {
   production: false,
   // baseUrl: 'http://jewelry.ixscope.com/backend/api/'
-  baseUrl: 'http://192.168.1.5:8000/api/'
+  // baseUrl: 'http://192.168.1.5:8000/api/',
+  baseUrl: 'http://testjewelry.inspia.net/backend/api/'
+  // baseUrl: '127.0.0.1:8000/api/'
   // baseUrl: 'http://192.168.1.110:8000/api/'
   // baseUrl: 'http://192.168.1.110/jewelry/public/api/'
-  // baseUrl: 'localhost:8000/api/'
 };

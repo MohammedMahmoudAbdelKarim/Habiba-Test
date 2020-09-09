@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { ToastrService } from 'ngx-toastr';
 @Component({
   templateUrl: 'transfer.component.html'
@@ -249,7 +249,7 @@ export class TransferComponent implements OnInit {
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           console.log('Empty Branch -> ', value.data);
-          setTimeout(() => {}, 300);
+          setTimeout(() => { }, 300);
         });
     }
     // tslint:disable-next-line: triple-equals
@@ -268,7 +268,7 @@ export class TransferComponent implements OnInit {
           console.log(value.data[0]);
           this.transferName = value.data[0].branch.name;
           this.productTransferID = value.data[0].id;
-          setTimeout(() => {}, 300);
+          setTimeout(() => { }, 300);
         });
       return this.items.filter(option =>
         option.label.toLowerCase().includes(filterValue)
@@ -327,7 +327,7 @@ export class TransferComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* ---------------------------- Open Request ------------------------------ */
   openReq(modal) {
@@ -421,7 +421,7 @@ export class TransferComponent implements OnInit {
     for (let i = 1; i <= this.pageIndex; i++) {
       console.log(i);
       this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
+      this.numberOfPages.sort(function (a, b) {
         return a - b;
       });
     }

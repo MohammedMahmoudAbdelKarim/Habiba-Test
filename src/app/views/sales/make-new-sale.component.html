@@ -98,7 +98,12 @@
         >
         <mat-hint
           class="alert alert-danger mt-2 w-100 d-block"
-          *ngIf="emptyArr"
+          *ngIf="
+            (!filterCode.value &&
+              filterCode.touched &&
+              !sellingProductListArray.length) ||
+            (!productArray.length && filterCode.touched)
+          "
         >
           No product available in that branch
         </mat-hint>
@@ -147,14 +152,14 @@
                   <table class="table inside-table table-striped">
                     <thead>
                       <tr class="">
-                        <th scope="col" class="border-right">Stone Name</th>
+                        <th scope="col" class="border-right">Stone Code</th>
                         <th scope="col" class="border-right">Quantity</th>
                         <th class="border-right" scope="col">
                           Weight (cts)
                         </th>
-                        <th class="border-right" scope="col">
+                        <!-- <th class="border-right" scope="col">
                           Cost ($)
-                        </th>
+                        </th> -->
                         <th class="border-right" scope="col">
                           Setting
                         </th>
@@ -176,7 +181,7 @@
                         "
                       >
                         <td class="pb-0 border-right">
-                          {{ stone.name }}
+                          {{ stone.code }}
                         </td>
                         <td class="pb-0 border-right">
                           <input
@@ -202,7 +207,7 @@
                             maxlength="9"
                           />
                         </td>
-                        <td class="border-right">
+                        <!-- <td class="border-right">
                           <input
                             class="stone-input text-center"
                             value="{{ stone.price ? stone.price : '0' }}"
@@ -214,14 +219,16 @@
                             (keypress)="numberCheckValidation($event)"
                             maxlength="9"
                           />
-                        </td>
+                        </td> -->
                         <td class="border-right">
                           <input
                             class="stone-input text-center"
                             value="{{ stone.setting ? stone.setting : '0' }}"
                             formControlName="productStoneSetting"
                             autocomplete="off"
-                            (keyup)="calculateStoneTotal($event, stoneIndex, i)"
+                            (keyup)="
+                              calculateStoneTotal($event, stoneIndex, i, 'sS')
+                            "
                             (keypress)="numberCheckValidation($event)"
                             maxlength="9"
                           />
@@ -231,7 +238,14 @@
                             class="stone-input text-center"
                             value="{{ stone.color }}"
                             formControlName="productColor"
-                            (keyup)="calculateStoneTotal($event, stoneIndex, i)"
+                            (keyup)="
+                              calculateStoneTotal(
+                                $event,
+                                stoneIndex,
+                                i,
+                                'Color'
+                              )
+                            "
                           />
                         </td>
                         <td class="pb-0 border-right">
@@ -239,7 +253,14 @@
                             class="stone-input text-center"
                             value="{{ stone.clarity }}"
                             formControlName="productClarity"
-                            (keyup)="calculateStoneTotal($event, stoneIndex, i)"
+                            (keyup)="
+                              calculateStoneTotal(
+                                $event,
+                                stoneIndex,
+                                i,
+                                'Clarity'
+                              )
+                            "
                           />
                         </td>
                         <td class="">

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -117,7 +117,7 @@ export class UsersComponent implements OnInit {
     for (let i = 1; i <= this.pageIndex; i++) {
       console.log(i);
       this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
+      this.numberOfPages.sort(function (a, b) {
         return a - b;
       });
     }
@@ -213,7 +213,7 @@ export class UsersComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* ---------------------------- Remove Multi-Items ----------------------- */
   mutliplyAction(event) {
@@ -300,7 +300,7 @@ export class UsersComponent implements OnInit {
               per_page: 50
             })
             // tslint:disable-next-line: no-shadowed-variable
-            .subscribe(value => {});
+            .subscribe(value => { });
         }
       });
     } else {
@@ -335,7 +335,7 @@ export class UsersComponent implements OnInit {
         for (let i = 1; i <= this.pageIndex; i++) {
           console.log(i);
           this.numberOfPages.push(i);
-          this.numberOfPages.sort(function(a, b) {
+          this.numberOfPages.sort(function (a, b) {
             return a - b;
           });
         }

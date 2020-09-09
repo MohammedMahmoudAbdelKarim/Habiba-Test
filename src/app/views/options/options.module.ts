@@ -2,17 +2,15 @@ import { OptionsRoutingModule } from './options-routing.module';
 import { OptionsComponent } from './options.component';
 import { NgModule } from '@angular/core';
 import { ChartsModule } from 'ng2-charts';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import {
-  ModalModule,
-  TabsModule,
-  CarouselModule,
-  CollapseModule,
-  PaginationModule,
-  PopoverModule,
-  ProgressbarModule,
-  TooltipModule
-} from 'ngx-bootstrap';
+import { PopoverModule } from 'ngx-bootstrap/popover';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -60,4 +58,4 @@ import { optionSolver } from '../../resolvers/otpions.solver';
   declarations: [OptionsComponent],
   providers: [optionSolver]
 })
-export class OptionsModule {}
+export class OptionsModule { }

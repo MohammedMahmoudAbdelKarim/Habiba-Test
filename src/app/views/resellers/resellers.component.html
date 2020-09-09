@@ -102,6 +102,39 @@
             </mat-autocomplete>
           </mat-form-field>
         </div>
+        <!-- Reseller -->
+        <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Reseller</mat-label>
+            <input
+              type="text"
+              placeholder="Reseller"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlReseller"
+              [matAutocomplete]="autoReseller"
+              [(ngModel)]="sellerValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="clientValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoReseller="matAutocomplete"
+              [displayWith]="displayClient"
+            >
+              <mat-option
+                *ngFor="let option of filteredResellers | async"
+                [value]="option"
+              >
+                {{ option ? option.name : "" }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
         <!-- Client -->
         <div class="col p-0 mr-3">
           <mat-form-field class="example-full-width" appearance="outline">
@@ -159,7 +192,7 @@
             (click)="getFromData()"
             style="position: relative;
         top: -30px;
-        left: 222px;
+        left: 159px;
         z-index: 9;"
             >close</mat-icon
           >
@@ -188,7 +221,7 @@
             (click)="getToData()"
             style="position: relative;
             top: -29px;
-            left: 222px;
+            left: 159px;
             z-index: 9;
         "
             >close</mat-icon
@@ -324,7 +357,24 @@
             alt=""
           />
         </td>
-        <td mat-footer-cell *matFooterCellDef class=""></td>
+        <td mat-footer-cell *matFooterCellDef class="">
+          <button
+            class="addBtnfooter"
+            [routerLink]="['/reports']"
+            [queryParams]="{
+              page: 'reseller',
+              branch_id: branch_id,
+              client_id: client_id,
+              reseller_id: reseller_id,
+              from_date: fromDate,
+              to_date: toDate,
+              product_id: label
+            }"
+          >
+            <i class="icon-printer mr-2 align-middle"></i>
+            Print
+          </button>
+        </td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="actions">
@@ -509,8 +559,8 @@
             >
               {{
                 stockData.product.stones.length > 0
-                  ? 'STONES'
-                  : 'No stone available to this product'
+                  ? "STONES"
+                  : "No stone available to this product"
               }}
               <span class="ml-3" *ngIf="stockData.product.stones.length > 1"
                 >{{ stockData.product.stones.length }} Stones</span

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -48,15 +48,18 @@ export class ResllersComponent implements OnInit {
   myControlLabel = new FormControl('');
   myControlDate = new FormControl('');
   myControlClient = new FormControl('');
+  myControlReseller = new FormControl('');
   // ------------------------------------------------------ ASYNC
   filteredBranches: Observable<string[]>;
   filteredLabels: Observable<string[]>;
   filteredDates: Observable<string[]>;
   filteredClients: Observable<string[]>;
+  filteredResellers: Observable<string[]>;
   // ----------------------------------------------- Arrays and Inital Variables
   hideme: any = [];
   products: any = [];
   statusList: any = [];
+  sellerValue: any = '';
   pageNumbers: any = [];
   categoryList: any = [];
   productNumbersList: any = [];
@@ -99,11 +102,14 @@ export class ResllersComponent implements OnInit {
   entryDate: any = '';
   fromDate: any = '';
   toDate: any = '';
+  reseller_id: any = '';
   clients: any = [];
   labelValue = '';
   clientValue = '';
   pageIndex;
   numberOfPages = [];
+  resellerArray: any = [];
+  resellersClient: any = [];
   currentPage;
   labels = [];
   totalProducts: any;
@@ -144,8 +150,10 @@ export class ResllersComponent implements OnInit {
       this.products = data.resellers.data.data;
       this.totalProducts = data.resellers.total;
       this.countProducts = data.resellers.count;
+      // ---------------------------------------- Get Resellers of Client
+      this.resellersClient = data.clients;
       // ---------------------------------------- Get Clients
-      this.clients = data.clients;
+      this.clients = data.realClients;
       console.log(this.clients);
       // -------------------------------------- Get Labels
       this.api
@@ -159,6 +167,9 @@ export class ResllersComponent implements OnInit {
         });
       this.data = Object.assign(data.resellers.data.data);
       this.dataSource = new MatTableDataSource(data.resellers.data.data);
+      this.resellerArray = data.resellers.data.data;
+      console.log(this.resellerArray);
+
       this.pageIndex = data.resellers.data.last_page;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -191,6 +202,10 @@ export class ResllersComponent implements OnInit {
     this.filteredClients = this.myControlClient.valueChanges.pipe(
       startWith(''),
       map(value => this.filterClients(value))
+    );
+    this.filteredResellers = this.myControlReseller.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterReseller(value))
     );
   }
 
@@ -730,6 +745,125 @@ export class ResllersComponent implements OnInit {
       );
     }
   }
+  // ----------------------------------- Filter Clients
+  private filterReseller(value) {
+    // tslint:disable-next-line: triple-equals
+    if (value == '' || value == undefined) {
+      this.reseller_id = '';
+      // Send Request
+      this.api
+        .get('reseller', {
+          branch_id: this.branch_id,
+          client_id: this.client_id,
+          reseller_id: this.reseller_id,
+          from_date: this.fromDate,
+          to_date: this.toDate,
+          product_id: this.label,
+          per_page: 50
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value);
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'product.label':
+                  return item.product.label;
+                case 'product.branch.name':
+                  return item.product.branch.name;
+                case 'client.name':
+                  return item.client.name;
+                case 'created_at':
+                  return item.created_at;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+    }
+    // tslint:disable-next-line: triple-equals
+    if (typeof value == 'object') {
+      const filterValue = value.name;
+      this.reseller_id = value.id;
+      // Send Request
+      this.api
+        .get('reseller', {
+          branch_id: this.branch_id,
+          reseller_id: this.reseller_id,
+          client_id: this.client_id,
+          from_date: this.fromDate,
+          to_date: this.toDate,
+          product_id: this.label,
+          per_page: 50
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe(value => {
+          console.log(value);
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            this.totalProducts = value.total;
+            this.countProducts = value.count;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case 'product.label':
+                  return item.product.label;
+                case 'product.branch.name':
+                  return item.product.branch.name;
+                case 'client.name':
+                  return item.client.name;
+                case 'created_at':
+                  return item.created_at;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+      return this.resellersClient.filter(option =>
+        option.name.includes(filterValue)
+      );
+      // tslint:disable-next-line: triple-equals
+    } else if (typeof value == 'string') {
+      // value = this.tem_category;
+      const filterValueName = value.toLowerCase();
+
+      const info = this.resellersClient.filter(option =>
+        option.name.toLowerCase().includes(filterValueName)
+      );
+      console.log(info);
+      this.dataSource = new MatTableDataSource(info);
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+      // Sort item inside inner Object
+      this.dataSource.sortingDataAccessor = (item, property) => {
+        switch (property) {
+          case 'product.label':
+            return item.product.label;
+          case 'product.branch.name':
+            return item.product.branch.name;
+          case 'client.name':
+            return item.client.name;
+          case 'created_at':
+            return item.created_at;
+          default:
+            return item[property];
+        }
+      };
+      return this.resellersClient.filter(option =>
+        option.name.includes(filterValueName)
+      );
+    }
+  }
   // ----------------------------------------- Display Codes
   displayClient(client): string {
     console.log(client);
@@ -742,6 +876,7 @@ export class ResllersComponent implements OnInit {
       .get('reseller', {
         branch_id: this.branch_id,
         client_id: this.client_id,
+        reseller_id: this.reseller_id,
         from_date: this.fromDate,
         to_date: this.toDate,
         product_id: this.label,
@@ -781,6 +916,7 @@ export class ResllersComponent implements OnInit {
       .get('reseller', {
         branch_id: this.branch_id,
         client_id: this.client_id,
+        reseller_id: this.reseller_id,
         from_date: this.fromDate,
         to_date: this.toDate,
         product_id: this.label,

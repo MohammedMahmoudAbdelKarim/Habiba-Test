@@ -6,17 +6,15 @@ import { ResllersComponent } from './resellers.component';
 import { CommonModule } from '@angular/common';
 import { MatNativeDateModule } from '@angular/material/core';
 import { NgxPaginationModule } from 'ngx-pagination';
-import {
-  ModalModule,
-  BsDropdownModule,
-  TabsModule,
-  CarouselModule,
-  CollapseModule,
-  PaginationModule,
-  PopoverModule,
-  ProgressbarModule,
-  TooltipModule
-} from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { PopoverModule } from 'ngx-bootstrap/popover';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -72,4 +70,4 @@ import { resellerClientsSolver } from '../../resolvers/clientsReseller.solver';
     resellerClientsSolver
   ]
 })
-export class ResllersModule {}
+export class ResllersModule { }

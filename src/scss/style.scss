@@ -13,29 +13,10 @@
 
 /* --------------------------------- Print --------------------------------- */
 @media print {
-  body * {
+  #invoice-list {
     visibility: hidden;
   }
 
-  #print-stock * {
-    visibility: visible;
-  }
-
-  #print-stock {
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-
-  #print-reseller * {
-    visibility: visible;
-  }
-
-  #print-reseller {
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
   #print-invoice * {
     visibility: visible;
   }
@@ -45,7 +26,62 @@
     left: 0;
     top: 0;
   }
+
+  #sales-list * {
+    visibility: hidden;
+  }
+
+  #invoice-modal * {
+    visibility: visible;
+  }
+
+  #invoice-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+
 }
+
+
+
+//   body * {
+//     visibility: hidden;
+//   }
+
+// #print-stock * {
+//   visibility: visible;
+// }
+
+// #print-stock {
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+// }
+
+// #print-reseller * {
+//   visibility: visible;
+// }
+
+// #print-reseller {
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+// }
+
+
+
+//   #print-report {
+//     visibility: visible;
+//   }
+
+//   #print-report {
+//     position: absolute;
+//     left: 0;
+//     top: 0;
+//   }
+// }
 
 
 /* ----------------------------------- Variables -------------------------------------*/
@@ -195,14 +231,14 @@ body {
     border-bottom: 1px solid #707070;
     font-family: Arial;
     color: #fff;
-    text-transform: uppercase;
-    font-weight: 600;
-    padding: 20px 5px;
+    // text-transform: uppercase;
+    // font-weight: 600;
+    // padding: 20px 5px;
   }
 
   i {
-    font-size: 20px;
-    margin-right: 15px;
+    // font-size: 20px;
+    // margin-right: 15px;
   }
 
   .nav-link.active {
@@ -215,7 +251,7 @@ body {
 
   .nav-dropdown-items {
     margin-left: 10px;
-    font-size: 12px;
+    font-size: 11px;
 
     i {
       font-size: 10px;
@@ -1422,8 +1458,10 @@ header {
 #invoice-modal {
   @media (min-width: 576px) {
     .modal-dialog {
-      max-width: 210mm;
-      margin: 1.75rem auto;
+      // max-width: 210mm;
+      // margin: 1.75rem auto;
+      max-width: 100%;
+      margin: 0;
     }
   }
 
@@ -1439,17 +1477,82 @@ header {
 
   .modal-footer {
     position: relative;
-    top: 8%;
+    top: 3%;
   }
 
   .modal-content {
-    background: url(../assets/icon/RASHA-EL-SHERBINY-1.jpg);
-    background-size: contain;
-    background-position: 3px;
-    height: 279mm;
+    background: url(../assets/icon/invoice.png);
+    // background-size: contain;
+    // background-position: 3px;
+    // height: 279mm;
+    background-size: cover;
+    /* background-position: 3px; */
+    height: 100vh;
 
     .modal-body {
       padding: 1rem 3.2rem;
+    }
+  }
+
+  #table-invoice {
+    border: 1px solid #333;
+
+    thead {
+      tr {
+        th {
+          font-size: .75rem;
+          text-transform: capitalize;
+          border: 1px solid #333;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          border: 1px solid #333;
+
+          .inner {}
+        }
+      }
+    }
+  }
+
+
+
+}
+
+#invoice-modal2 {
+  @media (min-width: 576px) {
+    .modal-dialog {
+      max-width: 210mm;
+      margin: 1.75rem auto;
+    }
+
+    .border-invoice {
+      border: 1px solid $black;
+      padding: 5px 10px;
+      font-size: 14px;
+    }
+
+    h5 {
+      font-size: 14px;
+    }
+
+    .modal-footer {
+      position: relative;
+      top: 3%;
+    }
+
+    .modal-content {
+      background: url(../assets/icon/RASHA-EL-SHERBINY-1.jpg);
+      background-size: contain;
+      background-position: 3px;
+      height: 279mm;
+
+      .modal-body {
+        padding: 1rem 3.2rem;
+      }
     }
   }
 
@@ -1842,4 +1945,11 @@ header {
 
 .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
   background-color: #039BE5;
+}
+
+.addBtnfooter {
+  background: #065a84;
+  border: 0;
+  color: #fff;
+  padding: 11px 20px;
 }

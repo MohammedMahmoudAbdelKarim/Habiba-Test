@@ -184,12 +184,6 @@
             Make New Sale
           </button>
         </div>
-        <div class="col-6 row justify-content-end no-gutters">
-          <button class="addBtn" routerLink="/main-stock/add-new-item">
-            <i class="icon-diamond mr-2 align-middle"></i>
-            Add New Item
-          </button>
-        </div>
       </div>
       <div class="col-12 row justify-content-start pl-3 mt-2">
         <p class="text-white m-0" *ngIf="dataSource.data.length > 1">
@@ -325,7 +319,22 @@
             {{ row.status.name }}
           </span>
         </td>
-        <td mat-footer-cell *matFooterCellDef></td>
+        <td mat-footer-cell *matFooterCellDef class="">
+          <button
+            class="addBtnfooter"
+            [routerLink]="['/reports']"
+            [queryParams]="{
+              page: 'stockList',
+              branch_id: branch_id,
+              category_id: category_id,
+              label: label,
+              status_id: status_id
+            }"
+          >
+            <i class="icon-printer mr-2 align-middle"></i>
+            Print
+          </button>
+        </td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="actions">

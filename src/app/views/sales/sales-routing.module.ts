@@ -35,7 +35,8 @@ const routes: Routes = [
         resolve: {
           branchList: branchListSolver,
           receipts: ReceiptsAllSolver,
-          metal: metalSolver
+          metal: metalSolver,
+          clients: clientsListSolver
         }
       },
       {
@@ -60,6 +61,7 @@ const routes: Routes = [
         resolve: {
           safeBox: safeboxIndexSolver,
           branchList: branchListSolver,
+          clients: clientsListSolver
         }
       },
       {
@@ -70,7 +72,7 @@ const routes: Routes = [
         },
         resolve: {
           safeBoxs: safeBoxActionsSolver,
-          branchList: branchListSolver,
+          branchList: branchListSolver
         }
       },
       {
@@ -93,4 +95,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class SalesRoutingModule { }
+export class SalesRoutingModule {}

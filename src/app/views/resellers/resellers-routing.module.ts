@@ -17,7 +17,8 @@ const routes: Routes = [
     resolve: {
       resellers: ResellersSolver,
       branches: branchListSolver,
-      clients: resellerClientsSolver
+      clients: resellerClientsSolver,
+      realClients: clientsListSolver
     }
   }
 ];
@@ -26,4 +27,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ResllersRoutingModule {}
+export class ResllersRoutingModule { }

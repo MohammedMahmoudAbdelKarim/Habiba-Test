@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MainServiceService } from '../../shared-services/main-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -44,7 +44,7 @@ export class OptionsComponent implements OnInit {
   }
   /* ----------------------------------- OnInit ------------------------ */
   // tslint:disable-next-line: use-lifecycle-interface
-  ngOnInit() {}
+  ngOnInit() { }
 
   /* ------------------------------- On Submit ----------------------------- */
   onSubmit(form) {

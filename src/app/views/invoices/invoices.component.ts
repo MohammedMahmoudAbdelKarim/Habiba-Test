@@ -1,26 +1,32 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { MainServiceService } from '../../shared-services/main-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { startWith, map } from 'rxjs/operators';
+import * as jspdf from 'jspdf';
+import html2canvas from 'html2canvas';
+
 @Component({
   templateUrl: 'invoices.component.html'
 })
 export class InvoicesComponent {
   /* ------------------------------------- Variables ------------------------ */
   // Modals
+  @ViewChild('content', { static: false }) content: ElementRef;
   @ViewChild('myModalPayment', { static: false })
   public myModalPayment: ModalDirective;
   @ViewChild('myModalImg', { static: false }) public myModalImg: ModalDirective;
   @ViewChild('invoiceModal', { static: false })
   public invoiceModal: ModalDirective;
+  @ViewChild('invoiceModalView', { static: false })
+  public invoiceModalView: ModalDirective;
   // Tables Colums
   selection = new SelectionModel<any>(true, []);
   displayedColumns: string[] = [
@@ -102,6 +108,7 @@ export class InvoicesComponent {
   inoviceAddress: any = '';
   inovicePhone: any = '';
   pageIndex;
+  dowloadShow = true;
   numberOfPages = [];
 
   // Form Controls
@@ -618,7 +625,7 @@ export class InvoicesComponent {
   /* ------------------------------ Open Inovice ----------------------- */
   openInvoice(row) {
     console.log(row);
-    this.invoiceModal.show();
+    this.invoiceModalView.show();
     this.api.get('settings', { per_page: 50 }).subscribe(data => {
       console.log(data.data);
       this.settings_address = data.data[0].address;
@@ -705,12 +712,47 @@ export class InvoicesComponent {
     this.router.navigate(['/']);
   }
   /* ----------------------------- Print ------------------------ */
-  print() {
+  print(row) {
+    this.dowloadShow = false;
     this.invoiceModal.show();
+    this.api.get('settings', { per_page: 50 }).subscribe(data => {
+      console.log(data.data);
+      this.settings_address = data.data[0].address;
+      this.settings_phone = data.data[0].phone;
+      this.settings_website = data.data[0].website;
+    });
+    this.invoiceData = row;
+    this.inoviceProducts = row.items[0];
+    console.log(this.inoviceProducts);
+    this.inoviceClient = row.client.name;
+    this.inoviceEmployee = row.employee.name;
+    this.inoviceBranch = row.branch.name;
+    this.inoviceCity = row.branch.city.name;
+    this.inoviceAddress = row.branch.address;
+    this.inovicePhone = row.branch.phone;
     setTimeout(() => {
       window.print();
-    }, 200);
+    }, 3000);
   }
+  captureScreen() {
+    setTimeout(() => {
+      var data = document.getElementById('content');
+      console.log(data);
 
+      html2canvas(data).then(canvas => {
+        // Few necessary setting options
+        var imgWidth = 208;
+        var pageHeight = 295;
+        var imgHeight = (canvas.height * imgWidth) / canvas.width;
+        var heightLeft = imgHeight;
+
+        const contentDataURL = canvas.toDataURL('image/png');
+        let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+        var position = 0;
+        pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
+        pdf.save('invoice.pdf'); // Generated PDF
+      });
+    }, 2500);
+  }
   resetEnd() {}
 }

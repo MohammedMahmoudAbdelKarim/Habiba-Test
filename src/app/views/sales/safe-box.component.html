@@ -8,9 +8,9 @@
       >
         <div class="col-8">
           <!-- Titles -->
-          <h6 class="col-12 p-0">Sales | Safe Box</h6>
+          <h6 class="col-12 p-0">Sales | Save Box</h6>
           <h3 class="text-uppercase">
-            Safe Box List
+            Save Box List
           </h3>
         </div>
         <div class="col-4 row justify-content-end">
@@ -49,8 +49,22 @@
             <option value="Out">Out</option>
           </select>
         </div>
-        <!-- Branch -->
+        <!-- Payment Method -->
         <div class="col p-0 mr-3">
+          <select
+            class="w-100"
+            style="padding: 6px 8px; border: 1px solid #333;"
+            (change)="getPayment($event.target.value)"
+          >
+            <option selected disabled>Payment Method</option>
+            <option value="">All</option>
+            <option value="1">Cash</option>
+            <option value="2">Visa</option>
+            <option value="3">Bank Check</option>
+          </select>
+        </div>
+        <!-- Branch -->
+        <div class="col p-0 mr-3 position-relative">
           <mat-form-field class="example-full-width" appearance="outline">
             <mat-label>Branch</mat-label>
             <input
@@ -82,8 +96,41 @@
             </mat-autocomplete>
           </mat-form-field>
         </div>
+        <!-- Client -->
+        <div class="col p-0 mr-3 position-relative">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Client</mat-label>
+            <input
+              type="text"
+              placeholder="Client"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlClient"
+              [matAutocomplete]="autoClient"
+              [(ngModel)]="clientValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="clientValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoClient="matAutocomplete"
+              [displayWith]="displayClient"
+            >
+              <mat-option
+                *ngFor="let option of filteredClients | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
         <!-- From Date -->
-        <div class="col p-0 mr-3">
+        <div class="col p-0 mr-3 position-relative">
           <input
             #fromInput
             style="padding: 5px 8px;"
@@ -104,15 +151,15 @@
             aria-label="Clear"
             (click)="fromInput.value = ''"
             (click)="getFromData()"
-            style="position: relative;
-          top: -30px;
-          left: 222px;
+            style="position: absolute;
+          right: 0;
+          margin-top: 5px;
           z-index: 9;"
             >close</mat-icon
           >
         </div>
         <!-- To Date -->
-        <div class="col p-0 mr-3">
+        <div class="col p-0 mr-3 position-relative">
           <input
             #toInput
             style="padding: 5px;"
@@ -133,11 +180,10 @@
             aria-label="Clear"
             (click)="toInput.value = ''"
             (click)="getToData()"
-            style="position: relative;
-            top: -29px;
-            left: 222px;
-            z-index: 9;
-        "
+            style="position: absolute;
+          right: 0;
+          margin-top: 5px;
+          z-index: 9;"
             >close</mat-icon
           >
         </div>
@@ -188,6 +234,7 @@
           >
           </mat-checkbox>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="created">
@@ -195,13 +242,22 @@
         <td mat-cell class="" *matCellDef="let row">
           {{ row.created }}
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="client">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Client</th>
+        <td mat-cell class="" *matCellDef="let row">
+          {{ row.client ? row.client.name : '' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="branches.name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>BRANCH</th>
         <td mat-cell *matCellDef="let row">
-          <span>{{ row.branches.name }}</span>
+          <span>{{ row.branches ? row.branches.name : '' }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="amount">
@@ -209,6 +265,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.amount }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="status">
@@ -216,6 +273,7 @@
         <td mat-cell *matCellDef="let row">
           <span class="status" [ngClass]="row.status">{{ row.status }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="type">
@@ -223,6 +281,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.type }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="reason">
@@ -230,9 +289,27 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.reason }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef class="">
+          <button
+            class="addBtnfooter"
+            [routerLink]="['/reports']"
+            [queryParams]="{
+              page: 'saveBox',
+              branch_id: branch_id,
+              status: status,
+              from_date: fromDate,
+              to_date: toDate,
+              payment_method: payment
+            }"
+          >
+            <i class="icon-printer mr-2 align-middle"></i>
+            Print
+          </button>
+        </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
     </table>
 
     <!-- Pagination -->

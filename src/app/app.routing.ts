@@ -63,6 +63,11 @@ export const routes: Routes = [
           import('./views/sales/sales.module').then(m => m.SalesModule)
       },
       {
+        path: 'clients-history',
+        loadChildren: () =>
+          import('./views/client-history/client-history.module').then(m => m.ClientHistoryModule)
+      },
+      {
         path: 'resellers',
         loadChildren: () =>
           import('./views/resellers/resellers.module').then(
@@ -95,6 +100,11 @@ export const routes: Routes = [
         path: 'options',
         loadChildren: () =>
           import('./views/options/options.module').then(m => m.OptionsModule)
+      },
+      {
+        path: 'reports',
+        loadChildren: () =>
+          import('./views/report/report.module').then(m => m.ReportModule)
       }
     ]
   },
@@ -105,4 +115,4 @@ export const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -1,0 +1,415 @@
+<div class="animated fadeIn" id="stock-list">
+  <!-- Start Header -->
+  <header class="bg-blue px-5 py-3">
+    <div
+      class="row align-items-start mb-5 justify-content-between no-gutters w-100"
+    >
+      <div class="col-8">
+        <!-- Titles -->
+        <h6 class="col-12 p-0">Dashboard | Client Report</h6>
+        <h3 class="text-uppercase">
+          Client Report
+        </h3>
+      </div>
+      <div class="col-4 row justify-content-end">
+        <div class="dropdown">
+          <button
+            class="btn dropdown-toggle"
+            type="button"
+            id="dropdownMenu2"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Welcome Habiba
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <button class="dropdown-item" type="button" (click)="logout()">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Filter -->
+      <p class="col-12 p-0 mt-4 text-white">
+        Filter by :
+      </p>
+      <!-- Client -->
+      <div class="col p-0 mr-3">
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Client Name</mat-label>
+          <input
+            type="text"
+            placeholder="Client Name"
+            aria-label="Number"
+            matInput
+            [formControl]="myControlClient"
+            [matAutocomplete]="autoClient"
+            [(ngModel)]="clientValue"
+          />
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="clientValue = ''"
+            >close</mat-icon
+          >
+          <mat-autocomplete
+            #autoClient="matAutocomplete"
+            [displayWith]="displayClient"
+          >
+            <mat-option
+              *ngFor="let option of filteredClients | async"
+              [value]="option"
+            >
+              {{ option.name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <!-- Code -->
+      <div class="col p-0 mr-3">
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Product Code</mat-label>
+          <input
+            type="text"
+            placeholder="Product Code"
+            aria-label="Number"
+            matInput
+            [formControl]="myControlCode"
+            [matAutocomplete]="autoCode"
+            [(ngModel)]="codeValue"
+          />
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="codeValue = ''"
+            >close</mat-icon
+          >
+          <mat-autocomplete
+            #autoCode="matAutocomplete"
+            [displayWith]="displayCode"
+          >
+            <mat-option
+              *ngFor="let option of filteredCodes | async"
+              [value]="option"
+            >
+              {{ option.label }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <!-- Status -->
+      <div class="col p-0 mr-3">
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Product Status</mat-label>
+          <input
+            type="text"
+            placeholder="Product Status"
+            aria-label="Number"
+            matInput
+            [formControl]="myControlStatus"
+            [matAutocomplete]="autoStatus"
+            [(ngModel)]="statusValue"
+          />
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="statusValue = ''"
+            >close</mat-icon
+          >
+          <mat-autocomplete
+            #autoStatus="matAutocomplete"
+            [displayWith]="displayStatus"
+          >
+            <mat-option
+              *ngFor="let option of filteredStatus | async"
+              [value]="option"
+            >
+              {{ option.name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <!-- From Date -->
+      <div class="col p-0 mr-3 position-relative">
+        <input
+          #fromInput
+          style="padding: 5px 8px;"
+          [matDatepicker]="picker"
+          placeholder="Date From"
+          class="itemInput pointer w-100"
+          id="exampleInputEmail1"
+          autocomplete="off"
+          (click)="picker.open()"
+          (dateInput)="entryDateFrom($event, 'from')"
+          (keypress)="(false)"
+          required
+        />
+        <mat-datepicker touchUi #picker></mat-datepicker>
+        <mat-icon
+          class="text-black-50 pointer"
+          matSuffix
+          aria-label="Clear"
+          (click)="fromInput.value = ''"
+          (click)="getFromData()"
+          style="position: absolute;
+      right: 0;
+      margin-top: 5px;
+      z-index: 9;
+  "
+          >close</mat-icon
+        >
+      </div>
+      <!-- To Date -->
+      <div class="col p-0 mr-3 position-relative">
+        <input
+          #toInput
+          style="padding: 5px;"
+          [matDatepicker]="picker2"
+          placeholder="Date To"
+          class="itemInput pointer w-100"
+          id="exampleInputEmail1"
+          autocomplete="off"
+          (click)="picker2.open()"
+          (dateInput)="entryDateTo($event, 'to')"
+          (keypress)="(false)"
+          required
+        />
+        <mat-datepicker touchUi #picker2></mat-datepicker>
+        <mat-icon
+          class="text-black-50 pointer"
+          matSuffix
+          aria-label="Clear"
+          (click)="toInput.value = ''"
+          (click)="getToData()"
+          style="position: absolute;
+      right: 0;
+      margin-top: 5px;
+      z-index: 9;
+  "
+          >close</mat-icon
+        >
+      </div>
+
+      <div class="col-12 row justify-content-start pl-3 mt-2">
+        <p class="text-white m-0" *ngIf="dataSource.data.length > 1">
+          Search Result {{ dataSource.data.length }} Items
+        </p>
+        <p class="text-white m-0" *ngIf="dataSource.data.length == 1">
+          Search Result {{ dataSource.data.length }} Item
+        </p>
+        <p *ngIf="!dataSource.data.length" class="text-white m-0">
+          No Data Available
+        </p>
+      </div>
+    </div>
+  </header>
+  <!-- End Header -->
+  <!-- Start Table -->
+  <div class="floated container-fluid relative">
+    <table mat-table [dataSource]="dataSource" matSort id="print-stock">
+      <!-- Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          #
+        </th>
+        <td mat-cell *matCellDef="let row; let i = index" class="text-center">
+          {{ i + 1 }}
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="img">
+        <th mat-header-cell *matHeaderCellDef>Client Name</th>
+        <td mat-cell class="pointer" *matCellDef="let row">
+          <img
+            *ngIf="row.image"
+            width="75px"
+            height="70px"
+            class="img-fluid"
+            src="http://jewelry.inspia.net/backend/img/products/{{ row.image }}"
+            #img
+            [alt]="row.label"
+            style="border: 1px solid #000"
+            (click)="openImage(img)"
+            class="pointer"
+          />
+          <span *ngIf="!row.image">No Image</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="category.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Prodcut Code</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.category.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="label">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Product Status
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.label }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="branch.name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Paid Date</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.branch.name }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="gold_weight">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.gold_weight }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="item_total_after_profit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Payment Status
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span>$ {{ row.item_total_after_profit }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Remaining Money
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.product_date }}</span>
+        </td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+        <td
+          mat-cell
+          *matCellDef="let row"
+          class="detailsmenu "
+          (mouseenter)="hideme[row.id] = !hideme[row.id] && (testArea = true)"
+          (mouseleave)="hideme[row.id] = !hideme[row.id] && (testArea = false)"
+        >
+          <ng-container>
+            <div id="showOrdercontrols" *ngIf="hideme[row.id]">
+              <button
+                *ngIf="row.status.name == 'available'"
+                class="basic_button"
+                type="button"
+                (click)="routeToSale(row)"
+              >
+                <a target="blank">
+                  <img src="../../../assets/icon/invoice.svg" alt="" />
+                </a>
+                <span class="tooltiptext">Invoice</span>
+              </button>
+              <button
+                *ngIf="
+                  row.status.name != 'available' && row.status.name != 'pending'
+                "
+                class="basic_button"
+                type="button"
+                (click)="routeToReturn(row)"
+              >
+                <a target="blank">
+                  <img src="../../../assets/icon/exchange.svg" alt="" />
+                </a>
+                <span class="tooltiptext">Refund</span>
+              </button>
+              <button
+                *ngIf="row.status.name == 'available'"
+                id="invicebutton"
+                class="basic_button"
+                type="button"
+                (click)="myModal.show(transferForm.reset())"
+                (click)="getData(row)"
+              >
+                <img src="../../../assets/icon/transfer.svg" alt="" />
+                <span class="tooltiptext">Transfer</span>
+              </button>
+              <button
+                *ngIf="row.status.name == 'available'"
+                id="invicebutton"
+                class="basic_button"
+                type="button"
+                (click)="openReseller(row)"
+              >
+                <img src="../../../assets/icon/user-2.svg" alt="" />
+                <span class="tooltiptext">Reseller</span>
+              </button>
+              <button
+                id="editButton"
+                (click)="openDetailsPopup(row)"
+                class="basic_button"
+                type="button"
+              >
+                <img src="../../../assets/icon/details.svg" alt="" />
+                <span class="tooltiptext">Details</span>
+              </button>
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="openUpdataPopup(row)"
+              >
+                <img src="../../../assets/icon/edit.svg" alt="" />
+                <span class="tooltiptext">Edit</span>
+              </button>
+              <button
+                id="editButton"
+                class="basic_button"
+                type="button"
+                (click)="openLabel(row)"
+              >
+                <img src="../../../assets/icon/barcode.svg" alt="" />
+                <span class="tooltiptext">Label</span>
+              </button>
+              <button
+                id="editButton"
+                (click)="opendeletePopup(row)"
+                class="basic_button"
+                type="button"
+              >
+                <img src="../../../assets/icon/delete.svg" alt="" />
+                <span class="tooltiptext">Delete</span>
+              </button>
+            </div>
+          </ng-container>
+          <button class="buttonListItems">
+            <img src="../../../assets/icon/menu.svg" alt="" />
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <!-- Pagination -->
+    <mat-paginator
+      [pageSizeOptions]="[10, 20, 30, 40, 50, 100]"
+      [length]="100"
+    ></mat-paginator>
+    <!-- <div style="position: relative;">
+      <div class="paginator">
+        <span class="mr-2 text-white" style="font-size: 12px;"
+          >Number of Page</span
+        >
+        <select name="" id="" (change)="selectPage($event.target.value)">
+          <option
+            *ngFor="let num of numberOfPages; let i = index"
+            [value]="num"
+          >
+            {{ num }}
+          </option>
+        </select>
+      </div>
+    </div> -->
+  </div>
+</div>

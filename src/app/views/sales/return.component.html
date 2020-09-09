@@ -341,9 +341,11 @@
             <tr class="header-tr">
               <!-- <th scope="col" class="border-right text-center">Total USD</th> -->
               <th class="border-right text-center" scope="col">
+                Paid EGP
+              </th>
+              <th class="border-right text-center" scope="col">
                 Total EGP
               </th>
-
               <th class="border-right text-center" scope="col">
                 Return Amount Paid
               </th>
@@ -365,6 +367,13 @@
               font-weight: 600; text-align: center;"
               >
                 {{ invoiceTotal }}
+              </td>
+              <td
+                class="border-right text-center"
+                style="font-size: 19px;
+            font-weight: 600; text-align: center;"
+              >
+                {{ invoiceTotalSum }}
               </td>
               <td class="border-right text-center">
                 <input

@@ -1,8 +1,8 @@
 import { MainServiceService } from './../../shared-services/main-service.service';
 import { FormGroup, FormControl } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-
+import * as jsPDF from 'jspdf';
 @Component({
   selector: 'app-dashboard',
   templateUrl: 'login.component.html'
@@ -10,7 +10,8 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   login: FormGroup;
   errorMessage: any = [];
-  constructor(private api: MainServiceService, private router: Router) {}
+  @ViewChild('content', { static: false }) content: ElementRef;
+  constructor(private api: MainServiceService, private router: Router) { }
   ngOnInit() {
     this.login = new FormGroup({
       email: new FormControl('habiba.k1997@gmail.com'),

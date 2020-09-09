@@ -9,7 +9,7 @@ import { MainServiceService } from '../../shared-services/main-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { startWith, map } from 'rxjs/operators';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 @Component({
   templateUrl: 'branches.component.html'
 })
@@ -115,7 +115,7 @@ export class BranchesComponent implements OnInit {
     for (let i = 1; i <= this.pageIndex; i++) {
       console.log(i);
       this.numberOfPages.push(i);
-      this.numberOfPages.sort(function(a, b) {
+      this.numberOfPages.sort(function (a, b) {
         return a - b;
       });
     }
@@ -221,7 +221,7 @@ export class BranchesComponent implements OnInit {
     }
     return `${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`;
+      } row ${row.position + 1}`;
   }
   /* -------------------------- Create New Branch ----------------------- */
   onSubmitBranch(form) {
@@ -405,7 +405,7 @@ export class BranchesComponent implements OnInit {
         for (let i = 1; i <= this.pageIndex; i++) {
           console.log(i);
           this.numberOfPages.push(i);
-          this.numberOfPages.sort(function(a, b) {
+          this.numberOfPages.sort(function (a, b) {
             return a - b;
           });
         }

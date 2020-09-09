@@ -16,7 +16,8 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { AlertModule, ModalModule } from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { AlertModule } from 'ngx-bootstrap/alert';
 import { clientsAllSolver } from '../../resolvers/clients-index.solver';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 // Theme Routing
@@ -44,4 +45,4 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   declarations: [ClientsListComponent, TypographyComponent],
   providers: [clientsAllSolver]
 })
-export class ClientsModule {}
+export class ClientsModule { }

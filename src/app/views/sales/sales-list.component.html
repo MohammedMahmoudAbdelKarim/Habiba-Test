@@ -102,8 +102,41 @@
             </mat-autocomplete>
           </mat-form-field>
         </div>
-        <!-- From Date -->
+        <!-- Client -->
         <div class="col p-0 mr-3">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Client</mat-label>
+            <input
+              type="text"
+              placeholder="Client"
+              aria-label="Number"
+              matInput
+              [formControl]="myControlClient"
+              [matAutocomplete]="autoClient"
+              [(ngModel)]="clientValue"
+            />
+            <mat-icon
+              class="text-black-50 pointer"
+              matSuffix
+              aria-label="Clear"
+              (click)="clientValue = ''"
+              >close</mat-icon
+            >
+            <mat-autocomplete
+              #autoClient="matAutocomplete"
+              [displayWith]="displayBranch"
+            >
+              <mat-option
+                *ngFor="let option of filteredClients | async"
+                [value]="option"
+              >
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <!-- From Date -->
+        <div class="col p-0 mr-3 position-relative">
           <input
             #fromInput
             style="padding: 5px 8px;"
@@ -124,15 +157,16 @@
             aria-label="Clear"
             (click)="fromInput.value = ''"
             (click)="getFromData()"
-            style="position: relative;
-          top: -30px;
-          left: 222px;
-          z-index: 9;"
+            style="position: absolute;
+            right: 0;
+            margin-top: 5px;
+            z-index: 9;
+        "
             >close</mat-icon
           >
         </div>
         <!-- To Date -->
-        <div class="col p-0 mr-3">
+        <div class="col p-0 mr-3 position-relative">
           <input
             #toInput
             style="padding: 5px;"
@@ -153,16 +187,16 @@
             aria-label="Clear"
             (click)="toInput.value = ''"
             (click)="getToData()"
-            style="position: relative;
-            top: -29px;
-            left: 222px;
+            style="position: absolute;
+            right: 0;
+            margin-top: 5px;
             z-index: 9;
         "
             >close</mat-icon
           >
         </div>
         <!-- Metal -->
-        <div class="col p-0 mr-3">
+        <div class="col p-0 mr-3 position-relative">
           <mat-form-field class="example-full-width" appearance="outline">
             <mat-label>Metal Type</mat-label>
             <input
@@ -241,6 +275,7 @@
           >
           </mat-checkbox>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="id">
@@ -248,6 +283,7 @@
         <td mat-cell class="" *matCellDef="let row">
           {{ row.id }}
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="product.label">
@@ -255,6 +291,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.product.label }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="receipts.branch.name">
@@ -262,6 +299,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.receipts.branch.name }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="receipts.receipt_date">
@@ -269,6 +307,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.receipts.receipt_date }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="product.metal.name">
@@ -276,6 +315,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.product.metal.name }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="receipts.receipt_number">
@@ -285,13 +325,33 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.receipts.receipt_number }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="receipts.total_egp">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>SELLING PRICE</th>
         <td mat-cell *matCellDef="let row">
-          <span>{{ row.receipts.total_egp }} EGP</span>
+          <span>{{ row.receipts.total_egp }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="receipts.paid_egp">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>PAID AMOUNT</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.receipts.paid_egp }}</span>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <!-- Column -->
+      <ng-container matColumnDef="remaining">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          REMAINING AMOUNT
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.receipts.total_egp - row.receipts.paid_egp }}</span>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Column -->
       <ng-container matColumnDef="receipts.employee.name">
@@ -299,8 +359,8 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.receipts.employee.name }}</span>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
-
       <!-- Column -->
       <ng-container matColumnDef="image">
         <th mat-header-cell *matHeaderCellDef>
@@ -314,6 +374,23 @@
             width="78px"
             alt=""
           />
+        </td>
+        <td mat-footer-cell *matFooterCellDef class="">
+          <button
+            class="addBtnfooter"
+            [routerLink]="['/reports']"
+            [queryParams]="{
+              page: 'saleList',
+              branch_id: branch_id,
+              receipt_number: receipt_number,
+              metal_type: metal_type,
+              from_date: fromDate,
+              to_date: toDate
+            }"
+          >
+            <i class="icon-printer mr-2 align-middle"></i>
+            Print
+          </button>
         </td>
       </ng-container>
       <!-- Column -->
@@ -356,15 +433,23 @@
                 </a>
                 <span class="tooltiptext">View Invoice</span>
               </button>
+              <button class="basic_button" type="button" (click)="print(row)">
+                <a target="blank">
+                  <img src="../../../assets/icon/printer.svg" alt="" />
+                </a>
+                <span class="tooltiptext">Print</span>
+              </button>
             </div>
           </ng-container>
           <button class="buttonListItems">
             <img src="../../../assets/icon/menu.svg" alt="" />
           </button>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
     </table>
 
     <!-- Pagination -->
@@ -765,11 +850,18 @@
                 </div>
               </div>
               <div class="col-12 row no-gutters mt-3">
-                <h5 class="border-invoice col-4 border-right-0">Price (EGP)</h5>
+                <h5 class="border-invoice col-4 border-right-0">Total Price</h5>
                 <h5 class="border-invoice col-8">
                   {{ totalEGP ? totalEGP : '-' }}
                 </h5>
               </div>
+              <div class="col-12 row no-gutters mt-3">
+                <h5 class="border-invoice col-4 border-right-0">Paid Amount</h5>
+                <h5 class="border-invoice col-8">
+                  {{ paidAmount ? paidAmount : '-' }}
+                </h5>
+              </div>
+
               <!-- <div class="col-6 row no-gutters mt-3">
                 <h5 class="border-invoice col-6 border-right-0">
                   Paid Amount (EGP)
@@ -791,35 +883,12 @@
                   New Turquoise Authorised Signatory:
                 </h5>
               </div>
-              <div class="col-12 px-0 row no-gutters mx-0">
-                <div class="col-8 row no-gutters mt-3">
-                  <h5 class="col-3 border-right-0">Head Office:</h5>
-                  <h5 class="col-9">
-                    {{ settings_address }}
-                  </h5>
-                </div>
-                <div class="col-4 row no-gutters mt-3">
-                  <h5 class="col-2 border-right-0">
-                    Tel:
-                  </h5>
-                  <h5 class="col-10">
-                    {{ settings_phone }}
-                  </h5>
-                </div>
-              </div>
-              <div class="col-12 px-0 row no-gutters mx-0">
-                <div class="col-8 row no-gutters">
+
+              <div class="col-12 mt-4 px-0 row no-gutters mx-0">
+                <div class="col-12 row no-gutters">
                   <h5 class="col-3 border-right-0">{{ inoviceCity }}:</h5>
                   <h5 class="col-9">
                     {{ inoviceAddress }} - {{ inovicePhone }}
-                  </h5>
-                </div>
-                <div class="col-4 row no-gutters">
-                  <h5 class="col-4 border-right-0">
-                    Website:
-                  </h5>
-                  <h5 class="col-8">
-                    {{ settings_website }}
                   </h5>
                 </div>
               </div>
@@ -828,5 +897,244 @@
         </div>
       </div>
     </div>
+  </div>
+  <div
+    id="invoice-modal2"
+    bsModal
+    #invoiceModalView="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div id="label-1">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <div class="text-center w-100 mt-5">
+              <img src="../../../assets/icon/logo.svg" alt="" />
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-6 row no-gutters">
+                <h5 class="border-invoice col-4 border-right-0">Date</h5>
+                <h5 class="border-invoice col-8">
+                  {{ receiptDateInvoice ? receiptDateInvoice : '-' }}
+                </h5>
+              </div>
+              <div class="col-6 row no-gutters">
+                <h5 class="border-invoice col-4 border-right-0">Branch</h5>
+                <h5 class="border-invoice col-8">
+                  {{ inoviceBranch }}
+                </h5>
+              </div>
+              <div class="col-12 row no-gutters mt-3">
+                <h5 class="border-invoice col-4 border-right-0">
+                  Customer Name
+                </h5>
+                <h5 class="border-invoice col-8">
+                  {{ inoviceClient }}
+                </h5>
+              </div>
+              <!-- <table id="table-invoice" *ngIf="product">
+              <thead>
+                <tr class="text-center">
+                  <th>Image</th>
+                  <th>Code</th>
+                  <th>Category</th>
+                  <th>Gold Weight</th>
+                  <th>Stones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="text-center">
+                  <td>
+                    <img
+                      src="http://jewelry.inspia.net/backend/img/products/{{
+                        product.image
+                      }}"
+                      alt=""
+                      width="55px"
+                      height="50px"
+                    />
+                  </td>
+                  <td>{{ product.label }}</td>
+                  <td>{{ product.category.name }}</td>
+                  <td>{{ product.gold_weight }}</td>
+                  <td>
+                    <table class="inner">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>Label</th>
+                          <th>Qty</th>
+                          <th>Weight</th>
+                          <th>Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          *ngFor="
+                            let stone of invoiceData.stones;
+                            let i = index
+                          "
+                        >
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ stone.code }}</td>
+                          <td>{{ stone.quantity }}</td>
+                          <td>{{ stone.weight }}</td>
+                          <td>{{ stone.price }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table> -->
+              <div
+                class="col-12 row no-gutters mt-5 justify-content-between align-items-start"
+                *ngIf="product"
+              >
+                <div class="col-6 row no-gutters">
+                  <div
+                    class="col-12 row no-gutters border-invoice border-bottom-0"
+                  >
+                    <h5 class="col-6 mb-0">
+                      Item Code
+                    </h5>
+                    <h5 class=" col-6">
+                      {{ product.label }}
+                    </h5>
+                  </div>
+                  <div
+                    class="col-12 row no-gutters border-invoice border-bottom-0"
+                  >
+                    <h5 class="col-6 mb-0">
+                      Category
+                    </h5>
+                    <h5 class="col-6">
+                      {{ product.category.name }}
+                    </h5>
+                  </div>
+                  <div class="col-12 row no-gutters border-invoice mb-3">
+                    <h5 class="col-6 mb-0">
+                      Gold Weight
+                    </h5>
+                    <h5 class="col-6">
+                      {{ product.gold_weight }}
+                    </h5>
+                  </div>
+                  <table id="table-invoice" class="mt-5" *ngIf="product">
+                    <thead>
+                      <tr class="text-center">
+                        <th class="text-capitalize">Diamond Details</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="text-center">
+                        <td>
+                          <table class="inner">
+                            <thead>
+                              <tr>
+                                <th>no</th>
+                                <th>Label</th>
+                                <th>qty</th>
+                                <th>Weight</th>
+                                <th>Colour</th>
+                                <th>Clarity</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                *ngFor="
+                                  let stone of invoiceData.stones;
+                                  let i = index
+                                "
+                              >
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ stone.code }}</td>
+                                <td>{{ stone.quantity }}</td>
+                                <td>{{ stone.weight }}</td>
+                                <td>{{ stone.color }}</td>
+                                <td>{{ stone.clarity }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-5 row no-gutters">
+                  <img
+                    class="col-12"
+                    src="http://jewelry.inspia.net/backend/img/products/{{
+                      product.image
+                    }}"
+                    alt=""
+                    width="100%"
+                  />
+                </div>
+              </div>
+              <div class="col-12 row no-gutters mt-3">
+                <h5 class="border-invoice col-4 border-right-0">Total Price</h5>
+                <h5 class="border-invoice col-8">
+                  {{ totalEGP ? totalEGP : '-' }}
+                </h5>
+              </div>
+              <div class="col-12 row no-gutters mt-3">
+                <h5 class="border-invoice col-4 border-right-0">Paid Amount</h5>
+                <h5 class="border-invoice col-8">
+                  {{ paidAmount ? paidAmount : '-' }}
+                </h5>
+              </div>
+
+              <!-- <div class="col-6 row no-gutters mt-3">
+              <h5 class="border-invoice col-6 border-right-0">
+                Paid Amount (EGP)
+              </h5>
+              <h5 class="border-invoice col-6">
+                {{ paidAmount ? paidAmount : '-' }}
+              </h5>
+            </div> -->
+              <div class="col-12 row no-gutters mt-3">
+                <h5 class="border-invoice col-4 border-right-0">Seller Name</h5>
+                <h5 class="border-invoice col-8">
+                  {{ inoviceEmployee }}
+                </h5>
+              </div>
+            </div>
+            <div class="row modal-footer border-0 w-100 mx-0 px-0">
+              <div class="col-12 p-0 row no-gutters mt-3 mx-0">
+                <h5 class="border-invoice col-12 pt-2 pb-5">
+                  New Turquoise Authorised Signatory:
+                </h5>
+              </div>
+
+              <div class="col-12 mt-4 px-0 row no-gutters mx-0">
+                <div class="col-12 row no-gutters">
+                  <h5 class="col-3 border-right-0">{{ inoviceCity }}:</h5>
+                  <h5 class="col-9">
+                    {{ inoviceAddress }} - {{ inovicePhone }}
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <input
+    type="button"
+    *ngIf="dowloadShow"
+    value="Download PDF"
+    class="btn btn-success"
+    (click)="captureScreen()"
+    style="position: absolute;
+    top: 6%;
+    left: 80%;"
+  /> -->
   </div>
 </div>

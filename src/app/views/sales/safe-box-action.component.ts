@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MainServiceService } from '../../shared-services/main-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -42,10 +42,8 @@ export class SafeBoxActionComponent {
     this.route.data.subscribe(data => {
       // ------------- Get Safe Boxes
       this.safeBoxArray = data.safeBoxs.data.data;
-      console.log(data.safeBoxs.data.data);
       // ------------- Get Branches
       this.branchesList = data.branchList.data;
-      console.log(data.branchList.data);
     });
   }
   /* ----------------------------------- OnInit ------------------------ */
@@ -57,21 +55,28 @@ export class SafeBoxActionComponent {
       .post('savebox/empty', {
         branch_id: row.branches.id
       })
-      .subscribe(value => {
-        console.log(value);
-        this.toast.success("The branch's safe box is empty Now!", '!Success');
-        this.api
-          .get('savebox/index', {
-            per_page: 50
-          })
-          .subscribe(data => {
-            this.safeBoxArray = data.data.data;
-          });
-      });
+      .subscribe(
+        value => {
+          this.toast.success("The branch's safe box is empty Now!", '!Success');
+          this.api
+            .get('savebox/index', {
+              per_page: 50
+            })
+            .subscribe(data => {
+              this.safeBoxArray = data.data.data;
+            });
+        },
+        error => {
+          if (error.error.errors) {
+            this.toast.error(error.error.errors, '!Error');
+          } else {
+            this.toast.error(error.error.message, '!Error');
+          }
+        }
+      );
   }
   /* -------------------------- Get Payment Method ------------------------- */
   getPaymentType(event) {
-    console.log(event);
     this.payment_method = event;
   }
   /* --------------------------------- Get Branch ID ------------------------ */
@@ -84,7 +89,6 @@ export class SafeBoxActionComponent {
   /* ----------------------- Get Transfer --------------------- */
   makeTransfer(row) {
     this.transferMoney.reset();
-    console.log(row);
     this.branch_name = row.branches.name;
     this.branch_id = row.branches.id;
     this.myModalTransfer.show();
@@ -111,14 +115,16 @@ export class SafeBoxActionComponent {
             });
         },
         error => {
-          this.modalError = error.error.message;
+          if (error.error.errors) {
+            this.toast.error(error.error.errors, '!Error');
+          } else {
+            this.toast.error(error.error.message, '!Error');
+          }
         }
       );
   }
-
   /* -------------------------- Get Money Transfer ---------------------- */
   onSubmitTransfer(form) {
-    console.log(form.value);
     this.api
       .post('savebox/transfer', {
         payment_amount: this.transferMoney.controls.payment_amount.value,
@@ -127,28 +133,34 @@ export class SafeBoxActionComponent {
         reasone: '',
         payment_method: this.payment_method
       })
-      .subscribe(data => {
-        console.log(data);
-        this.myModalTransfer.hide();
-        this.api
-          .get('savebox/index', {
-            per_page: 50
-          })
-          .subscribe(data => {
-            this.safeBoxArray = data.data.data;
-          });
-      });
+      .subscribe(
+        data => {
+          this.myModalTransfer.hide();
+          this.toast.success('The money has been transfered', '!Success');
+          this.api
+            .get('savebox/index', {
+              per_page: 50
+            })
+            .subscribe(data => {
+              this.safeBoxArray = data.data.data;
+            });
+        },
+        error => {
+          if (error.error.errors) {
+            this.toast.error(error.error.errors, '!Error');
+          } else {
+            this.toast.error(error.error.message, '!Error');
+          }
+        }
+      );
   }
-
   /* ----------------------- Get Branch ID ------------------------ */
   getSelectedListOptionId(event) {
-    console.log(event.target.value);
     this.api
       .get('savebox/index', {
         branch_id: event.target.value
       })
       .subscribe(data => {
-        console.log(data);
         this.safeBoxArray = data.data.data;
       });
   }

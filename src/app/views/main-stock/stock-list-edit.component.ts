@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 @Component({
   // tslint:disable-next-line: component-selector
   selector: 'stock-list-edit',
@@ -93,7 +93,7 @@ export class stockListEditComponent {
   ngOnInit() {
     this.assignUpdatedData();
     this.ItemDataCalculated = Object.assign({}, this.updatedItemData);
-    for (let i = 0; i < this.ItemDataCalculated.length; i++) {}
+    for (let i = 0; i < this.ItemDataCalculated.length; i++) { }
     const items = this.updatedItemData.stones;
     let sum = null;
     items.forEach((value, index, arry) => {
@@ -138,7 +138,7 @@ export class stockListEditComponent {
     form.value.id = this.stone_id;
     form.value.total = Math.ceil(
       form.value.quantity * form.value.price +
-        form.value.weight * form.value.setting
+      form.value.weight * form.value.setting
     );
     if (
       form.value.name &&
@@ -221,9 +221,9 @@ export class stockListEditComponent {
         }
         const stoneTotal =
           this.stonesArray[stoneIndex].quantity *
-            this.stonesArray[stoneIndex].setting +
+          this.stonesArray[stoneIndex].setting +
           this.stonesArray[stoneIndex].weight *
-            this.stonesArray[stoneIndex].price;
+          this.stonesArray[stoneIndex].price;
         // Set New Stone
         this.stonesArray[stoneIndex].total = stoneTotal;
       }
