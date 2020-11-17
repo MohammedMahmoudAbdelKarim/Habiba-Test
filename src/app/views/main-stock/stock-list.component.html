@@ -7,9 +7,7 @@
       <div class="col-8">
         <!-- Titles -->
         <h6 class="col-12 p-0">Dashboard | Main Stock | List</h6>
-        <h3 class="text-uppercase">
-          MAIN STOCK LIST
-        </h3>
+        <h3 class="text-uppercase">MAIN STOCK LIST</h3>
       </div>
       <div class="col-4 row justify-content-end">
         <div class="dropdown">
@@ -31,9 +29,7 @@
         </div>
       </div>
       <!-- Filter -->
-      <p class="col-12 p-0 mt-2 text-white">
-        Filter by :
-      </p>
+      <p class="col-12 p-0 mt-2 text-white">Filter by :</p>
       <!-- Branch -->
       <div class="col p-0 mr-3">
         <mat-form-field class="example-full-width" appearance="outline">
@@ -166,6 +162,38 @@
           </mat-autocomplete>
         </mat-form-field>
       </div>
+      <div class="col p-0 mr-3">
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Metal Type</mat-label>
+          <input
+            type="text"
+            placeholder="Metal Type"
+            aria-label="Number"
+            matInput
+            [formControl]="myControlMetal"
+            [matAutocomplete]="autoMetal"
+            [(ngModel)]="metalValue"
+          />
+          <mat-icon
+            class="text-black-50 pointer"
+            matSuffix
+            aria-label="Clear"
+            (click)="metalValue = ''"
+            >close</mat-icon
+          >
+          <mat-autocomplete
+            #autoMetal="matAutocomplete"
+            [displayWith]="displaMetal"
+          >
+            <mat-option
+              *ngFor="let option of filteredMetals | async"
+              [value]="option"
+            >
+              {{ option.name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
       <!-- Delete -->
       <div
         class="col pointer mr-3 pl-3 row align-items-center"
@@ -223,7 +251,7 @@
           >
           </mat-checkbox>
         </td>
-        <td mat-footer-cell *matFooterCellDef class="" style="font-size: 16px;">
+        <td mat-footer-cell *matFooterCellDef class="" style="font-size: 16px">
           No. of Items
         </td>
       </ng-container>
@@ -249,7 +277,7 @@
           mat-footer-cell
           *matFooterCellDef
           class=""
-          style="font-size: 16px; font-weight: 800;"
+          style="font-size: 16px; font-weight: 800"
         >
           {{ countProducts }}
         </td>
@@ -260,7 +288,7 @@
         <td mat-cell *matCellDef="let row">
           <span>{{ row.category.name }}</span>
         </td>
-        <td mat-footer-cell *matFooterCellDef class="" style="font-size: 16px;">
+        <td mat-footer-cell *matFooterCellDef class="" style="font-size: 16px">
           Total EGP
         </td>
       </ng-container>
@@ -274,7 +302,7 @@
           mat-footer-cell
           *matFooterCellDef
           class=""
-          style="font-size: 16px; font-weight: 800;"
+          style="font-size: 16px; font-weight: 800"
         >
           {{ totalProducts }}
         </td>
@@ -284,6 +312,13 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>BRANCH</th>
         <td mat-cell *matCellDef="let row">
           <span>{{ row.branch.name }}</span>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+      <ng-container matColumnDef="metal_type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>METAL TYPE</th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{ row.metal_type == 1? 'Diamond': 'Gold' }}</span>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
@@ -342,7 +377,7 @@
         <td
           mat-cell
           *matCellDef="let row"
-          class="detailsmenu "
+          class="detailsmenu"
           (mouseenter)="hideme[row.id] = !hideme[row.id] && (testArea = true)"
           (mouseleave)="hideme[row.id] = !hideme[row.id] && (testArea = false)"
         >
@@ -534,7 +569,7 @@
                   <div class="gold-box">
                     <h3 class="head-title">Gold Weight</h3>
                     <p>(gm)</p>
-                    <p style="font-size: 1rem; font-weight: 500;">
+                    <p style="font-size: 1rem; font-weight: 500">
                       {{ goldWeight }}
                     </p>
                   </div>
@@ -543,7 +578,7 @@
                   <div class="gold-box">
                     <h3 class="head-title">Gold Price</h3>
                     <p>($)</p>
-                    <p style="font-size: 1rem; font-weight: 500;">
+                    <p style="font-size: 1rem; font-weight: 500">
                       {{ goldPrice }}
                     </p>
                   </div>
@@ -552,7 +587,7 @@
                   <div class="gold-box">
                     <h3 class="head-title">Total</h3>
                     <p>($)</p>
-                    <p style="font-size: 1rem; font-weight: 900;">
+                    <p style="font-size: 1rem; font-weight: 900">
                       {{ goldTotal }}
                     </p>
                   </div>
@@ -567,8 +602,8 @@
             >
               {{
                 stones.length > 0
-                  ? 'STONES'
-                  : 'No stone available to this product'
+                  ? "STONES"
+                  : "No stone available to this product"
               }}
               <span class="ml-3" *ngIf="stones.length > 1"
                 >{{ stones.length }} Stones</span
@@ -634,7 +669,7 @@
               </div>
             </div>
             <footer class="row mt-5 justify-content-center w-100">
-              <div class=" col-md-10 col-md-offset-1">
+              <div class="col-md-10 col-md-offset-1">
                 <div class="row justify-content-center">
                   <div
                     class="col-md-6 row justify-content-center align-items-center pointer"
@@ -810,8 +845,8 @@
               >
                 {{
                   stones.length > 0
-                    ? 'STONES'
-                    : 'No stone available to this product'
+                    ? "STONES"
+                    : "No stone available to this product"
                 }}
                 <span class="ml-3" *ngIf="stones.length > 1"
                   >{{ stones.length }} Stones</span
@@ -863,9 +898,9 @@
                               updateStoneData($event.target.value, stoneIndex)
                             "
                           >
-                            <option value="" selected hidden>{{
-                              stone.name
-                            }}</option>
+                            <option value="" selected hidden>
+                              {{ stone.name }}
+                            </option>
                             <option
                               *ngFor="let stone of stoneList"
                               [value]="stone.id"
@@ -1036,12 +1071,12 @@
                     (change)="getSelectedListOptionId()"
                     (change)="getStoneDetails($event.target.value)"
                   >
-                    <option disabled selected="selected" value=""
-                      >Please Select Type</option
-                    >
+                    <option disabled selected="selected" value="">
+                      Please Select Type
+                    </option>
                     <option *ngFor="let stone of stoneList" [value]="stone.id">
-                      {{ stone.name }}</option
-                    >
+                      {{ stone.name }}
+                    </option>
                   </select>
                   <mat-hint
                     class="d-inline-block text-center w-100 mt-2 alert alert-danger"
@@ -1298,15 +1333,15 @@
                     >Transfer To: <span class="text-red">*</span></label
                   >
                   <select class="input-text w-100" formControlName="branch_id">
-                    <option disabled selected="selected" value=""
-                      >Please Select Branch</option
-                    >
+                    <option disabled selected="selected" value="">
+                      Please Select Branch
+                    </option>
                     <option
                       *ngFor="let branch of branchList"
                       [value]="branch.id"
                     >
-                      {{ branch.name }}</option
-                    >
+                      {{ branch.name }}
+                    </option>
                   </select>
                   <mat-hint
                     class="d-inline-block text-center w-100 mt-2 alert alert-danger"
@@ -1394,9 +1429,7 @@
                 </div>
               </div>
               <div class="col-md-4 modal-footer border-0 p-0">
-                <button type="submit" class="submit-btn">
-                  Delete
-                </button>
+                <button type="submit" class="submit-btn">Delete</button>
               </div>
             </div>
           </form>
@@ -1449,9 +1482,7 @@
                 </div>
               </div>
               <div class="col-md-4 modal-footer border-0 p-0">
-                <button type="submit" class="submit-btn">
-                  Delete
-                </button>
+                <button type="submit" class="submit-btn">Delete</button>
               </div>
             </div>
           </form>
@@ -1470,7 +1501,7 @@
     aria-hidden="true"
   >
     <div class="modal-dialog" role="document">
-      <div class="modal-content border-0" style="background: 0;">
+      <div class="modal-content border-0" style="background: 0">
         <div class="modal-header border-0">
           <button
             type="button"
@@ -1483,7 +1514,7 @@
         </div>
         <!-- Body -->
         <div class="modal-body">
-          <img style="width: 100%; height: auto;" [src]="imgSrc" alt="" />
+          <img style="width: 100%; height: auto" [src]="imgSrc" alt="" />
         </div>
       </div>
     </div>
@@ -1539,12 +1570,12 @@
                     >Select a Client: <span class="text-red">*</span></label
                   >
                   <select class="input-text w-100" formControlName="client_id">
-                    <option disabled selected="selected" value=""
-                      >Please Select Client</option
-                    >
+                    <option disabled selected="selected" value="">
+                      Please Select Client
+                    </option>
                     <option *ngFor="let client of clients" [value]="client.id">
-                      {{ client.name }}</option
-                    >
+                      {{ client.name }}
+                    </option>
                   </select>
                   <mat-hint
                     class="d-inline-block text-center w-100 mt-2 alert alert-danger"
@@ -1566,7 +1597,7 @@
                 <div class="form-group col-12 no-gutters mb-0">
                   <label class="title-4">Notes:</label>
                   <textarea
-                    style="height: 150px;"
+                    style="height: 150px"
                     type="text"
                     formControlName="note"
                     class="input-text w-100 p-2"

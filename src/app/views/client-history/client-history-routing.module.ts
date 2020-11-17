@@ -12,6 +12,7 @@ import { statusListSolver } from '../../resolvers/statusList.solver';
 import { stoneListSolver } from '../../resolvers/stoneList.solver';
 import { citySolver } from '../../resolvers/cities.solver';
 import { transferAllSolver } from '../../resolvers/transfer-index.solver';
+import { clientsHistorySolver } from '../../resolvers/clients-history.solver';
 // Components
 const routes: Routes = [
   {
@@ -32,9 +33,10 @@ const routes: Routes = [
           branchList: branchListSolver,
           statusList: statusListSolver,
           stones: stoneListSolver,
-          clients: clientsListSolver
+          clients: clientsListSolver,
+          history: clientsHistorySolver
         }
-      },
+      }
     ]
   }
 ];
@@ -42,4 +44,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ClientHistoryRoutingModule { }
+export class ClientHistoryRoutingModule {}

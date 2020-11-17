@@ -1,57 +1,57 @@
-import { MainServiceService } from './../../shared-services/main-service.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { SelectionModel } from '@angular/cdk/collections';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
-import { ToastrService } from 'ngx-toastr';
-import { ModalDirective } from 'ngx-bootstrap/modal';
-import htmlToImage from 'html-to-image';
-import html2canvas from 'html2canvas';
-import $ from 'jquery';
+import { MainServiceService } from "./../../shared-services/main-service.service";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { MatTableDataSource } from "@angular/material/table";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
+import { SelectionModel } from "@angular/cdk/collections";
+import { ActivatedRoute, Router } from "@angular/router";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { Observable } from "rxjs";
+import { startWith, map } from "rxjs/operators";
+import { ToastrService } from "ngx-toastr";
+import { ModalDirective } from "ngx-bootstrap/modal";
+import htmlToImage from "html-to-image";
+import html2canvas from "html2canvas";
+import $ from "jquery";
 
 @Component({
-  templateUrl: 'stock-list.component.html'
+  templateUrl: "stock-list.component.html",
 })
 export class StockListComponent implements OnInit {
   /* ------------------------------------- Variables ------------------------ */
   // Modals
-  @ViewChild('myModal', { static: false }) public myModal: ModalDirective;
-  @ViewChild('detailsModal', { static: false })
+  @ViewChild("myModal", { static: false }) public myModal: ModalDirective;
+  @ViewChild("detailsModal", { static: false })
   public detailsModal: ModalDirective;
-  @ViewChild('labelModal', { static: false })
+  @ViewChild("labelModal", { static: false })
   public labelModal: ModalDirective;
-  @ViewChild('labelModal2', { static: false })
+  @ViewChild("labelModal2", { static: false })
   public labelModal2: ModalDirective;
-  @ViewChild('editModal', { static: false })
+  @ViewChild("editModal", { static: false })
   public editModal: ModalDirective;
-  @ViewChild('stoneModal', { static: false })
+  @ViewChild("stoneModal", { static: false })
   public stoneModal: ModalDirective;
-  @ViewChild('deleteModal', { static: false })
+  @ViewChild("deleteModal", { static: false })
   public deleteModal: ModalDirective;
-  @ViewChild('delete2Modal', { static: false })
+  @ViewChild("delete2Modal", { static: false })
   public delete2Modal: ModalDirective;
-  @ViewChild('myModalImg', { static: false }) public myModalImg: ModalDirective;
-  @ViewChild('resellerModal', { static: false })
+  @ViewChild("myModalImg", { static: false }) public myModalImg: ModalDirective;
+  @ViewChild("resellerModal", { static: false })
   public resellerModal: ModalDirective;
 
   // Tables Colums
   displayedColumns: string[] = [
-    'select',
-    'img',
-    'category.name',
-
-    'label',
-    'branch.name',
-    'gold_weight',
-    'item_total_after_profit',
-    'created_at',
-    'status.name',
-    'actions'
+    "select",
+    "img",
+    "category.name",
+    "label",
+    "branch.name",
+    "metal_type",
+    "gold_weight",
+    "item_total_after_profit",
+    "created_at",
+    "status.name",
+    "actions",
   ];
   dataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   selection = new SelectionModel<any>(true, []);
@@ -69,12 +69,14 @@ export class StockListComponent implements OnInit {
   stoneFlage: boolean = false;
   imageUploadedOnInput: boolean = true;
   flage: boolean = false;
-  imageArray = '';
+  imageArray = "";
   // ASYNC
   filteredBranches: Observable<string[]>;
   filteredCategories: Observable<string[]>;
   filteredCodes: Observable<string[]>;
   filteredStatus: Observable<string[]>;
+  filteredMetals: Observable<string[]>;
+
   // Arrays and Inital Variables
   hideme: any = [];
   products: any = [];
@@ -90,6 +92,7 @@ export class StockListComponent implements OnInit {
   deletedStockIndex: any;
   stoneTotal: any;
   imageFile;
+  metalValue: any = "";
   StochImage;
   stonePrice: any;
   stonesArray: any;
@@ -98,6 +101,7 @@ export class StockListComponent implements OnInit {
   newWeightValue: any;
   newSettingValue: any;
   newQuantityValue: any;
+  metal_type: any = "";
   newGoldPriceValue: any;
   labelCost: any;
   newGoldWeightValue: any;
@@ -107,90 +111,92 @@ export class StockListComponent implements OnInit {
   newStoneArray: any = [];
   testStonesArray: any = [];
   clients: any = [];
-  label: any = '';
+  label: any = "";
   stockData: any = {};
   labelData: any = {};
   updatedItemData: any = {};
-  branch_id: any = '';
-  status_id: any = '';
-  category_id: any = '';
-  codeValue: string = '';
-  tem_category: any = '';
-  branchValue: string = '';
-  categoryValue: string = '';
-  statusValue: string = '';
-  status: string = '';
-  category: string = '';
-  branch: string = '';
-  reseller: any = '';
-  resellerBranch: any = '';
-  imgUrl: string = 'img/products/';
-  baseUrl: string = 'http://jewelry.inspia.net/backend/img/products/';
-  transferName: any = '';
-  transferCode: any = '';
-  imgSrc: any = '';
+  branch_id: any = "";
+  status_id: any = "";
+  category_id: any = "";
+  codeValue: string = "";
+  tem_category: any = "";
+  branchValue: string = "";
+  categoryValue: string = "";
+  statusValue: string = "";
+  status: string = "";
+  category: string = "";
+  branch: string = "";
+  reseller: any = "";
+  resellerBranch: any = "";
+  imgUrl: string = "img/products/";
+  baseUrl: string = "http://jewelry.inspia.net/backend/img/products/";
+  transferName: any = "";
+  transferCode: any = "";
+  imgSrc: any = "";
   per_page: number = 10;
   pageEvent: any;
-  totalSearch: any = '';
-  totalCost: any = '';
-  finalCost: any = '';
+  totalSearch: any = "";
+  totalCost: any = "";
+  finalCost: any = "";
   productTransferID: any;
   checkedItems: any = 0;
-  stone_id: any = '';
+  stone_id: any = "";
   pageSize: any = 10;
-  imagePlaceHolder: any = 'Stock Image';
-  stonAreaPlaceHolder: any = 'No Stones Added Yet';
+  imagePlaceHolder: any = "Stock Image";
+  stonAreaPlaceHolder: any = "No Stones Added Yet";
   imageBase64StringCharacter: any;
 
   // Form Controls
-  myControlBranch = new FormControl('');
-  myControlCategory = new FormControl('');
-  myControlCode = new FormControl('');
-  myControlStatus = new FormControl('');
+  myControlBranch = new FormControl("");
+  myControlCategory = new FormControl("");
+  myControlCode = new FormControl("");
+  myControlStatus = new FormControl("");
+  myControlMetal = new FormControl("");
+
   /* ----------------------------------- Form ------------------------ */
   // Delete Form
   deleteForm = new FormGroup({
-    deleteInput: new FormControl('')
+    deleteInput: new FormControl(""),
   });
   selectNumberOfProductForm = new FormGroup({
-    numberOfProducts: new FormControl('')
+    numberOfProducts: new FormControl(""),
   });
   // Transfer Form
   transferForm = new FormGroup({
-    branch_id: new FormControl('', Validators.required)
+    branch_id: new FormControl("", Validators.required),
   });
   // Stock Form
   stockUpdatForm = new FormGroup({
-    updateStockTotalPrice: new FormControl(''),
-    updateGoldWeight: new FormControl(''),
-    updateGoldPrice: new FormControl(''),
-    updateStonesQuantity: new FormControl(''),
-    upadateStonesName: new FormControl(''),
-    updateSettingsSetting: new FormControl(''),
-    profit_percent: new FormControl(''),
-    updateStonesWeight: new FormControl(''),
-    updateStonesPrice: new FormControl(''),
-    goldTotalPrice: new FormControl(''),
-    stoneTotal: new FormControl(''),
-    stoneTotal1: new FormControl(''),
-    stoneTotal2: new FormControl('')
+    updateStockTotalPrice: new FormControl(""),
+    updateGoldWeight: new FormControl(""),
+    updateGoldPrice: new FormControl(""),
+    updateStonesQuantity: new FormControl(""),
+    upadateStonesName: new FormControl(""),
+    updateSettingsSetting: new FormControl(""),
+    profit_percent: new FormControl(""),
+    updateStonesWeight: new FormControl(""),
+    updateStonesPrice: new FormControl(""),
+    goldTotalPrice: new FormControl(""),
+    stoneTotal: new FormControl(""),
+    stoneTotal1: new FormControl(""),
+    stoneTotal2: new FormControl(""),
   });
   // Add New Stone Form
   stonesForm = new FormGroup({
-    id: new FormControl(''),
-    name: new FormControl('', Validators.required),
-    setting: new FormControl('', Validators.required),
-    price: new FormControl('', Validators.required),
-    weight: new FormControl('', Validators.required),
-    quantity: new FormControl('', Validators.required),
-    total: new FormControl('')
+    id: new FormControl(""),
+    name: new FormControl("", Validators.required),
+    setting: new FormControl("", Validators.required),
+    price: new FormControl("", Validators.required),
+    weight: new FormControl("", Validators.required),
+    quantity: new FormControl("", Validators.required),
+    total: new FormControl(""),
   });
   // Reseller Form
   resellerForm = new FormGroup({
-    client_id: new FormControl('', Validators.required),
-    branch_id: new FormControl('', Validators.required),
-    product_id: new FormControl('', Validators.required),
-    note: new FormControl('')
+    client_id: new FormControl("", Validators.required),
+    branch_id: new FormControl("", Validators.required),
+    product_id: new FormControl("", Validators.required),
+    note: new FormControl(""),
   });
   pageIndex: any;
   numberOfPages: any = [];
@@ -203,6 +209,7 @@ export class StockListComponent implements OnInit {
   imageExtention: any;
   totalProducts: any;
   countProducts: any;
+  metals: any = [];
 
   /* ----------------------------------- Constructor ------------------------ */
   constructor(
@@ -211,19 +218,20 @@ export class StockListComponent implements OnInit {
     private toast: ToastrService,
     private router: Router
   ) {
-    this.route.data.subscribe(data => {
+    this.route.data.subscribe((data) => {
       console.log(data);
       // --------------------------------------  Get Branches
       this.branchList = data.branchList.data;
       // -------------------------------------- Get Categories
       this.categoryList = data.categoryList.data;
+      this.metals = data.metal.data;
       // --------------------------------------- Get Products
       this.products = data.productsData.data;
       this.pageIndex = data.productsData.data.last_page;
       this.data = Object.assign(data.productsData.data);
       this.totalSearch = data.productsData.data.total;
       // this.pageIndex
-      console.log('Stock List Products -> ', data.productsData.data);
+      console.log("Stock List Products -> ", data.productsData.data);
       this.dataSource = new MatTableDataSource(data.productsData.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -232,11 +240,11 @@ export class StockListComponent implements OnInit {
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
-          case 'category.name':
+          case "category.name":
             return item.category.name;
-          case 'branch.name':
+          case "branch.name":
             return item.branch.name;
-          case 'status.name':
+          case "status.name":
             return item.status.name;
           default:
             return item[property];
@@ -247,30 +255,34 @@ export class StockListComponent implements OnInit {
       this.statusList = data.statusList.data;
       // -------------------------------------- Get Stones
       this.stoneList = data.stones.data;
-      console.log('Stones -> ', this.stoneList);
+      console.log("Stones -> ", this.stoneList);
       // -------------------------------------- Get Status
       this.clients = data.clients;
-      console.log('Clinets -> ', this.clients);
+      console.log("Clinets -> ", this.clients);
     });
     // Filter Branches
     this.filteredBranches = this.myControlBranch.valueChanges.pipe(
-      startWith(''),
-      map(value => this.filterBranch(value))
+      startWith(""),
+      map((value) => this.filterBranch(value))
     );
     // Filter Categories
     this.filteredCategories = this.myControlCategory.valueChanges.pipe(
-      startWith(''),
-      map(value => this.filterCategory(value))
+      startWith(""),
+      map((value) => this.filterCategory(value))
     );
     // Filter Codes
     this.filteredCodes = this.myControlCode.valueChanges.pipe(
-      startWith(''),
-      map(value => this.fitlerCode(value))
+      startWith(""),
+      map((value) => this.fitlerCode(value))
     );
     // Filter Status
     this.filteredStatus = this.myControlStatus.valueChanges.pipe(
-      startWith(''),
-      map(value => this.filterStatus(value))
+      startWith(""),
+      map((value) => this.filterStatus(value))
+    );
+    this.filteredMetals = this.myControlMetal.valueChanges.pipe(
+      startWith(""),
+      map((value) => this.filterMetal(value))
     );
   }
   /* ----------------------------------- OnInit ------------------------ */
@@ -285,25 +297,145 @@ export class StockListComponent implements OnInit {
     // }
   }
 
-  /* ---------------------------- Filter Branches ------------------------ */
-  private filterBranch(value) {
+  // ----------------------------------- Filter Metal
+  private filterMetal(value) {
     // tslint:disable-next-line: triple-equals
-    if (value == '' || value == undefined) {
-      this.branch_id = '';
+    if (value == "" || value == undefined) {
+      this.metal_type = "";
       // Send Request
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
           per_page: this.per_page,
-          page: this.currentPage
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
         // tslint:disable-next-line: no-shadowed-variable
-        .subscribe(value => {
+        .subscribe((value) => {
+          console.log(value);
           setTimeout(() => {
-            console.log('Empty Branch -> ', value.data);
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case "product.label":
+                  return item.product.label;
+                case "product.metal.name":
+                  return item.product.metal.name;
+                case "receipts.branch.name":
+                  return item.receipts.branch.name;
+                case "receipts.employee.name":
+                  return item.receipts.employee.name;
+                case "receipts.receipt_number":
+                  return item.receipts.receipt_number;
+                case "receipts.total_egp":
+                  return item.receipts.total_egp;
+                case "receipts.paid_egp":
+                  return item.receipts.paid_egp;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+    }
+    // tslint:disable-next-line: triple-equals
+    if (typeof value == "object") {
+      const filterValue = value.name;
+      this.metal_type = value.id;
+      // Send Request
+      this.api
+        .get("products", {
+          branch_id: this.branch_id,
+          category_id: this.category_id,
+          label: this.label,
+          status_id: this.status_id,
+          per_page: this.per_page,
+          page: this.currentPage,
+          metal_type: this.metal_type,
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe((value) => {
+          console.log(value);
+          setTimeout(() => {
+            this.dataSource = new MatTableDataSource(value.data.data);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            // Sort item inside inner Object
+            this.dataSource.sortingDataAccessor = (item, property) => {
+              switch (property) {
+                case "category.name":
+                  return item.category.name;
+                case "branch.name":
+                  return item.branch.name;
+                case "status.name":
+                  return item.status.name;
+                default:
+                  return item[property];
+              }
+            };
+          }, 300);
+        });
+      return this.metals.filter((option) => option.name.includes(filterValue));
+      // tslint:disable-next-line: triple-equals
+    } else if (typeof value == "string") {
+      // value = this.tem_category;
+      const filterValueName = value;
+      const info = this.products.filter((option) =>
+        option.metal_type.includes(filterValueName)
+      );
+      console.log(info);
+      this.dataSource = new MatTableDataSource(info);
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+      // Sort item inside inner Object
+      this.dataSource.sortingDataAccessor = (item, property) => {
+        switch (property) {
+          case "category.name":
+            return item.category.name;
+          case "branch.name":
+            return item.branch.name;
+          case "status.name":
+            return item.status.name;
+          default:
+            return item[property];
+        }
+      };
+      return this.metals.filter((option) =>
+        option.name.includes(filterValueName)
+      );
+    }
+  }
+  // ----------------------------------------- Display Codes
+  displaMetal(metal): string {
+    console.log(metal);
+    return metal ? metal.name : metal;
+  }
+  /* ---------------------------- Filter Branches ------------------------ */
+  private filterBranch(value) {
+    // tslint:disable-next-line: triple-equals
+    if (value == "" || value == undefined) {
+      this.branch_id = "";
+      // Send Request
+      this.api
+        .get("products", {
+          branch_id: this.branch_id,
+          category_id: this.category_id,
+          label: this.label,
+          status_id: this.status_id,
+          per_page: this.per_page,
+          page: this.currentPage,
+          metal_type: this.metal_type,
+        })
+        // tslint:disable-next-line: no-shadowed-variable
+        .subscribe((value) => {
+          setTimeout(() => {
+            console.log("Empty Branch -> ", value.data);
             this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
@@ -312,11 +444,11 @@ export class StockListComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -326,21 +458,22 @@ export class StockListComponent implements OnInit {
         });
     }
     // tslint:disable-next-line: triple-equals
-    if (typeof value == 'object') {
+    if (typeof value == "object") {
       const filterValue = value.name.toLowerCase();
       this.branch_id = value.id;
       // Send Request
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 'all',
-          page: this.currentPage
+          per_page: "all",
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
         // tslint:disable-next-line: no-shadowed-variable
-        .subscribe(value => {
+        .subscribe((value) => {
           console.log(value);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data);
@@ -351,11 +484,11 @@ export class StockListComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -363,13 +496,13 @@ export class StockListComponent implements OnInit {
             };
           }, 300);
         });
-      return this.branchList.filter(option =>
+      return this.branchList.filter((option) =>
         option.name.toLowerCase().includes(filterValue)
       );
       // tslint:disable-next-line: triple-equals
-    } else if (typeof value == 'string') {
+    } else if (typeof value == "string") {
       const filterValueName = value.toLowerCase();
-      const info = this.products.filter(option =>
+      const info = this.products.filter((option) =>
         option.branch.name.toLowerCase().includes(filterValueName)
       );
       this.dataSource = new MatTableDataSource(info);
@@ -378,17 +511,17 @@ export class StockListComponent implements OnInit {
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
-          case 'category.name':
+          case "category.name":
             return item.category.name;
-          case 'branch.name':
+          case "branch.name":
             return item.branch.name;
-          case 'status.name':
+          case "status.name":
             return item.status.name;
           default:
             return item[property];
         }
       };
-      return this.branchList.filter(option =>
+      return this.branchList.filter((option) =>
         option.name.toLowerCase().includes(filterValueName)
       );
     }
@@ -400,21 +533,22 @@ export class StockListComponent implements OnInit {
   /* ---------------------------- Filter Categories ------------------------ */
   private filterCategory(value) {
     // tslint:disable-next-line: triple-equals
-    if (value == '' || value == undefined) {
-      this.category_id = '';
+    if (value == "" || value == undefined) {
+      this.category_id = "";
       // Send Request
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
           per_page: this.per_page,
-          page: this.currentPage
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
         // tslint:disable-next-line: no-shadowed-variable
-        .subscribe(value => {
-          console.log('Empty Category -> ', value.data);
+        .subscribe((value) => {
+          console.log("Empty Category -> ", value.data);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
@@ -422,11 +556,11 @@ export class StockListComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -436,21 +570,22 @@ export class StockListComponent implements OnInit {
         });
     }
     // tslint:disable-next-line: triple-equals
-    if (typeof value == 'object') {
+    if (typeof value == "object") {
       const filterValue = value.name.toLowerCase();
       this.category_id = value.id;
       // Send Request
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 'all',
-          page: this.currentPage
+          per_page: "all",
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
         // tslint:disable-next-line: no-shadowed-variable
-        .subscribe(value => {
+        .subscribe((value) => {
           console.log(value);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data);
@@ -461,11 +596,11 @@ export class StockListComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -473,14 +608,14 @@ export class StockListComponent implements OnInit {
             };
           }, 300);
         });
-      return this.categoryList.filter(option =>
+      return this.categoryList.filter((option) =>
         option.name.toLowerCase().includes(filterValue)
       );
       // tslint:disable-next-line: triple-equals
-    } else if (typeof value == 'string') {
+    } else if (typeof value == "string") {
       // value = this.tem_category;
       const filterValueName = value.toLowerCase();
-      const info = this.products.filter(option =>
+      const info = this.products.filter((option) =>
         option.category.name.toLowerCase().includes(filterValueName)
       );
       this.dataSource = new MatTableDataSource(info);
@@ -490,17 +625,17 @@ export class StockListComponent implements OnInit {
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
-          case 'category.name':
+          case "category.name":
             return item.category.name;
-          case 'branch.name':
+          case "branch.name":
             return item.branch.name;
-          case 'status.name':
+          case "status.name":
             return item.status.name;
           default:
             return item[property];
         }
       };
-      return this.categoryList.filter(option =>
+      return this.categoryList.filter((option) =>
         option.name.toLowerCase().includes(filterValueName)
       );
     }
@@ -512,21 +647,22 @@ export class StockListComponent implements OnInit {
   /* ---------------------------- Filter Codes ------------------------ */
   private fitlerCode(value) {
     // tslint:disable-next-line: triple-equals
-    if (value == '' || value == undefined) {
-      this.label = '';
+    if (value == "" || value == undefined) {
+      this.label = "";
       // Send Request
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
           per_page: this.per_page,
-          page: this.currentPage
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
         // tslint:disable-next-line: no-shadowed-variable
-        .subscribe(value => {
-          console.log('Empty Code -> ', value.data);
+        .subscribe((value) => {
+          console.log("Empty Code -> ", value.data);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
@@ -536,11 +672,11 @@ export class StockListComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -550,21 +686,22 @@ export class StockListComponent implements OnInit {
         });
     }
     // tslint:disable-next-line: triple-equals
-    if (typeof value == 'object') {
+    if (typeof value == "object") {
       const filterValue = value.label.toLowerCase();
       this.label = value.label;
       // Send Request
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 'all',
-          page: this.currentPage
+          per_page: "all",
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
         // tslint:disable-next-line: no-shadowed-variable
-        .subscribe(value => {
+        .subscribe((value) => {
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
@@ -574,11 +711,11 @@ export class StockListComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -586,32 +723,33 @@ export class StockListComponent implements OnInit {
             };
           }, 300);
         });
-      return this.products.filter(option =>
+      return this.products.filter((option) =>
         option.label.toLowerCase().includes(filterValue)
       );
       // tslint:disable-next-line: triple-equals
-    } else if (typeof value == 'string') {
+    } else if (typeof value == "string") {
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: value,
           status_id: this.status_id,
-          per_page: 'all',
-          page: this.currentPage
+          per_page: "all",
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
-        .subscribe(value => {
+        .subscribe((value) => {
           this.dataSource = new MatTableDataSource(value.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
           // Sort item inside inner Object
           this.dataSource.sortingDataAccessor = (item, property) => {
             switch (property) {
-              case 'category.name':
+              case "category.name":
                 return item.category.name;
-              case 'branch.name':
+              case "branch.name":
                 return item.branch.name;
-              case 'status.name':
+              case "status.name":
                 return item.status.name;
               default:
                 return item[property];
@@ -620,7 +758,7 @@ export class StockListComponent implements OnInit {
         });
       // value = this.tem_category;
       const filterValueName = value.toLowerCase();
-      const info = this.products.filter(option =>
+      const info = this.products.filter((option) =>
         option.label.toLowerCase().includes(filterValueName)
       );
       this.dataSource = new MatTableDataSource(info);
@@ -629,17 +767,17 @@ export class StockListComponent implements OnInit {
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
-          case 'category.name':
+          case "category.name":
             return item.category.name;
-          case 'branch.name':
+          case "branch.name":
             return item.branch.name;
-          case 'status.name':
+          case "status.name":
             return item.status.name;
           default:
             return item[property];
         }
       };
-      return this.products.filter(option =>
+      return this.products.filter((option) =>
         option.label.toLowerCase().includes(filterValueName)
       );
     }
@@ -652,20 +790,21 @@ export class StockListComponent implements OnInit {
   /* ---------------------------- Filter Status ------------------------ */
   private filterStatus(value) {
     // tslint:disable-next-line: triple-equals
-    if (value == '' || value == undefined) {
-      this.status_id = '';
+    if (value == "" || value == undefined) {
+      this.status_id = "";
       // Send Request
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
           per_page: this.per_page,
-          page: this.currentPage
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
         // tslint:disable-next-line: no-shadowed-variable
-        .subscribe(value => {
+        .subscribe((value) => {
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
@@ -673,11 +812,11 @@ export class StockListComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -687,21 +826,22 @@ export class StockListComponent implements OnInit {
         });
     }
     // tslint:disable-next-line: triple-equals
-    if (typeof value == 'object') {
+    if (typeof value == "object") {
       const filterValue = value.name.toLowerCase();
       this.status_id = value.id;
       // Send Request
       this.api
-        .get('products', {
+        .get("products", {
           branch_id: this.branch_id,
           category_id: this.category_id,
           label: this.label,
           status_id: this.status_id,
-          per_page: 'all',
-          page: this.currentPage
+          per_page: "all",
+          page: this.currentPage,
+          metal_type: this.metal_type,
         })
         // tslint:disable-next-line: no-shadowed-variable
-        .subscribe(value => {
+        .subscribe((value) => {
           console.log(value);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data);
@@ -712,11 +852,11 @@ export class StockListComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -724,14 +864,14 @@ export class StockListComponent implements OnInit {
             };
           }, 300);
         });
-      return this.statusList.filter(option =>
+      return this.statusList.filter((option) =>
         option.name.toLowerCase().includes(filterValue)
       );
       // tslint:disable-next-line: triple-equals
-    } else if (typeof value == 'string') {
+    } else if (typeof value == "string") {
       // value = this.tem_category;
       const filterValueName = value.toLowerCase();
-      const info = this.products.filter(option =>
+      const info = this.products.filter((option) =>
         option.status.name.toLowerCase().includes(filterValueName)
       );
       this.dataSource = new MatTableDataSource(info);
@@ -740,17 +880,17 @@ export class StockListComponent implements OnInit {
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
-          case 'category.name':
+          case "category.name":
             return item.category.name;
-          case 'branch.name':
+          case "branch.name":
             return item.branch.name;
-          case 'status.name':
+          case "status.name":
             return item.status.name;
           default:
             return item[property];
         }
       };
-      return this.statusList.filter(option =>
+      return this.statusList.filter((option) =>
         option.name.toLowerCase().includes(filterValueName)
       );
     }
@@ -774,7 +914,7 @@ export class StockListComponent implements OnInit {
     } else {
       this.flage = true;
       this.checkedItems = this.selection.selected.length;
-      this.dataSource.data.forEach(row => this.selection.select(row));
+      this.dataSource.data.forEach((row) => this.selection.select(row));
     }
     console.log(this.flage);
   }
@@ -784,13 +924,13 @@ export class StockListComponent implements OnInit {
     if (!row) {
       this.flage = true;
       // console.log(this.flage);
-      return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
+      return `${this.isAllSelected() ? "select" : "deselect"} all`;
     } else {
       this.flage = false;
     }
-    return `${
-      this.selection.isSelected(row) ? 'deselect' : 'select'
-      } row ${row.position + 1}`;
+    return `${this.selection.isSelected(row) ? "deselect" : "select"} row ${
+      row.position + 1
+    }`;
   }
   /* ---------------------------- Remove Multi-Items ----------------------- */
   mutliplyAction(event) {
@@ -799,31 +939,31 @@ export class StockListComponent implements OnInit {
   }
   removeMultiply() {
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
-    if (upperDeleteInputValue === 'DELETE') {
+    if (upperDeleteInputValue === "DELETE") {
       const ids = [];
-      this.selection.selected.forEach(item => {
-        const index: number = this.data.findIndex(d => d === item);
+      this.selection.selected.forEach((item) => {
+        const index: number = this.data.findIndex((d) => d === item);
         ids.push(item.id);
       });
       this.checkedItems = 0;
       this.selection.clear();
       this.api
-        .delete('products', { params: { 'ids[]': ids } })
-        .subscribe(data => {
-          this.toast.success('The Items are Successfully delete', '!Success');
+        .delete("products", { params: { "ids[]": ids } })
+        .subscribe((data) => {
+          this.toast.success("The Items are Successfully delete", "!Success");
           this.delete2Modal.hide();
-          this.api.get('products').subscribe(value => {
+          this.api.get("products").subscribe((value) => {
             this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -832,7 +972,7 @@ export class StockListComponent implements OnInit {
           });
         });
     } else {
-      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
+      this.api.fireAlert("error", 'Error in writing "DELETE"', "");
     }
   }
   /* ------------------------------------ Popup ----------------------------- */
@@ -850,7 +990,7 @@ export class StockListComponent implements OnInit {
     this.goldPrice = +(+row.gold_price).toFixed(2);
     this.goldTotal = +(+row.gold_total).toFixed(2);
     const sum = [];
-    row.stones.filter(stone => {
+    row.stones.filter((stone) => {
       sum.push(stone.total);
     });
     const total = sum.reduce((a, b) => a + b, 0);
@@ -878,7 +1018,7 @@ export class StockListComponent implements OnInit {
     this.goldPrice = +(+stockData.gold_price).toFixed(2);
     this.goldTotal = +(+stockData.gold_total).toFixed(2);
     const sums = [];
-    stockData.stones.filter(stone => {
+    stockData.stones.filter((stone) => {
       sums.push(stone.total);
     });
     const total = sums.reduce((a, b) => a + b, 0);
@@ -888,7 +1028,7 @@ export class StockListComponent implements OnInit {
     // this.finalCost = Math.ceil(this.totalCost * stockData.profit_percent);
     this.showUpdataPopup = true;
     this.ItemDataCalculated = Object.assign({}, this.updatedItemData);
-    for (let i = 0; i < this.ItemDataCalculated.length; i++) { }
+    for (let i = 0; i < this.ItemDataCalculated.length; i++) {}
     const items = this.updatedItemData.stones;
     let sum = null;
     items.forEach((value, index, arry) => {
@@ -933,7 +1073,7 @@ export class StockListComponent implements OnInit {
     this.checkItemDataCalculatedIsDefiend = true;
     if (this.ItemDataCalculated.stones.length > 0) {
       this.stonesArray = this.ItemDataCalculated.stones;
-      if (key === 'gW') {
+      if (key === "gW") {
         this.newGoldWeightValue = e.target.value;
         this.ItemDataCalculated.gold_weight = this.newGoldWeightValue;
         this.ItemDataCalculated.gold_total = +(
@@ -941,7 +1081,7 @@ export class StockListComponent implements OnInit {
           this.ItemDataCalculated.gold_price
         ).toFixed(2);
       }
-      if (key === 'gP') {
+      if (key === "gP") {
         this.newGoldPriceValue = e.target.value;
         this.ItemDataCalculated.gold_price = this.newGoldPriceValue;
         this.ItemDataCalculated.gold_total = +(
@@ -949,28 +1089,28 @@ export class StockListComponent implements OnInit {
           this.ItemDataCalculated.gold_price
         ).toFixed(2);
       } else {
-        if (key === 'sQ') {
+        if (key === "sQ") {
           this.newQuantityValue = e.target.value;
           this.stonesArray[stoneIndex].quantity = this.newQuantityValue;
         }
-        if (key === 'sW') {
+        if (key === "sW") {
           this.newWeightValue = e.target.value;
           this.stonesArray[stoneIndex].weight = this.newWeightValue;
         }
-        if (key === 'sP') {
+        if (key === "sP") {
           this.newPriceValue = e.target.value;
           this.stonesArray[stoneIndex].price = this.newPriceValue;
         }
-        if (key === 'sS') {
+        if (key === "sS") {
           this.newSettingValue = e.target.value;
           this.stonesArray[stoneIndex].setting = this.newSettingValue;
         }
 
         const stoneTotal = +(
           this.stonesArray[stoneIndex].quantity *
-          this.stonesArray[stoneIndex].setting +
+            this.stonesArray[stoneIndex].setting +
           this.stonesArray[stoneIndex].weight *
-          this.stonesArray[stoneIndex].price
+            this.stonesArray[stoneIndex].price
         ).toFixed(2);
         // Set New Stone
         this.stonesArray[stoneIndex].total = stoneTotal;
@@ -978,7 +1118,7 @@ export class StockListComponent implements OnInit {
       // Start Calculate Total of Stone Total
       const items = this.ItemDataCalculated.stones;
       let sum = null;
-      items.forEach(value => {
+      items.forEach((value) => {
         sum += value.total;
       });
       // End Calculate Total of Stone Total
@@ -988,10 +1128,10 @@ export class StockListComponent implements OnInit {
 
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+          this.ItemDataCalculated.profit_percent
       );
     } else {
-      if (key === 'gW') {
+      if (key === "gW") {
         this.newGoldWeightValue = e.target.value;
         this.ItemDataCalculated.gold_weight = this.newGoldWeightValue;
         this.ItemDataCalculated.gold_total = +(
@@ -999,7 +1139,7 @@ export class StockListComponent implements OnInit {
           this.ItemDataCalculated.gold_price
         ).toFixed(2);
       }
-      if (key === 'gP') {
+      if (key === "gP") {
         this.newGoldPriceValue = e.target.value;
         this.ItemDataCalculated.gold_price = this.newGoldPriceValue;
         this.ItemDataCalculated.gold_total = +(
@@ -1012,7 +1152,7 @@ export class StockListComponent implements OnInit {
       );
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+          this.ItemDataCalculated.profit_percent
       );
       this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
       this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
@@ -1039,7 +1179,7 @@ export class StockListComponent implements OnInit {
   }
   getStoneDetails(event) {
     console.log(event);
-    this.api.get('stones/' + event).subscribe(data => {
+    this.api.get("stones/" + event).subscribe((data) => {
       console.log(data.data);
       this.stonesForm.controls.name.setValue(data.data.name);
       this.stonesForm.controls.price.setValue(data.data.price);
@@ -1052,7 +1192,7 @@ export class StockListComponent implements OnInit {
   updateStoneData(event, i) {
     console.log(event);
     console.log(i);
-    this.api.get('stones/' + event).subscribe(data => {
+    this.api.get("stones/" + event).subscribe((data) => {
       console.log(data.data);
       console.log(this.testStonesArray);
       this.checkItemDataCalculatedIsDefiend = true;
@@ -1078,7 +1218,7 @@ export class StockListComponent implements OnInit {
       console.log(this.updatedItemData.stones);
       const items = this.ItemDataCalculated.stones;
       let sum = null;
-      items.forEach(value => {
+      items.forEach((value) => {
         sum += value.total;
       });
 
@@ -1088,7 +1228,7 @@ export class StockListComponent implements OnInit {
       ).toFixed(2);
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+          this.ItemDataCalculated.profit_percent
       );
       // End Calculate Total of Stone Total
 
@@ -1138,7 +1278,7 @@ export class StockListComponent implements OnInit {
     // Start Calculate Total of Stone Total
     const items = this.ItemDataCalculated.stones;
     let sum = null;
-    items.forEach(value => {
+    items.forEach((value) => {
       sum += value.total;
     });
     // End Calculate Total of Stone Total
@@ -1147,7 +1287,7 @@ export class StockListComponent implements OnInit {
     ).toFixed(2);
     this.ItemDataCalculated.item_total_after_profit = Math.ceil(
       this.ItemDataCalculated.item_total *
-      this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
     );
     this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
     this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
@@ -1159,7 +1299,7 @@ export class StockListComponent implements OnInit {
     // form.value.id = this.stone_id;
     form.value.total = Math.ceil(
       form.value.quantity * form.value.price +
-      form.value.weight * form.value.setting
+        form.value.weight * form.value.setting
     );
     if (
       form.value.name &&
@@ -1177,7 +1317,7 @@ export class StockListComponent implements OnInit {
       this.stoneModal.hide();
       const items = this.ItemDataCalculated.stones;
       let sum = null;
-      items.forEach(value => {
+      items.forEach((value) => {
         sum += value.total;
       });
       this.ItemDataCalculated.item_total = +(
@@ -1185,14 +1325,14 @@ export class StockListComponent implements OnInit {
       ).toFixed(2);
       this.ItemDataCalculated.item_total_after_profit = Math.ceil(
         this.ItemDataCalculated.item_total *
-        this.ItemDataCalculated.profit_percent
+          this.ItemDataCalculated.profit_percent
       );
       this.updatedItemData.item_total = this.ItemDataCalculated.item_total;
       this.updatedItemData.item_total_after_profit = this.ItemDataCalculated.item_total_after_profit;
     } else {
-      this.api.fireAlert('error', 'Please Fill in All Data', '');
+      this.api.fireAlert("error", "Please Fill in All Data", "");
     }
-    this.stone_id = '';
+    this.stone_id = "";
   }
   // Button
   openButton() {
@@ -1200,7 +1340,7 @@ export class StockListComponent implements OnInit {
     this.ItemDataCalculated.profit_percent = this.stockUpdatForm.controls.profit_percent.value;
     this.ItemDataCalculated.item_total_after_profit = Math.ceil(
       this.ItemDataCalculated.item_total *
-      this.ItemDataCalculated.profit_percent
+        this.ItemDataCalculated.profit_percent
     );
   }
   /* --------------------- Update Item ---------------------- */
@@ -1208,7 +1348,7 @@ export class StockListComponent implements OnInit {
     // tslint:disable-next-line: no-unused-expression
     this.stoneFlage = true;
     if (this.stoneFlage == true) {
-      console.log('New Stones Add');
+      console.log("New Stones Add");
     } else {
       this.newStoneArray = [];
     }
@@ -1216,19 +1356,19 @@ export class StockListComponent implements OnInit {
     if (this.updatedItemData.stones.length === 0) {
       delete this.updatedItemData.stones;
     }
-    if (this.imageArray != '' || this.imageArray == undefined) {
+    if (this.imageArray != "" || this.imageArray == undefined) {
       this.updatedItemData.image = this.imageArray;
       console.log(this.updatedItemData);
     }
     this.updatedItemData.profit_percent = this.stockUpdatForm.controls.profit_percent.value;
     this.updatedItemData[
-      'gold_price'
+      "gold_price"
     ] = this.stockUpdatForm.controls.updateGoldPrice.value;
     this.updatedItemData[
-      'gold_weight'
+      "gold_weight"
     ] = this.stockUpdatForm.controls.updateGoldWeight.value;
     console.log(this.ItemDataCalculated.gold_total);
-    this.updatedItemData['gold_total'] = this.ItemDataCalculated.gold_total;
+    this.updatedItemData["gold_total"] = this.ItemDataCalculated.gold_total;
     console.log(this.updatedItemData.gold_total);
     if (this.newStoneArray.length) {
       this.updatedItemData.stones = this.newStoneArray;
@@ -1238,13 +1378,13 @@ export class StockListComponent implements OnInit {
     console.log(this.updatedItemData.stones);
 
     this.api
-      .put('products/' + this.updatedItemData.id, this.updatedItemData)
-      .subscribe(value => {
+      .put("products/" + this.updatedItemData.id, this.updatedItemData)
+      .subscribe((value) => {
         this.toast.success(
-          this.updatedItemData.label + ' ' + ' was successfully Updated',
-          'Success!',
+          this.updatedItemData.label + " " + " was successfully Updated",
+          "Success!",
           {
-            timeOut: 1000
+            timeOut: 1000,
           }
         );
         setTimeout(() => {
@@ -1257,43 +1397,43 @@ export class StockListComponent implements OnInit {
   opendeletePopup(row) {
     console.log(row);
     this.deleteItem = row;
-    this.deleteForm.controls.deleteInput.setValue('');
+    this.deleteForm.controls.deleteInput.setValue("");
     this.deleteModal.show();
   }
   // Open Multi Delete
   deleteMultiply() {
-    this.deleteForm.controls.deleteInput.setValue('');
+    this.deleteForm.controls.deleteInput.setValue("");
     this.delete2Modal.show();
   }
   /* -------------------------- Delete Item ----------------------------- */
   deleteStock() {
     const upperDeleteInputValue = this.deleteForm.value.deleteInput;
-    if (upperDeleteInputValue === 'DELETE') {
-      this.api.delete('products/' + this.deleteItem.id).subscribe(value => {
+    if (upperDeleteInputValue === "DELETE") {
+      this.api.delete("products/" + this.deleteItem.id).subscribe((value) => {
         // tslint:disable-next-line: triple-equals
-        if (value['status'] == 'success') {
+        if (value["status"] == "success") {
           this.toast.success(
-            this.deleteItem.label + ' ' + 'has been Deleted',
-            'Success!'
+            this.deleteItem.label + " " + "has been Deleted",
+            "Success!"
           );
           this.deleteModal.hide();
           this.api
-            .get('products', {
+            .get("products", {
               per_page: this.per_page,
-              page: this.currentPage
+              page: this.currentPage,
             })
             // tslint:disable-next-line: no-shadowed-variable
-            .subscribe(value => {
+            .subscribe((value) => {
               this.dataSource = new MatTableDataSource(value.data);
               this.dataSource.paginator = this.paginator;
               this.dataSource.sort = this.sort;
               this.dataSource.sortingDataAccessor = (item, property) => {
                 switch (property) {
-                  case 'category.name':
+                  case "category.name":
                     return item.category.name;
-                  case 'branch.name':
+                  case "branch.name":
                     return item.branch.name;
-                  case 'status.name':
+                  case "status.name":
                     return item.status.name;
                   default:
                     return item[property];
@@ -1303,12 +1443,12 @@ export class StockListComponent implements OnInit {
         }
       });
     } else {
-      this.api.fireAlert('error', 'Error in writing "DELETE"', '');
+      this.api.fireAlert("error", 'Error in writing "DELETE"', "");
     }
   }
   // Reload Page
   reloadPage() {
-    console.log('Reload Popup');
+    console.log("Reload Popup");
   }
   /* --------------------------- Open Reseller Modal -------------------- */
   openReseller(row) {
@@ -1322,41 +1462,41 @@ export class StockListComponent implements OnInit {
     console.log(this.reseller);
     console.log(form);
     this.api
-      .post('reseller/add', {
+      .post("reseller/add", {
         branch_id: this.reseller.branch.id,
         product_id: this.reseller.id,
         client_id: this.resellerForm.controls.client_id.value,
-        note: this.resellerForm.controls.note.value
+        note: this.resellerForm.controls.note.value,
       })
       .subscribe(
-        value => {
+        (value) => {
           console.log(value);
           this.toast.success(
-            this.reseller.label + ' has been pending',
-            '!Success'
+            this.reseller.label + " has been pending",
+            "!Success"
           );
           this.api
-            .get('products', {
+            .get("products", {
               branch_id: this.branch_id,
               category_id: this.category_id,
               label: this.label,
               status_id: this.status_id,
               per_page: this.per_page,
-              page: this.currentPage
+              page: this.currentPage,
             })
             // tslint:disable-next-line: no-shadowed-variable
-            .subscribe(value => {
+            .subscribe((value) => {
               this.dataSource = new MatTableDataSource(value.data);
               this.dataSource.sort = this.sort;
               this.dataSource.paginator = this.paginator;
               // Sort item inside inner Object
               this.dataSource.sortingDataAccessor = (item, property) => {
                 switch (property) {
-                  case 'category.name':
+                  case "category.name":
                     return item.category.name;
-                  case 'branch.name':
+                  case "branch.name":
                     return item.branch.name;
-                  case 'status.name':
+                  case "status.name":
                     return item.status.name;
                   default:
                     return item[property];
@@ -1365,7 +1505,7 @@ export class StockListComponent implements OnInit {
             });
           this.resellerModal.hide();
         },
-        error => {
+        (error) => {
           console.log(error.error.erorrs);
           this.modalError = error.error.errors;
         }
@@ -1450,35 +1590,35 @@ export class StockListComponent implements OnInit {
   /* -------------------------- Transfer Action ---------------------------- */
   onSubmitTransfer(form) {
     this.api
-      .put('branches/' + form.value.branch_id + '/transfer', {
-        product_id: this.productTransferID
+      .put("branches/" + form.value.branch_id + "/transfer", {
+        product_id: this.productTransferID,
       })
-      .subscribe(val => {
+      .subscribe((val) => {
         this.toast.success(
-          'The product has been successfully transfered',
-          '!Success'
+          "The product has been successfully transfered",
+          "!Success"
         );
         this.api
-          .get('products', {
+          .get("products", {
             branch_id: this.branch_id,
             category_id: this.category_id,
             label: this.label,
             status_id: this.status_id,
-            per_page: this.per_page
+            per_page: this.per_page,
           })
           // tslint:disable-next-line: no-shadowed-variable
-          .subscribe(value => {
+          .subscribe((value) => {
             this.dataSource = new MatTableDataSource(value.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
+                case "category.name":
                   return item.category.name;
-                case 'branch.name':
+                case "branch.name":
                   return item.branch.name;
-                case 'status.name':
+                case "status.name":
                   return item.status.name;
                 default:
                   return item[property];
@@ -1490,30 +1630,30 @@ export class StockListComponent implements OnInit {
   }
   /* -------------------------- Transfer Data Show -------------------------- */
   getData(row) {
-    console.log('Item To Sale : ', row);
+    console.log("Item To Sale : ", row);
     this.productTransferID = row.id;
     this.transferName = row.branch.name;
     this.transferCode = row.label;
   }
   /* -------------------------- Invoice Action ---------------------------- */
   routeToSale(row) {
-    console.log('Item To Sale: ', row);
-    this.router.navigate(['/sales/make-new-sale'], {
+    console.log("Item To Sale: ", row);
+    this.router.navigate(["/sales/make-new-sale"], {
       queryParams: { id: row.id },
-      skipLocationChange: true
+      skipLocationChange: true,
     });
   }
   /* ------------------------- Refund Action ---------------------------- */
   routeToReturn(row) {
-    console.log('Item To Return: ', row);
-    this.router.navigate(['/sales/return'], {
+    console.log("Item To Return: ", row);
+    this.router.navigate(["/sales/return"], {
       queryParams: { id: row.id },
-      skipLocationChange: true
+      skipLocationChange: true,
     });
   }
   /*--------------------------------- Logout ------------------------------ */
   logout() {
-    sessionStorage.removeItem('token');
-    this.router.navigate(['/']);
+    sessionStorage.removeItem("token");
+    this.router.navigate(["/"]);
   }
 }

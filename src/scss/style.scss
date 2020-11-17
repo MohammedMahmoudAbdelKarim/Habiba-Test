@@ -1953,3 +1953,22 @@ header {
   color: #fff;
   padding: 11px 20px;
 }
+
+.RemainingCase {
+  padding: 10px 15px;
+  background: darkred;
+  color: #FFF;
+}
+
+.DoneCase,
+.purchaseCase {
+  padding: 10px 15px;
+  background: green;
+  color: #FFF;
+}
+
+.refundCase {
+  padding: 10px 15px;
+  background: gold;
+  color: #FFF;
+}

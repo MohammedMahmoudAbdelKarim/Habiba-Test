@@ -43,6 +43,7 @@ import { metalSolver } from '../../resolvers/metal.solver';
 import { clientsListSolver } from '../../resolvers/clientsList.solver';
 import { ClientHistoryRoutingModule } from './client-history-routing.module';
 import { ClientHistoryComponent } from './client-history.component';
+import { clientsHistorySolver } from '../../resolvers/clients-history.solver';
 @NgModule({
   imports: [
     CommonModule,
@@ -73,9 +74,7 @@ import { ClientHistoryComponent } from './client-history.component';
     ProgressbarModule.forRoot(),
     TooltipModule.forRoot()
   ],
-  declarations: [
-    ClientHistoryComponent,
-  ],
+  declarations: [ClientHistoryComponent],
   providers: [
     MatDatepickerModule,
     productsAllSolver,
@@ -87,7 +86,8 @@ import { ClientHistoryComponent } from './client-history.component';
     StonesAllSolver,
     transferAllSolver,
     metalSolver,
-    clientsListSolver
+    clientsListSolver,
+    clientsHistorySolver
   ]
 })
-export class ClientHistoryModule { }
+export class ClientHistoryModule {}

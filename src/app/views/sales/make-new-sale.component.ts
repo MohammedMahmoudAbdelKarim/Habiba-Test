@@ -114,6 +114,7 @@ export class MakeNewSaleComponent implements OnInit {
         this.api.get('products/' + value.id).subscribe(val => {
           if (val.data) {
             this.isInvoiced = true;
+            this.invoiceDataform.controls.branch.disable();
             this.branch_name = val.data.branch.name;
             if (val.data.reseller) {
               this.reseller_name = val.data.reseller.client.name;
@@ -580,8 +581,11 @@ export class MakeNewSaleComponent implements OnInit {
           }
         },
         error => {
+          console.log(error.error);
+
           if (error.error.errors) {
-            this.toast.error(error.error.errors, '!Error');
+            this.toast.error(error.error.errors.client_id[0], '! Error');
+            this.toast.error(error.error.errors.receipt_date[0], '! Error');
           } else {
             this.toast.error(error.error.message, '!Error');
           }

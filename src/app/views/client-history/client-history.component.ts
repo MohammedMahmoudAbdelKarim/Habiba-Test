@@ -42,15 +42,13 @@ export class ClientHistoryComponent implements OnInit {
   // Tables Colums
   displayedColumns: string[] = [
     'select',
-    'img',
-    'category.name',
-
-    'label',
-    'branch.name',
-    'gold_weight',
-    'item_total_after_profit',
+    'client.name',
+    'product.label',
+    'action',
     'created_at',
-    'actions'
+    'receipt.total_egp',
+    'payment_status',
+    'remaining'
   ];
   dataSource: MatTableDataSource<any> = new MatTableDataSource([]);
   selection = new SelectionModel<any>(true, []);
@@ -115,7 +113,7 @@ export class ClientHistoryComponent implements OnInit {
   updatedItemData: any = {};
   branch_id: any = '';
   status_id: any = '';
-  category_id: any = '';
+  client_id: any = '';
   codeValue: string = '';
   tem_category: any = '';
   branchValue: string = '';
@@ -219,39 +217,34 @@ export class ClientHistoryComponent implements OnInit {
       // -------------------------------------- Get Categories
       this.categoryList = data.categoryList.data;
       // --------------------------------------- Get Products
-      this.products = data.productsData.data;
-      this.pageIndex = data.productsData.data.last_page;
-      this.data = Object.assign(data.productsData.data);
-      this.totalSearch = data.productsData.data.total;
+      this.products = data.history.data;
+      this.pageIndex = data.history.data.last_page;
+      this.data = Object.assign(data.history.data);
+      this.totalSearch = data.history.data.total;
       // this.pageIndex
-      console.log('Stock List Products -> ', data.productsData.data);
-      this.dataSource = new MatTableDataSource(data.productsData.data);
+      this.dataSource = new MatTableDataSource(data.history.data.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.totalProducts = data.productsData.total;
-      this.countProducts = data.productsData.count;
+      this.totalProducts = data.history.total;
+      this.countProducts = data.history.count;
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
-          case 'category.name':
-            return item.category.name;
-          case 'branch.name':
-            return item.branch.name;
-          case 'status.name':
-            return item.status.name;
+          case 'client.name':
+            return item.client.name;
+          case 'product.label':
+            return item.product.label;
           default:
             return item[property];
         }
       };
 
       // -------------------------------------- Get Status
-      this.statusList = data.statusList.data;
+      this.statusList = ['Purchase', 'Refund'];
       // -------------------------------------- Get Stones
       this.stoneList = data.stones.data;
-      console.log('Stones -> ', this.stoneList);
       // -------------------------------------- Get Status
       this.clients = data.clients;
-      console.log('Clinets -> ', this.clients);
     });
     // Filter Clients
     this.filteredClients = this.myControlClient.valueChanges.pipe(
@@ -284,22 +277,20 @@ export class ClientHistoryComponent implements OnInit {
   private filterClient(value) {
     // tslint:disable-next-line: triple-equals
     if (value == '' || value == undefined) {
-      console.log(this.products);
-
-      // this.client_id = '';
+      this.client_id = '';
       // Send Request
       this.api
-        .get('sales', {
-          branch_id: this.branch_id,
-          // receipt_number: this.receipt_number,
-          // receipt_date: this.receipt_date,
-          // metal_type: this.metal_type,
-          per_page: 50,
-          // client_id: this.client_id
+        .get('clients/history', {
+          client_id: this.client_id,
+          action: this.status_id,
+          date_from: this.fromDate,
+          date_to: this.toDate,
+          product: this.label,
+          per_page: this.per_page
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log(value);
+          console.log('Clients ', value.data.data);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
@@ -307,20 +298,10 @@ export class ClientHistoryComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
+                case 'client.name':
+                  return item.client.name;
                 case 'product.label':
                   return item.product.label;
-                case 'product.metal.name':
-                  return item.product.metal.name;
-                case 'receipts.branch.name':
-                  return item.receipts.branch.name;
-                case 'receipts.employee.name':
-                  return item.receipts.employee.name;
-                case 'receipts.total_egp':
-                  return item.receipts.total_egp;
-                case 'receipts.receipt_number':
-                  return item.receipts.receipt_number;
-                case 'receipts.paid_egp':
-                  return item.receipts.paid_egp;
                 default:
                   return item[property];
               }
@@ -331,21 +312,20 @@ export class ClientHistoryComponent implements OnInit {
     // tslint:disable-next-line: triple-equals
     if (typeof value == 'object') {
       const filterValue = value.name.toLowerCase();
-      // this.client_id = value.id;
+      this.client_id = value.id;
       // console.log(this.client_id);
       // Send Request
       this.api
-        .get('sales', {
-          branch_id: this.branch_id,
-          // receipt_number: this.receipt_number,
-          // receipt_date: this.receipt_date,
-          // metal_type: this.metal_type,
-          // client_id: this.client_id,
-          per_page: 50
+        .get('clients/history', {
+          client_id: this.client_id,
+          action: this.status_id,
+          date_from: this.fromDate,
+          date_to: this.toDate,
+          product: this.label,
+          per_page: this.per_page
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log(value);
           setTimeout(() => {
             this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
@@ -353,20 +333,10 @@ export class ClientHistoryComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
+                case 'client.name':
+                  return item.client.name;
                 case 'product.label':
                   return item.product.label;
-                case 'product.metal.name':
-                  return item.product.metal.name;
-                case 'receipts.branch.name':
-                  return item.receipts.branch.name;
-                case 'receipts.employee.name':
-                  return item.receipts.employee.name;
-                case 'receipts.total_egp':
-                  return item.receipts.total_egp;
-                case 'receipts.receipt_number':
-                  return item.receipts.receipt_number;
-                case 'receipts.paid_egp':
-                  return item.receipts.paid_egp;
                 default:
                   return item[property];
               }
@@ -379,30 +349,20 @@ export class ClientHistoryComponent implements OnInit {
       // tslint:disable-next-line: triple-equals
     } else if (typeof value == 'string') {
       const filterValueName = value.toLowerCase();
-      const info = this.clients.filter(option =>
-        option.name.toLowerCase().includes(filterValueName)
+      const info = this.products.data.filter(option =>
+        option.client.name.toLowerCase().includes(filterValueName)
       );
-      console.log(info);
+      console.log('Filter -> ', info);
       this.dataSource = new MatTableDataSource(info);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
+          case 'client.name':
+            return item.client.name;
           case 'product.label':
             return item.product.label;
-          case 'product.metal.name':
-            return item.product.metal.name;
-          case 'receipts.branch.name':
-            return item.receipts.branch.name;
-          case 'receipts.employee.name':
-            return item.receipts.employee.name;
-          case 'receipts.total_egp':
-            return item.receipts.total_egp;
-          case 'receipts.receipt_number':
-            return item.receipts.receipt_number;
-          case 'receipts.paid_egp':
-            return item.receipts.paid_egp;
           default:
             return item[property];
         }
@@ -414,7 +374,6 @@ export class ClientHistoryComponent implements OnInit {
   }
   // ----------------------------------------- Display Branches
   displayClient(branch): string {
-    console.log(branch);
     return branch ? branch.name : branch;
   }
   /* ---------------------------- Filter Codes ------------------------ */
@@ -424,19 +383,19 @@ export class ClientHistoryComponent implements OnInit {
       this.label = '';
       // Send Request
       this.api
-        .get('products', {
-          branch_id: this.branch_id,
-          category_id: this.category_id,
-          label: this.label,
-          status_id: this.status_id,
-          per_page: this.per_page,
-          page: this.currentPage
+        .get('clients/history', {
+          client_id: this.client_id,
+          action: this.status_id,
+          date_from: this.fromDate,
+          date_to: this.toDate,
+          product: this.label,
+          per_page: this.per_page
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log('Empty Code -> ', value.data);
+          console.log('Code -> ', value.data.data);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data);
+            this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             this.totalProducts = value.total;
@@ -444,12 +403,10 @@ export class ClientHistoryComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
-                  return item.category.name;
-                case 'branch.name':
-                  return item.branch.name;
-                case 'status.name':
-                  return item.status.name;
+                case 'client.name':
+                  return item.client.name;
+                case 'product.label':
+                  return item.product.label;
                 default:
                   return item[property];
               }
@@ -459,22 +416,24 @@ export class ClientHistoryComponent implements OnInit {
     }
     // tslint:disable-next-line: triple-equals
     if (typeof value == 'object') {
-      const filterValue = value.label.toLowerCase();
-      this.label = value.label;
+      console.log(value);
+
+      const filterValue = value.product.label.toLowerCase();
+      this.label = value.product.label;
       // Send Request
       this.api
-        .get('products', {
-          branch_id: this.branch_id,
-          category_id: this.category_id,
-          label: this.label,
-          status_id: this.status_id,
-          per_page: 'all',
-          page: this.currentPage
+        .get('clients/history', {
+          client_id: this.client_id,
+          action: this.status_id,
+          date_from: this.fromDate,
+          date_to: this.toDate,
+          product: this.label,
+          per_page: this.per_page
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data);
+            this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             this.totalProducts = value.total;
@@ -482,54 +441,50 @@ export class ClientHistoryComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
-                  return item.category.name;
-                case 'branch.name':
-                  return item.branch.name;
-                case 'status.name':
-                  return item.status.name;
+                case 'client.name':
+                  return item.client.name;
+                case 'product.label':
+                  return item.product.label;
                 default:
                   return item[property];
               }
             };
           }, 300);
         });
-      return this.products.filter(option =>
-        option.label.toLowerCase().includes(filterValue)
+      return this.products.data.filter(option =>
+        option.product.label.toLowerCase().includes(filterValue)
       );
       // tslint:disable-next-line: triple-equals
     } else if (typeof value == 'string') {
       this.api
-        .get('products', {
+        .get('clients/history', {
           branch_id: this.branch_id,
-          category_id: this.category_id,
+          client_id: this.client_id,
           label: value,
           status_id: this.status_id,
-          per_page: 'all',
+          per_page: this.per_page,
           page: this.currentPage
         })
         .subscribe(value => {
-          this.dataSource = new MatTableDataSource(value.data);
+          this.dataSource = new MatTableDataSource(value.data.data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
           // Sort item inside inner Object
           this.dataSource.sortingDataAccessor = (item, property) => {
             switch (property) {
-              case 'category.name':
-                return item.category.name;
-              case 'branch.name':
-                return item.branch.name;
-              case 'status.name':
-                return item.status.name;
+              case 'client.name':
+                return item.client.name;
+              case 'product.label':
+                return item.product.label;
               default:
                 return item[property];
             }
           };
         });
-      // value = this.tem_category;
+      // value = this.tem_client;
       const filterValueName = value.toLowerCase();
-      const info = this.products.filter(option =>
-        option.label.toLowerCase().includes(filterValueName)
+      const info = this.products.data.filter(option =>
+        option.product.label.toLowerCase().includes(filterValueName)
       );
       this.dataSource = new MatTableDataSource(info);
       this.dataSource.sort = this.sort;
@@ -537,25 +492,22 @@ export class ClientHistoryComponent implements OnInit {
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
-          case 'category.name':
-            return item.category.name;
-          case 'branch.name':
-            return item.branch.name;
-          case 'status.name':
-            return item.status.name;
+          case 'client.name':
+            return item.client.name;
+          case 'product.label':
+            return item.product.label;
           default:
             return item[property];
         }
       };
-      return this.products.filter(option =>
-        option.label.toLowerCase().includes(filterValueName)
+      return this.products.data.filter(option =>
+        option.product.label.toLowerCase().includes(filterValueName)
       );
     }
   }
   /* ---------------------------- Display Codes ------------------------ */
   displayCode(code): string {
-    console.log(code);
-    return code ? code.label : code;
+    return code ? code.product.label : code;
   }
   /* ---------------------------- Filter Status ------------------------ */
   private filterStatus(value) {
@@ -564,9 +516,9 @@ export class ClientHistoryComponent implements OnInit {
       this.status_id = '';
       // Send Request
       this.api
-        .get('products', {
+        .get('clients/history', {
           branch_id: this.branch_id,
-          category_id: this.category_id,
+          client_id: this.client_id,
           label: this.label,
           status_id: this.status_id,
           per_page: this.per_page,
@@ -575,18 +527,16 @@ export class ClientHistoryComponent implements OnInit {
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data);
+            this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
-                  return item.category.name;
-                case 'branch.name':
-                  return item.branch.name;
-                case 'status.name':
-                  return item.status.name;
+                case 'client.name':
+                  return item.client.name;
+                case 'product.label':
+                  return item.product.label;
                 default:
                   return item[property];
               }
@@ -597,12 +547,12 @@ export class ClientHistoryComponent implements OnInit {
     // tslint:disable-next-line: triple-equals
     if (typeof value == 'object') {
       const filterValue = value.name.toLowerCase();
-      this.status_id = value.id;
+      this.status_id = value.action;
       // Send Request
       this.api
-        .get('products', {
+        .get('clients/history', {
           branch_id: this.branch_id,
-          category_id: this.category_id,
+          client_id: this.client_id,
           label: this.label,
           status_id: this.status_id,
           per_page: 'all',
@@ -610,9 +560,10 @@ export class ClientHistoryComponent implements OnInit {
         })
         // tslint:disable-next-line: no-shadowed-variable
         .subscribe(value => {
-          console.log(value);
           setTimeout(() => {
-            this.dataSource = new MatTableDataSource(value.data);
+            console.log(value.data.data);
+
+            this.dataSource = new MatTableDataSource(value.data.data);
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
             this.totalProducts = value.total;
@@ -620,12 +571,10 @@ export class ClientHistoryComponent implements OnInit {
             // Sort item inside inner Object
             this.dataSource.sortingDataAccessor = (item, property) => {
               switch (property) {
-                case 'category.name':
-                  return item.category.name;
-                case 'branch.name':
-                  return item.branch.name;
-                case 'status.name':
-                  return item.status.name;
+                case 'client.name':
+                  return item.client.name;
+                case 'product.label':
+                  return item.product.label;
                 default:
                   return item[property];
               }
@@ -633,14 +582,14 @@ export class ClientHistoryComponent implements OnInit {
           }, 300);
         });
       return this.statusList.filter(option =>
-        option.name.toLowerCase().includes(filterValue)
+        option.toLowerCase().includes(filterValue)
       );
       // tslint:disable-next-line: triple-equals
     } else if (typeof value == 'string') {
-      // value = this.tem_category;
+      // value = this.tem_client;
       const filterValueName = value.toLowerCase();
-      const info = this.products.filter(option =>
-        option.status.name.toLowerCase().includes(filterValueName)
+      const info = this.products.data.filter(option =>
+        option.action.toLowerCase().includes(filterValueName)
       );
       this.dataSource = new MatTableDataSource(info);
       this.dataSource.sort = this.sort;
@@ -648,30 +597,28 @@ export class ClientHistoryComponent implements OnInit {
       // Sort item inside inner Object
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
-          case 'category.name':
-            return item.category.name;
-          case 'branch.name':
-            return item.branch.name;
-          case 'status.name':
-            return item.status.name;
+          case 'client.name':
+            return item.client.name;
+          case 'product.label':
+            return item.product.label;
           default:
             return item[property];
         }
       };
       return this.statusList.filter(option =>
-        option.name.toLowerCase().includes(filterValueName)
+        option.toLowerCase().includes(filterValueName)
       );
     }
   }
   /* ---------------------------- Display Status ------------------------ */
   displayStatus(status): string {
-    return status ? status.name : status;
+    return status ? status : status;
   }
   // 1
   entryDateFrom(event, type) {
     if (event.targetElement.value) {
       this.api
-        .get('sales', {
+        .get('clients/history', {
           branch_id: this.branch_id,
           // receipt_number: this.receipt_number,
           // metal_type: this.metal_type,
@@ -703,7 +650,7 @@ export class ClientHistoryComponent implements OnInit {
     this.fromDate =
       entryDateArray[2] + '/' + entryDateArray[0] + '/' + entryDateArray[1];
     this.api
-      .get('sales', {
+      .get('clients/history', {
         branch_id: this.branch_id,
         // receipt_number: this.receipt_number,
         // metal_type: this.metal_type,
@@ -733,7 +680,7 @@ export class ClientHistoryComponent implements OnInit {
   entryDateTo(event, type) {
     if (event.targetElement.value) {
       this.api
-        .get('sales', {
+        .get('clients/history', {
           branch_id: this.branch_id,
           // receipt_number: this.receipt_number,
           // metal_type: this.metal_type,
@@ -764,7 +711,7 @@ export class ClientHistoryComponent implements OnInit {
     this.toDate =
       entryDateArray[2] + '/' + entryDateArray[0] + '/' + entryDateArray[1];
     this.api
-      .get('sales', {
+      .get('clients/history', {
         branch_id: this.branch_id,
         // receipt_number: this.receipt_number,
         // metal_type: this.metal_type,
@@ -794,7 +741,7 @@ export class ClientHistoryComponent implements OnInit {
   getFromData() {
     this.fromDate = '';
     this.api
-      .get('sales', {
+      .get('clients/history', {
         // branch_id: this.branch_id,
         // receipt_number: this.receipt_number,
         // metal_type: this.metal_type,
@@ -812,20 +759,10 @@ export class ClientHistoryComponent implements OnInit {
           // Sort item inside inner Object
           this.dataSource.sortingDataAccessor = (item, property) => {
             switch (property) {
+              case 'client.name':
+                return item.client.name;
               case 'product.label':
                 return item.product.label;
-              case 'product.metal.name':
-                return item.product.metal.name;
-              case 'receipts.branch.name':
-                return item.receipts.branch.name;
-              case 'receipts.employee.name':
-                return item.receipts.employee.name;
-              case 'receipts.receipt_number':
-                return item.receipts.receipt_number;
-              case 'receipts.total_egp':
-                return item.receipts.total_egp;
-              case 'receipts.paid_egp':
-                return item.receipts.paid_egp;
               default:
                 return item[property];
             }
@@ -837,7 +774,7 @@ export class ClientHistoryComponent implements OnInit {
   getToData() {
     this.toDate = '';
     this.api
-      .get('sales', {
+      .get('clients/history', {
         branch_id: this.branch_id,
         // receipt_number: this.receipt_number,
         // metal_type: this.metal_type,
@@ -855,20 +792,10 @@ export class ClientHistoryComponent implements OnInit {
           // Sort item inside inner Object
           this.dataSource.sortingDataAccessor = (item, property) => {
             switch (property) {
+              case 'client.name':
+                return item.client.name;
               case 'product.label':
                 return item.product.label;
-              case 'product.metal.name':
-                return item.product.metal.name;
-              case 'receipts.branch.name':
-                return item.receipts.branch.name;
-              case 'receipts.employee.name':
-                return item.receipts.employee.name;
-              case 'receipts.receipt_number':
-                return item.receipts.receipt_number;
-              case 'receipts.total_egp':
-                return item.receipts.total_egp;
-              case 'receipts.paid_egp':
-                return item.receipts.paid_egp;
               default:
                 return item[property];
             }
